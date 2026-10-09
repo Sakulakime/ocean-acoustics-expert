@@ -24,8 +24,8 @@ function run_bellhop( casename, varargin )
 %              because the binary runs in pwd.
 %
 % OPTIONAL NAME-VALUE ARGUMENTS
-%   'AtRoot'   : char. Path to the AT install root. Default is the verified
-%                local install (see DEF.atRoot below).
+%   'AtRoot'   : char. Path to the AT install root. Default is the at_2020
+%                location from oae_local_paths() (see oae_local_paths.m.example).
 %   'PlotRays' : logical scalar (default false). If true, also call plotray
 %                on casename.ray. Only meaningful for ray/eigenray runs.
 %   'Freq'     : numeric scalar (default NaN). Frequency to select when
@@ -38,6 +38,8 @@ function run_bellhop( casename, varargin )
 %
 % ERRORS (all raised with identifier 'runBellhop:*' and a clear message)
 %   runBellhop:badInput     - casename empty or wrong type.
+%   runBellhop:noConfig     - no 'AtRoot' given and oae_local_paths() is
+%                             missing or does not define at_2020.
 %   runBellhop:noEnv        - casename.env not found in pwd.
 %   runBellhop:validation   - validate_bellhop_env returned false.
 %   runBellhop:noBinary     - which('bellhop.exe') did not resolve.
@@ -52,7 +54,7 @@ function run_bellhop( casename, varargin )
 %   validate_bellhop_env, bellhop, read_shd, plotshd, plotray
 
     % ---- documented defaults (no bare magic numbers) -----------------------
-    DEF.atRoot  = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4';
+    DEF.atRoot  = '';      % empty -> the at_2020 location from oae_local_paths()
     DEF.tlFloor = 1e-37;   % abs(pressure) below this is floored before log10
     DEF.binName = 'bellhop.exe';   % literal name resolved via which() on Linux too
 
@@ -69,6 +71,9 @@ function run_bellhop( casename, varargin )
     end
 
     opt = local_parse_opts( varargin, DEF );
+    if ( isempty( opt.AtRoot ) )
+        opt.AtRoot = local_configured_path( 'at_2020' );
+    end
 
     % ---- ensure the AT path is set up so binaries/scripts resolve ----------
     local_ensure_path( opt.AtRoot, DEF.binName );
@@ -189,6 +194,24 @@ function opt = local_parse_opts( args, DEF )
                 error( 'runBellhop:badInput', 'Unknown option ''%s''.', char( name ) );
         end
     end
+end
+
+function p = local_configured_path( field )
+% LOCAL_CONFIGURED_PATH  Read one toolbox location from oae_local_paths().
+%   Toolbox locations are machine-specific, so they come from the local
+%   configuration function instead of literals in this file.
+    if ( exist( 'oae_local_paths', 'file' ) ~= 2 )
+        error( 'runBellhop:noConfig', ...
+            [ 'oae_local_paths.m is not on the MATLAB path, so the toolbox location is unknown.\n', ...
+              'Copy oae_local_paths.m.example to oae_local_paths.m on the path and set its paths,\n', ...
+              'or pass ''AtRoot'' explicitly.' ] );
+    end
+    paths = oae_local_paths( );
+    if ( ~isstruct( paths ) || ~isfield( paths, field ) || isempty( paths.( field ) ) )
+        error( 'runBellhop:noConfig', ...
+            'oae_local_paths() does not define ''%s''. Set it there, or pass ''AtRoot'' explicitly.', field );
+    end
+    p = char( paths.( field ) );
 end
 
 function local_ensure_path( atRoot, binName )

@@ -1,3 +1,4 @@
 node_modules/
 *.tgz
 .DS_Store
+tools/matlab/oae_local_paths.m

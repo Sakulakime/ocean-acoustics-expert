@@ -37,9 +37,19 @@ const MINIMAL_KNOWLEDGE_BASE = {
  * @returns {string} Absolute path of the knowledge-base root.
  */
 export function writeKnowledgeBase(t, overrides = {}) {
+  return writeDirectory(t, { ...MINIMAL_KNOWLEDGE_BASE, ...overrides });
+}
+
+/**
+ * Write files to a temp directory that is removed after the test.
+ * @param {import("node:test").TestContext} t
+ * @param {Record<string, string>} files Relative path to file content.
+ * @returns {string} Absolute path of the directory.
+ */
+export function writeDirectory(t, files) {
   const root = mkdtempSync(join(tmpdir(), "oae-kb-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  for (const [relativePath, content] of Object.entries({ ...MINIMAL_KNOWLEDGE_BASE, ...overrides })) {
+  for (const [relativePath, content] of Object.entries(files)) {
     const target = join(root, relativePath);
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, content);

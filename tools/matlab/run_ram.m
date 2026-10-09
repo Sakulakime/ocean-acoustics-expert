@@ -9,7 +9,7 @@ function run_ram( infile, varargin )
 %   hard to launch a malformed or mis-configured run. It:
 %     1. Validates infile with validate_ram_in and ABORTS with a clear error
 %        if validation fails.
-%     2. Uses the VERIFIED Linux ELF binary at DEF.ramBin directly via
+%     2. Uses the configured Linux ELF binary (RamBin) directly via
 %        system(), instead of which('ram.exe') which on this machine may
 %        resolve a Mach-O (macOS) binary that cannot execute on Linux.
 %     3. RAM always reads a file literally named "ram.in" from the run
@@ -28,12 +28,15 @@ function run_ram( infile, varargin )
 %            infile (or pwd if infile is a bare name).
 %
 % OPTIONAL NAME-VALUE ARGUMENTS
-%   'RamBin'   : char. Full path to the working ELF RAM binary. Default is the
-%                verified local ELF build (see DEF.ramBin below). The stock
-%                AT ram.m uses which('ram.exe') which may find a Mach-O build;
-%                this wrapper calls the verified path directly to avoid that.
+%   'RamBin'   : char. Full path to the working ELF RAM binary. Default is
+%                RAM/ram.exe under the at_2023 location from oae_local_paths()
+%                (see oae_local_paths.m.example). The stock AT ram.m uses
+%                which('ram.exe') which may find a Mach-O build; this wrapper
+%                calls the configured path directly to avoid that.
 %   'AtRoot'   : char. Path to the AT install root that holds the Matlab tree
-%                (needed so read_ram_tlgrid resolves). Default below.
+%                (needed so read_ram_tlgrid resolves). Default is the at_2020
+%                location from oae_local_paths(), consulted only when
+%                read_ram_tlgrid is not already on the MATLAB path.
 %   'RunDir'   : char. Directory to run RAM in. Default is the folder of infile
 %                (or pwd if infile has no path). ram.in and outputs live here.
 %   'Validate' : logical scalar (default true). If false, skip validate_ram_in
@@ -45,12 +48,14 @@ function run_ram( infile, varargin )
 % ERRORS (all raised with identifier 'runRam:*' and a clear message)
 %   runRam:badInput   - infile empty or wrong type, or bad option value.
 %   runRam:noInput    - infile not found.
+%   runRam:noConfig   - a default toolbox location is needed but
+%                       oae_local_paths() is missing or does not define it.
 %   runRam:noBinary   - the RAM binary path does not exist.
 %   runRam:validation - validate_ram_in returned false.
 %   runRam:runFailed  - the binary returned a non-zero exit status.
 %
 % EXAMPLE
-%   cd /home/jay/temp/ram_run     % directory that will hold ram.in + outputs
+%   cd /path/to/ram_run           % directory that will hold ram.in + outputs
 %   validate_ram_in( 'ram.in' );
 %   run_ram( 'ram.in' );          % validates, runs, plots the TL field
 %   run_ram( 'wedge.in' );        % copied to ram.in first, then run
@@ -59,8 +64,9 @@ function run_ram( infile, varargin )
 %   validate_ram_in, read_ram_tlgrid, run_bellhop, validate_bellhop_env
 
     % ---- documented defaults (no bare magic numbers) -----------------------
-    DEF.ramBin   = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM/ram.exe';
-    DEF.atRoot   = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4';
+    DEF.ramBin   = '';      % empty -> DEF.ramExe under the at_2023 location from oae_local_paths()
+    DEF.ramExe   = { 'RAM', 'ram.exe' };  % path of the working ELF build inside the at_2023 tree
+    DEF.atRoot   = '';      % empty -> the at_2020 location from oae_local_paths()
     DEF.tlFloor  = 1e-37;   % abs(pressure) below this is floored before log10
     DEF.dynRange = 70.0;    % dB window below the strongest return for caxis
     DEF.ramName  = 'ram.in';  % the FIXED filename RAM opens in the run dir
@@ -81,6 +87,9 @@ function run_ram( infile, varargin )
     end
 
     opt = local_parse_opts( varargin, DEF );
+    if ( isempty( opt.RamBin ) )
+        opt.RamBin = fullfile( local_configured_path( 'at_2023' ), DEF.ramExe{:} );
+    end
 
     % ---- validate before doing anything expensive -------------------------
     if ( opt.Validate )
@@ -185,10 +194,31 @@ function opt = local_parse_opts( args, DEF )
     end
 end
 
+function p = local_configured_path( field )
+% LOCAL_CONFIGURED_PATH  Read one toolbox location from oae_local_paths().
+%   Toolbox locations are machine-specific, so they come from the local
+%   configuration function instead of literals in this file.
+    if ( exist( 'oae_local_paths', 'file' ) ~= 2 )
+        error( 'runRam:noConfig', ...
+            [ 'oae_local_paths.m is not on the MATLAB path, so the toolbox location is unknown.\n', ...
+              'Copy oae_local_paths.m.example to oae_local_paths.m on the path and set its paths,\n', ...
+              'or pass ''RamBin''/''AtRoot'' explicitly.' ] );
+    end
+    paths = oae_local_paths( );
+    if ( ~isstruct( paths ) || ~isfield( paths, field ) || isempty( paths.( field ) ) )
+        error( 'runRam:noConfig', ...
+            'oae_local_paths() does not define ''%s''. Set it there, or pass ''RamBin''/''AtRoot'' explicitly.', field );
+    end
+    p = char( paths.( field ) );
+end
+
 function local_ensure_path( atRoot )
 % LOCAL_ENSURE_PATH  Put the AT Matlab tree on the path so read_ram_tlgrid resolves.
     if ( exist( 'read_ram_tlgrid', 'file' ) == 2 )
         return;   % already resolvable, nothing to do
+    end
+    if ( isempty( atRoot ) )
+        atRoot = local_configured_path( 'at_2020' );
     end
     if ( exist( atRoot, 'dir' ) ~= 7 )
         error( 'runRam:noBinary', ...

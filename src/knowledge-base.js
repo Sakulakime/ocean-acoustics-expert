@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { readDataFile } from "./data-file.js";
+import { readDataFile, readTextFiles } from "./data-file.js";
 import { parseYaml } from "./yaml.js";
 
 /** The knowledge base shipped with this package (the authoring copy when run from a checkout). */
@@ -30,7 +30,12 @@ export const BUNDLED_KNOWLEDGE_BASE = fileURLToPath(new URL("../knowledge/", imp
  * @property {string} hub Text of the hub note.
  * @property {Map<string, Route>} routes
  * @property {Concept[]} concepts
+ * @property {Map<string, string>} texts Text of every note and data file,
+ *   keyed by path relative to the root, in path order.
  */
+
+/** Extensions of the files that make up a knowledge base's text. */
+const TEXT_FILE = /\.(?:md|ya?ml|json)$/;
 
 /**
  * Load the parts of a knowledge base that checks reason about.
@@ -49,6 +54,7 @@ export function loadKnowledgeBase(root) {
     hub,
     routes: toRoutes(routingMap?.routes),
     concepts: (conceptIndex?.concepts ?? []).map(toConcept),
+    texts: readTextFiles(root, TEXT_FILE),
   };
 }
 

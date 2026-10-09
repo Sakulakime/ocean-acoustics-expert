@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { runCli } from "./helpers/cli.js";
-import { conceptIndexWith, writeKnowledgeBase } from "./helpers/knowledge-base.js";
+import { conceptIndexWith, writeDirectory, writeKnowledgeBase } from "./helpers/knowledge-base.js";
 
 const BUNDLED_CASE_COUNT = JSON.parse(
   readFileSync(new URL("../checks/route-selection-cases.json", import.meta.url), "utf8"),
@@ -186,6 +186,157 @@ test("check reports fallback-window references that collide with built-in proper
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /fallback window constructor\.name is not defined in the routing map/);
+});
+
+test("check fails when a note contains an absolute machine path", async (t) => {
+  const notes = {
+    "a POSIX path in a chapter note": [
+      "chapters/ch01.md",
+      "---\nsource_pdf: /home/someone/Zotero/storage/ABCD1234/book.pdf\n---\n",
+      /chapters\/ch01\.md:2: absolute path \/home\/someone\/Zotero\/storage\/ABCD1234\/book\.pdf/,
+    ],
+    "a path inside a MATLAB string": [
+      "runbooks/run.md",
+      "```matlab\nAT = '/opt/at/atWin10';\n```\n",
+      /runbooks\/run\.md:2: absolute path \/opt\/at\/atWin10/,
+    ],
+    "a path in the routing map": [
+      "routing-map.yaml",
+      "primary_pdf: /Users/someone/book.pdf\nroutes:\n  fundamentals:\n    notes:\n      - chapters/ch01.md\n",
+      /routing-map\.yaml:1: absolute path \/Users\/someone\/book\.pdf/,
+    ],
+    "a Windows drive path": [
+      "chapters/ch01.md",
+      "Binary: `C:\\Tools\\at\\bellhop.exe`\n",
+      /chapters\/ch01\.md:1: absolute path C:\\Tools\\at\\bellhop\.exe/,
+    ],
+    "a home-relative path": [
+      "chapters/ch01.md",
+      "PDF lives in ~/Zotero/storage/ABCD1234\n",
+      /chapters\/ch01\.md:1: absolute path ~\/Zotero\/storage\/ABCD1234/,
+    ],
+    "a path in bold": [
+      "chapters/ch01.md",
+      "The PDF is **/home/someone/book.pdf**.\n",
+      /chapters\/ch01\.md:1: absolute path \/home\/someone\/book\.pdf;/,
+    ],
+    "a path after a dash or CJK punctuation": [
+      "chapters/ch01.md",
+      "PDF —/home/someone/a.pdf\n路径：/home/someone/b.pdf\n",
+      /chapters\/ch01\.md:1: absolute path \/home\/someone\/a\.pdf[^]*chapters\/ch01\.md:2: absolute path \/home\/someone\/b\.pdf/,
+    ],
+    "a placeholder that climbs out of /path/to": [
+      "chapters/ch01.md",
+      "Run `cd /path/to/../../home/someone` first.\n",
+      /chapters\/ch01\.md:1: absolute path \/path\/to\/\.\.\/\.\.\/home\/someone/,
+    ],
+    "a UNC path": [
+      "chapters/ch01.md",
+      "Share: \\\\fileserver\\acoustics\\at\n",
+      /chapters\/ch01\.md:1: absolute path \\\\fileserver\\acoustics\\at/,
+    ],
+    "a Windows environment-variable path": [
+      "chapters/ch01.md",
+      "Zotero: %USERPROFILE%\\Zotero\\storage\n",
+      /chapters\/ch01\.md:1: absolute path %USERPROFILE%\\Zotero\\storage/,
+    ],
+  };
+
+  for (const [form, [note, content, message]] of Object.entries(notes)) {
+    await t.test(form, (st) => {
+      const kb = writeKnowledgeBase(st, { [note]: content });
+
+      const result = runCli(["check", "--kb", kb]);
+
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, message);
+      assert.match(result.stderr, /Zotero key|logical name/);
+    });
+  }
+});
+
+test("check fails when a note uses an undefined logical name", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "runbooks/run.md": "Binary: `{{at_2099}}/RAM/ram.exe`\nTools: `{{ at_2020 }}/Matlab`\n",
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /runbooks\/run\.md:1: undefined logical name \{\{at_2099\}\}/);
+  assert.match(result.stderr, /runbooks\/run\.md:2: undefined logical name \{\{ at_2020 \}\}/);
+});
+
+test("check accepts every logical name of the local path map", (t) => {
+  const names = ["knowledge_base", "zotero_storage", "at_2023", "at_2020", "matlab_helpers", "authoring_root"];
+  const kb = writeKnowledgeBase(t, {
+    "runbooks/run.md": names.map((name) => `- \`{{${name}}}/sub/dir\``).join("\n"),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("check does not mistake URLs, units, relative paths or placeholders for machine paths", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "chapters/ch01.md": [
+      "DOI: https://doi.org/10.1007/978-1-4419-8678-8",
+      "Speeds in m/s, attenuation in dB/λ, spreading as 1/r and (m/s)/km/h.",
+      "Wavenumber $\\frac{\\omega}{c}/k/2$ and level in dB re 1 µPa²/Hz/m.",
+      "See `../solvers/solver-ram.md` and `{{at_2020}}/Matlab/Plot/plotshd.m`.",
+      "Run `cd /path/to/case` first.",
+      "射线/简正模/抛物方程 都可用。",
+      "",
+    ].join("\n"),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("check lints the bundled MATLAB helpers along with the authoring copy", () => {
+  const result = runCli(["check"]);
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /OK MATLAB helpers .*tools\/matlab/);
+});
+
+test("check fails when a MATLAB helper hard-codes a machine path or an undefined logical name", (t) => {
+  const kb = writeKnowledgeBase(t);
+  const helpers = writeDirectory(t, {
+    "run_x.m": "function run_x( )\n    DEF.atRoot = '/home/someone/at';\nend\n",
+    "README.md": "Binary: `{{at_2099}}/RAM/ram.exe`\n",
+  });
+
+  const result = runCli(["check", "--kb", kb, "--helpers", helpers]);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /run_x\.m:2: absolute path \/home\/someone\/at/);
+  assert.match(result.stderr, /README\.md:1: undefined logical name \{\{at_2099\}\}/);
+});
+
+test("check leaves the machine-specific local MATLAB configuration alone", (t) => {
+  const kb = writeKnowledgeBase(t);
+  const helpers = writeDirectory(t, {
+    "oae_local_paths.m": "function paths = oae_local_paths( )\n    paths.at_2020 = '/home/someone/at';\nend\n",
+    "oae_local_paths.m.example": "function paths = oae_local_paths( )\n    paths.at_2020 = '/path/to/at';\nend\n",
+  });
+
+  const result = runCli(["check", "--kb", kb, "--helpers", helpers]);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("check reports a MATLAB helpers folder it cannot load instead of crashing", (t) => {
+  const kb = writeKnowledgeBase(t);
+
+  const result = runCli(["check", "--kb", kb, "--helpers", join(kb, "missing")]);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /FAIL cannot load MATLAB helpers .*missing/);
+  assert.doesNotMatch(result.stderr, /\n\s+at /);
 });
 
 test("check fails when the hub references a note that does not exist", (t) => {

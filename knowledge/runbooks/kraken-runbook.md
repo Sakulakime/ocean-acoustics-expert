@@ -42,10 +42,10 @@ The Linux binaries carry a `.exe` suffix but are genuine Linux ELF executables
 (`file kraken.exe` -> `ELF 64-bit LSB pie executable, x86-64 ... for GNU/Linux 3.2.0`).
 
 ```
-AT root:    /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4
+AT root:    {{at_2020}}
 binaries:   <AT>/linux-bin/      kraken.exe, krakenc.exe, field.exe, bounce.exe
 matlab src: <AT>/Matlab/         kraken.m, krakenc.m, Kraken/field.m, ReadWrite/, Plot/
-matlab:     /usr/local/bin/matlab
+matlab:     matlab (on PATH)
 ```
 
 `kraken.m` resolves the binary with `which('kraken.exe')` (`kraken.m:8`) and
@@ -58,7 +58,7 @@ MATLAB path. If `which('kraken.exe')` returns empty, `kraken.m:11` throws
 Required `addpath` (run once per session):
 
 ```matlab
-AT = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4';
+AT = '{{at_2020}}';
 addpath( genpath( fullfile( AT, 'Matlab' ) ) );   % kraken.m, field.m, read_modes, read_shd, plotmode, plotshd, plottlr, read_flp
 addpath( fullfile( AT, 'linux-bin' ) );           % so which('kraken.exe') resolves
 global units jkpsflag                              % used by plotshd.m:13

@@ -10,10 +10,27 @@ agent or a user cannot easily launch a malformed run:
   `bellhop`, then reads the `.shd` and draws a transmission-loss plot
   (optionally rays).
 
+## Configuration: toolbox locations
+
+The helpers never hard-code where the Acoustics Toolbox lives. The runners read
+their default locations from `oae_local_paths()`, a small function returning a
+struct with one field per toolbox tree:
+
+| Field     | Location                                                                 |
+|-----------|--------------------------------------------------------------------------|
+| `at_2020` | AT 2020 tree (`atWin10_2020_11_4`): `Matlab/` scripts and the BELLHOP/KRAKEN binaries in `linux-bin/` |
+| `at_2023` | AT 2023 tree: the working Linux RAM binary at `RAM/ram.exe`              |
+
+To set it up, copy `oae_local_paths.m.example` to `oae_local_paths.m` in a
+folder on the MATLAB path (this folder is fine; the copy is git-ignored) and
+edit the two paths. An explicit `'AtRoot'` or `'RamBin'` option overrides the
+configuration. Below, `{{at_2020}}` and `{{at_2023}}` stand for these two paths;
+the knowledge base names them with the same logical names.
+
 ## Important: the binaries are ELF, not Windows
 
 The executables in
-`/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4/linux-bin`
+`{{at_2020}}/linux-bin`
 are named `*.exe` (e.g. `bellhop.exe`) but are **genuine Linux ELF
 executables**, confirmed with `file`:
 
@@ -27,7 +44,7 @@ handles this for you. If you ever see a "Permission denied" error, make the
 binary executable once:
 
 ```bash
-chmod +x /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4/linux-bin/bellhop.exe
+chmod +x {{at_2020}}/linux-bin/bellhop.exe
 ```
 
 ## Required path setup
@@ -36,10 +53,11 @@ chmod +x /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020
 directly, add both the AT MATLAB tree and the `linux-bin` directory:
 
 ```matlab
-AT = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4';
+addpath( '/path/to/matlab-helpers' );             % these helpers and oae_local_paths.m
+paths = oae_local_paths( );
+AT = paths.at_2020;
 addpath( genpath( fullfile( AT, 'Matlab' ) ) );   % read_shd, plotshd, plotray, ...
 addpath( fullfile( AT, 'linux-bin' ) );           % so which('bellhop.exe') resolves
-addpath( '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/cc_helpers' );
 
 % sanity checks
 which bellhop.exe      % must print <AT>/linux-bin/bellhop.exe
@@ -70,7 +88,7 @@ end
 
 | Name        | Type    | Default       | Meaning                                              |
 |-------------|---------|---------------|------------------------------------------------------|
-| `AtRoot`    | char    | local install | AT install root (holds `Matlab/` and `linux-bin/`).  |
+| `AtRoot`    | char    | `{{at_2020}}` | AT install root (holds `Matlab/` and `linux-bin/`).  |
 | `PlotRays`  | logical | `false`       | Also call `plotray` (ray/eigenray runs only).        |
 | `Freq`      | numeric | `NaN`         | Frequency to select from a broadband `.shd`.         |
 | `Validate`  | logical | `true`        | Run the validator first (keep `true`).               |
@@ -130,16 +148,16 @@ BELLHOP helpers do: validate first, then run and plot.
 
 ## Important: use the verified ELF binary, not which('ram.exe')
 
-The working Linux RAM binary on this machine is the **ELF 64-bit** build at:
+The working Linux RAM binary is the **ELF 64-bit** build in the 2023 tree:
 
 ```
-/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM/ram.exe
+{{at_2023}}/RAM/ram.exe
 ```
 
 The stock AT wrapper `ram.m` resolves the binary with `which('ram.exe')` and
 calls `! ram.exe`. On this machine the `ram.exe` that tends to land first on
 the MATLAB path is a **Mach-O (macOS) binary** that will NOT execute on Linux.
-`run_ram` sidesteps this entirely: it calls the verified ELF path above with
+`run_ram` sidesteps this entirely: it calls the configured ELF path above with
 `system()`, never `which`. Override it with the `'RamBin'` option if needed.
 
 ## Important: the input filename is FIXED as `ram.in`
@@ -165,7 +183,7 @@ heuristic **WARN** when `rmax` looks like km (small `rmax` with `dr < 1`).
 ## Usage
 
 ```matlab
-cd /home/jay/temp/ram_run        % directory that will hold ram.in + outputs
+cd /path/to/ram_run              % directory that will hold ram.in + outputs
 
 validate_ram_in( 'ram.in' );     % line-level checks, returns true/false
 run_ram( 'ram.in' );             % validates, runs the ELF binary, plots TL
@@ -175,8 +193,8 @@ run_ram( 'ram.in' );             % validates, runs the ELF binary, plots TL
 
 | Name       | Type    | Default                         | Meaning                                              |
 |------------|---------|---------------------------------|------------------------------------------------------|
-| `RamBin`   | char    | `at_2023/RAM/ram.exe` (ELF)     | Full path to the working RAM binary.                 |
-| `AtRoot`   | char    | local install                   | AT root holding `Matlab/` (for `read_ram_tlgrid`).   |
+| `RamBin`   | char    | `{{at_2023}}/RAM/ram.exe` (ELF) | Full path to the working RAM binary.                 |
+| `AtRoot`   | char    | `{{at_2020}}`                   | AT root holding `Matlab/` (for `read_ram_tlgrid`).   |
 | `RunDir`   | char    | folder of the input file        | Directory to stage `ram.in` and run in.              |
 | `Validate` | logical | `true`                          | Run `validate_ram_in` first (keep `true`).           |
 
@@ -237,7 +255,7 @@ real-axis `kraken` search misses. Pass `'Complex', true` to `run_kraken` for it.
 ### Important: the binaries are ELF, not Windows (same as BELLHOP)
 
 `kraken.exe`, `krakenc.exe`, and `field.exe` in
-`/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4/linux-bin`
+`{{at_2020}}/linux-bin`
 are named `*.exe` but are **genuine Linux ELF executables** (`ELF 64-bit LSB
 ... for GNU/Linux 3.2.0`). `kraken.m` resolves the binary with
 `which('kraken.exe')` and `krakenc.m` with `which('krakenc.exe')`, so the
@@ -245,7 +263,7 @@ literal `.exe` names must be on the MATLAB path on Linux too. If you ever see a
 "Permission denied" error, set the executable bit once:
 
 ```bash
-chmod +x /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4/linux-bin/*.exe
+chmod +x {{at_2020}}/linux-bin/*.exe
 ```
 
 ### Required path setup
@@ -256,10 +274,11 @@ directly, add the AT MATLAB tree **recursively** (`field.m` lives in
 `Matlab/Plot/` — `genpath` is required) plus the `linux-bin` directory:
 
 ```matlab
-AT = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4';
+addpath( '/path/to/matlab-helpers' );             % these helpers and oae_local_paths.m
+paths = oae_local_paths( );
+AT = paths.at_2020;
 addpath( genpath( fullfile( AT, 'Matlab' ) ) );   % kraken, field, read_shd, plotshd, plotmode, read_flp, ...
 addpath( fullfile( AT, 'linux-bin' ) );           % so which('kraken.exe'/'field.exe') resolves
-addpath( '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/cc_helpers' );
 
 % sanity checks
 which kraken.exe       % must print <AT>/linux-bin/kraken.exe
@@ -292,7 +311,7 @@ end
 
 | Name        | Type    | Default       | Meaning                                                       |
 |-------------|---------|---------------|---------------------------------------------------------------|
-| `AtRoot`    | char    | local install | AT install root (holds `Matlab/` and `linux-bin/`).           |
+| `AtRoot`    | char    | `{{at_2020}}` | AT install root (holds `Matlab/` and `linux-bin/`).           |
 | `Complex`   | logical | `false`       | Run `krakenc` (complex/leaky-mode solver) instead of `kraken`.|
 | `PlotModes` | logical | `false`       | Also call `plotmode` (wavenumbers + mode shapes).             |
 | `Freq`      | numeric | `NaN`         | Frequency to select from a broadband `.shd`.                  |

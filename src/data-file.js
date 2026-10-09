@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
+import { join, relative, sep } from "node:path";
 
 import { YamlError } from "./yaml.js";
 
@@ -11,7 +12,7 @@ export class DataFileError extends Error {
 }
 
 /** File-system errors that mean "this file is not usable", not a program bug. */
-const UNREADABLE_FILE_CODES = new Set(["ENOENT", "EISDIR", "EACCES"]);
+const UNREADABLE_FILE_CODES = new Set(["ENOENT", "ENOTDIR", "EISDIR", "EACCES"]);
 
 /**
  * Read and parse a data file, turning only expected failures into DataFileError.
@@ -36,4 +37,28 @@ export function readDataFile(path, parse, label = path) {
     if (!(error instanceof YamlError || error instanceof SyntaxError)) throw error;
     throw new DataFileError(`${label}: ${error.message}`);
   }
+}
+
+/**
+ * Read the text of every file under a directory whose name a pattern accepts,
+ * skipping hidden entries (such as Zotero caches) and hidden directories.
+ * @param {string} root
+ * @param {RegExp} include Tested against each file name.
+ * @returns {Map<string, string>} Text keyed by "/"-separated path relative to root, in path order.
+ * @throws {DataFileError}
+ */
+export function readTextFiles(root, include) {
+  let entries;
+  try {
+    entries = readdirSync(root, { recursive: true, withFileTypes: true });
+  } catch (error) {
+    if (!UNREADABLE_FILE_CODES.has(error.code)) throw error;
+    throw new DataFileError(`${root}: ${error.message}`);
+  }
+  const names = entries
+    .filter((entry) => entry.isFile() && include.test(entry.name))
+    .map((entry) => relative(root, join(entry.parentPath, entry.name)).split(sep).join("/"))
+    .filter((name) => !name.split("/").some((part) => part.startsWith(".")))
+    .sort();
+  return new Map(names.map((name) => [name, readDataFile(join(root, name), (text) => text, name)]));
 }

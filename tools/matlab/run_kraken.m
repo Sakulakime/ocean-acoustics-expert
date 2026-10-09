@@ -30,8 +30,8 @@ function run_kraken( casename, varargin )
 %              current working directory (pwd), because the binary runs in pwd.
 %
 % OPTIONAL NAME-VALUE ARGUMENTS
-%   'AtRoot'    : char. Path to the AT install root. Default is the verified
-%                 local install (see DEF.atRoot below).
+%   'AtRoot'    : char. Path to the AT install root. Default is the at_2020
+%                 location from oae_local_paths() (see oae_local_paths.m.example).
 %   'Complex'   : logical scalar (default false). If true, run krakenc (the
 %                 complex-wavenumber solver that captures leaky modes and
 %                 bottom-loss attenuation) instead of kraken.
@@ -47,6 +47,8 @@ function run_kraken( casename, varargin )
 %
 % ERRORS (all raised with identifier 'runKraken:*' and a clear message)
 %   runKraken:badInput     - casename empty/wrong type, or a bad option value.
+%   runKraken:noConfig     - no 'AtRoot' given and oae_local_paths() is
+%                            missing or does not define at_2020.
 %   runKraken:noEnv        - casename.env not found in pwd.
 %   runKraken:noFlp        - casename.flp not found in pwd.
 %   runKraken:validation   - validate_kraken_files returned false.
@@ -63,7 +65,7 @@ function run_kraken( casename, varargin )
 %   validate_kraken_files, kraken, krakenc, field, read_shd, plotshd, plotmode
 
     % ---- documented defaults (no bare magic numbers) -----------------------
-    DEF.atRoot      = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4';
+    DEF.atRoot      = '';             % empty -> the at_2020 location from oae_local_paths()
     DEF.tlFloor     = 1e-37;          % abs(pressure) below this is floored before log10
     DEF.krakenBin   = 'kraken.exe';   % literal name resolved via which() on Linux too
     DEF.krakencBin  = 'krakenc.exe';  % complex-mode solver
@@ -82,6 +84,9 @@ function run_kraken( casename, varargin )
     end
 
     opt = local_parse_opts( varargin, DEF );
+    if ( isempty( opt.AtRoot ) )
+        opt.AtRoot = local_configured_path( 'at_2020' );
+    end
 
     % ---- pick the modes solver --------------------------------------------
     if ( opt.Complex )
@@ -218,6 +223,24 @@ function opt = local_parse_opts( args, DEF )
                 error( 'runKraken:badInput', 'Unknown option ''%s''.', char( name ) );
         end
     end
+end
+
+function p = local_configured_path( field )
+% LOCAL_CONFIGURED_PATH  Read one toolbox location from oae_local_paths().
+%   Toolbox locations are machine-specific, so they come from the local
+%   configuration function instead of literals in this file.
+    if ( exist( 'oae_local_paths', 'file' ) ~= 2 )
+        error( 'runKraken:noConfig', ...
+            [ 'oae_local_paths.m is not on the MATLAB path, so the toolbox location is unknown.\n', ...
+              'Copy oae_local_paths.m.example to oae_local_paths.m on the path and set its paths,\n', ...
+              'or pass ''AtRoot'' explicitly.' ] );
+    end
+    paths = oae_local_paths( );
+    if ( ~isstruct( paths ) || ~isfield( paths, field ) || isempty( paths.( field ) ) )
+        error( 'runKraken:noConfig', ...
+            'oae_local_paths() does not define ''%s''. Set it there, or pass ''AtRoot'' explicitly.', field );
+    end
+    p = char( paths.( field ) );
 end
 
 function local_ensure_path( atRoot, binName )

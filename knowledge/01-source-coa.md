@@ -1,9 +1,7 @@
 ---
 title: Source Note - Computational Ocean Acoustics
 type: source-note
-source_pdf: /home/jay/Zotero/storage/B4W6S79R/Jensen 等 - 2011 - Computational Ocean Acoustics.pdf
-source_outline: /home/jay/Zotero/storage/B4W6S79R/jasminum-outline.json
-source_text_cache: /home/jay/Zotero/storage/B4W6S79R/.zotero-ft-cache
+zotero_key: NWQ228R5
 zotero_storage_key: B4W6S79R
 doi: 10.1007/978-1-4419-8678-8
 isbn: 978-1-4419-8677-1
@@ -62,6 +60,8 @@ The second edition adds or expands material on:
 
 ## File anchors
 
+All in the Zotero storage folder `{{zotero_storage}}/B4W6S79R/`:
+
 - Outline: `jasminum-outline.json`
 - Searchable text cache: `.zotero-ft-cache`
-- Full book PDF: `Jensen 等 - 2011 - Computational Ocean Acoustics.pdf`
+- Full book PDF: `Jensen 等 - 2011 - Computational Ocean Acoustics.pdf` (the folder's only PDF; Zotero may name it differently in another library)

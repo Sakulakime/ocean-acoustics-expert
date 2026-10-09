@@ -19,10 +19,10 @@ The Linux binaries carry a `.exe` suffix but are genuine Linux ELF executables
 (`file bellhop.exe` -> `ELF 64-bit LSB pie executable, x86-64 ... GNU/Linux`).
 
 ```
-AT root:    /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4
+AT root:    {{at_2020}}
 binaries:   <AT>/linux-bin/      bellhop.exe, bellhop3d.exe, field.exe, field3d.exe
 matlab src: <AT>/Matlab/         bellhop.m, ReadWrite/, Plot/
-matlab:     /usr/local/bin/matlab
+matlab:     matlab (on PATH)
 ```
 
 `bellhop.m` resolves the binary with `which('bellhop.exe')` and shell-runs
@@ -32,7 +32,7 @@ matlab:     /usr/local/bin/matlab
 Required `addpath` (run once per session):
 
 ```matlab
-AT = '/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4';
+AT = '{{at_2020}}';
 addpath( genpath( fullfile( AT, 'Matlab' ) ) );   % ReadWrite, Plot, etc.
 addpath( fullfile( AT, 'linux-bin' ) );           % so which('bellhop.exe') resolves
 global units jkpsflag                              % used by plotray/plotshd

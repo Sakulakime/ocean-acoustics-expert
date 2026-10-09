@@ -16,7 +16,8 @@
     "tools/",
     "checks/",
     "!**/*.pdf",
-    "!**/.zotero-*"
+    "!**/.zotero-*",
+    "!tools/matlab/oae_local_paths.m"
   ],
   "scripts": {
     "test": "node --test \"test/**/*.test.js\"",

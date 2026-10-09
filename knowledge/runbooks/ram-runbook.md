@@ -43,10 +43,10 @@ binary that reads a file literally named `ram.in` from the current directory
 and writes `tl.grid` / `tl.line` there.
 
 ```
-working ELF binary: /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM/ram.exe
-example input:      /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM/ram.in
-matlab src:         <AT>/atWin10_2020_11_4/Matlab/ReadWrite/read_ram_tlgrid.m
-matlab:             /usr/local/bin/matlab
+working ELF binary: {{at_2023}}/RAM/ram.exe
+example input:      {{at_2023}}/RAM/ram.in
+matlab src:         {{at_2020}}/Matlab/ReadWrite/read_ram_tlgrid.m
+matlab:             matlab (on PATH)
 ```
 
 Two binary/path traps to avoid:
@@ -71,13 +71,13 @@ read the outputs from the same directory.
 
 ```bash
 # 1. Make a clean scratch dir for this case and enter it
-mkdir -p /home/jay/temp/ram_run && cd /home/jay/temp/ram_run
+mkdir -p /path/to/ram_run && cd /path/to/ram_run
 
 # 2. Put your case file in place AS ram.in (the filename is FIXED).
 #    Either copy your case file and rename it to ram.in ...
 cp /path/to/my_case.in ram.in
 #    ... or copy the shipped example to start from:
-# cp /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM/ram.in .
+# cp {{at_2023}}/RAM/ram.in .
 
 # 3. VALIDATE before launching (catches the fatal traps cheaply).
 #    In MATLAB: validate_ram_in('ram.in')  -- must PASS before you run.
@@ -85,7 +85,7 @@ cp /path/to/my_case.in ram.in
 #    km-where-meters-expected) would otherwise crash RAM or give a garbage field.
 
 # 4. Run the WORKING Linux ELF binary directly (no arguments)
-/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM/ram.exe
+{{at_2023}}/RAM/ram.exe
 
 # 5. Confirm outputs (check SIZE and exit code, not just existence:
 #    a crashed run still leaves a ~68 B header-only tl.grid + 0 B tl.line)
@@ -112,9 +112,9 @@ prepend the working directory to the path so `which('ram.exe')` finds the ELF
 build, or call the binary by full path:
 
 ```matlab
-addpath('/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM', '-begin');
-cd('/home/jay/temp/ram_run');   % dir containing ram.in
-system('/home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/at_2023/RAM/ram.exe');
+addpath('{{at_2023}}/RAM', '-begin');
+cd('/path/to/ram_run');   % dir containing ram.in
+system('{{at_2023}}/RAM/ram.exe');
 ```
 
 The Slicer helper `run_ram.m` follows this same pattern on UNIX: it `cd`s into
@@ -305,7 +305,7 @@ Use the toolbox reader `read_ram_tlgrid.m`. It takes no arguments and reads
 `tl.grid` from the **current directory**, so `cd` into the run dir first.
 
 ```matlab
-cd('/home/jay/temp/ram_run');
+cd('/path/to/ram_run');
 [ PlotTitle, PlotType, freq, atten, Pos, pressure ] = read_ram_tlgrid();
 ```
 
@@ -351,7 +351,7 @@ meters), put depth on a downward y-axis, and use a dB colorbar. Lower TL =
 stronger field, so flip the colormap so strong field reads "hot."
 
 ```matlab
-cd('/home/jay/temp/ram_run');
+cd('/path/to/ram_run');
 [ PlotTitle, ~, freq, ~, Pos, pressure ] = read_ram_tlgrid();
 
 TL     = -20 * log10( abs( squeeze( pressure ) ) );  % [depth x range], dB

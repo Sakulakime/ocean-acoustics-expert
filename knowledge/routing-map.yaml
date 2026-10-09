@@ -1,5 +1,8 @@
-source_root: /home/jay/.claude/knowledge/ocean-acoustics
-primary_pdf: /home/jay/Zotero/storage/B4W6S79R/Jensen 等 - 2011 - Computational Ocean Acoustics.pdf
+# Note paths are relative to the knowledge-base root. Chapter spans and
+# fallback windows are PDF page ranges of the primary source, whose PDF sits
+# in {{zotero_storage}}/<primary_zotero_storage_key>/ (see 00-hub.md).
+primary_source: 01-source-coa.md
+primary_zotero_storage_key: B4W6S79R
 policy:
   default_order:
     - read 00-hub.md
@@ -18,7 +21,7 @@ routes:
     notes:
       - visualization.md
     source_refs:
-      at2020_plotshd: /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4/Matlab/Plot/plotshd.m
+      at2020_plotshd: "{{at_2020}}/Matlab/Plot/plotshd.m"
     note: TL/场可视化权威规范——色标范围按 AT2020 plotshd.m 自适应算(median+0.75std, 50dB窗口),多图对比共用同一 caxis,离散标签不用连续色标。涉及任何 TL/声场出图、色标、配色问题必读此 note。
   fundamentals:
     trigger_keywords: [fundamentals, ocean-acoustic environment, acoustic preliminaries, source and receiver, sources and receivers, intensity, power, energy density, decibel, spectrum level, sound speed, SSP, sound-speed profile, thermocline, mixed layer, surface duct, deep sound channel, deep sound channel axis, bubble layer, bubble suspension, bottom loss, volume attenuation, boundary scattering, volume scattering, transmission loss, shallow water, deep water, 水声环境, 声速剖面, 热跃层, 表面波导, 深海声道, 海洋波导, 传输损失, 海底损失]

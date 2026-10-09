@@ -1,10 +1,8 @@
 ---
 title: Ocean Acoustics Knowledge Hub
 type: hub
-source_root: /home/jay/.claude/knowledge/ocean-acoustics
-primary_source_pdf: /home/jay/Zotero/storage/B4W6S79R/Jensen 等 - 2011 - Computational Ocean Acoustics.pdf
-primary_outline: /home/jay/Zotero/storage/B4W6S79R/jasminum-outline.json
-primary_text_cache: /home/jay/Zotero/storage/B4W6S79R/.zotero-ft-cache
+primary_source: 01-source-coa.md
+primary_zotero_storage_key: B4W6S79R
 status: active
 ---
 
@@ -35,6 +33,20 @@ This library is the default local knowledge base for underwater acoustics questi
   - RAM (parabolic equation, `ram.in`): `runbooks/ram-runbook.md` (+ `runbooks/ram-in-template.md`, `runbooks/ram-checklist.md`)
 
 When the question is about actually building an input file or running a model (not just the physics), read the matching runbook in `runbooks/` — it has the exact input-file format, the Linux+MATLAB call recipe against the local AT install, a pre-run validator, and the known crash traps.
+
+## Sources and machine locations
+
+Notes contain no absolute paths:
+
+- **Sources** are named by Zotero key. A note's `zotero_key` is the source's Zotero library item; its `zotero_storage_key` names the Zotero storage folder `{{zotero_storage}}/<zotero_storage_key>/` that holds the source's PDF, together with any Zotero outline or full-text cache.
+- **Tools** and other machine-specific locations are named by logical name, written in double braces, such as `{{at_2023}}/RAM/ram.exe`. Resolve each name through the local path map (local-paths.yaml, written at install time; the agent definition gives its location):
+  - `{{knowledge_base}}`: the installed copy of this knowledge base
+  - `{{zotero_storage}}`: the Zotero storage folder
+  - `{{at_2023}}`: the Acoustics Toolbox 2023 tree, which holds the working Linux RAM binary (RAM/ram.exe)
+  - `{{at_2020}}`: the Acoustics Toolbox 2020 tree (atWin10_2020_11_4), which holds the MATLAB scripts and plotting (Matlab) and the BELLHOP and KRAKEN binaries (linux-bin)
+  - `{{matlab_helpers}}`: the MATLAB solver helpers (validators and runners for BELLHOP, KRAKEN and RAM)
+  - `{{authoring_root}}`: the project checkout holding the authoring copy (link-mode installs only)
+- A path beginning with /path/to/ in a recipe stands for a directory of the user's choice.
 
 ## Core topic map
 

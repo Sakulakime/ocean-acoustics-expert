@@ -4,7 +4,7 @@ type: chapter-note
 chapter: 1
 book_pages: 1-64
 pdf_pages: 20-83
-source_pdf: /home/jay/Zotero/storage/B4W6S79R/Jensen 等 - 2011 - Computational Ocean Acoustics.pdf
+zotero_storage_key: B4W6S79R
 status: expanded
 ---
 

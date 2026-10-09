@@ -1,0 +1,22 @@
+function paths = oae_local_paths( )
+% OAE_LOCAL_PATHS  Machine-specific Acoustics Toolbox locations for the helpers.
+%
+%   paths = oae_local_paths( )
+%
+% EXAMPLE CONFIGURATION. Copy this file to oae_local_paths.m in a folder on
+% the MATLAB path (this folder is fine; that copy is git-ignored), then set the
+% paths below for your machine. run_bellhop, run_kraken and run_ram read their
+% default toolbox locations from it; an explicit 'AtRoot' or 'RamBin' option
+% still overrides it.
+%
+% OUTPUT
+%   paths : struct whose fields are logical names of the local path map.
+%     .at_2020 : char. Acoustics Toolbox 2020 tree (atWin10_2020_11_4). Holds
+%                Matlab/ (readers, plotters, bellhop.m, kraken.m) and linux-bin/
+%                (the BELLHOP and KRAKEN ELF binaries named *.exe).
+%     .at_2023 : char. Acoustics Toolbox 2023 tree. Holds the working Linux ELF
+%                RAM binary at RAM/ram.exe.
+
+    paths.at_2020 = '/path/to/atWin10_2020_11_4';
+    paths.at_2023 = '/path/to/at_2023';
+end
