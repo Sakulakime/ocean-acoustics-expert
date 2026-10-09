@@ -4,6 +4,7 @@ import { parseArgs } from "node:util";
 
 import { CLAUDE_HARNESS } from "./harness-claude.js";
 import { CODEX_HARNESS } from "./harness-codex.js";
+import { OPENCODE_HARNESS } from "./harness-opencode.js";
 import { newBackupDir } from "./fs-entries.js";
 import { applyActions, describeAction, planInstall } from "./install-plan.js";
 import { installLocations } from "./locations.js";
@@ -38,7 +39,7 @@ import { readAgentTemplate, renderPlaceholders } from "./template.js";
  */
 
 /** @type {Harness[]} */
-export const HARNESSES = [CLAUDE_HARNESS, CODEX_HARNESS];
+export const HARNESSES = [CLAUDE_HARNESS, CODEX_HARNESS, OPENCODE_HARNESS];
 
 const MODES = ["link", "copy"];
 

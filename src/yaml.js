@@ -2,8 +2,9 @@
  * Parser for the YAML subset used by the knowledge base's hand-edited files.
  *
  * Supported: block mappings, block sequences of scalars, flow sequences of
- * scalars (`[a, b]`), plain and quoted scalars, blank lines and full-line
- * comments. Scalars stay strings. Inline comments, flow mappings, mappings
+ * scalars (`[a, b]`), plain and quoted scalars and mapping keys, blank lines
+ * and full-line comments. Scalars stay strings, and quotes are removed
+ * without unescaping. Inline comments, flow mappings, mappings
  * inside sequences, quoted flow items containing commas and duplicate keys
  * raise YamlError, so an unsupported construct fails loudly instead of being
  * misread.
@@ -63,9 +64,10 @@ function parseMapping(lines, start, indent) {
   let i = start;
   while (i < lines.length && lines[i].indent === indent) {
     const line = lines[i];
-    const match = line.content.match(/^([^:]+?):(?:\s+(.*))?$/);
+    const match = line.content.match(/^("(?:[^"\\]|\\.)*"|'(?:[^']|'')*'|[^:]+?):(?:\s+(.*))?$/);
     if (!match) throw new YamlError(line, `expected "key: value", got "${line.content}"`);
-    const [, key, inline] = match;
+    const [, rawKey, inline] = match;
+    const key = unquote(rawKey);
     if (key in mapping) throw new YamlError(line, `duplicate key "${key}"`);
     i += 1;
     if (inline !== undefined && inline !== "") {
