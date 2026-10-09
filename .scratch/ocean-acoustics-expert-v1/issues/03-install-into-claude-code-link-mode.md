@@ -14,7 +14,7 @@ Overwritten files are backed up first, and the known legacy copies are cleaned u
 
 **Blocked by:** 02, 17
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Claude agent file rendered from the template: `tools: [Read, Grep, Glob]`, `model: inherit`, absolute path to the installed copy; no find-and-replace on existing files
 - [x] Local path map written with detected defaults, each overridable by a flag
@@ -33,8 +33,8 @@ Overwritten files are backed up first, and the known legacy copies are cleaned u
 - [x] `status` prints version, mode, harnesses, paths and manifest summary
 - [x] `uninstall` removes exactly the manifest entries; `uninstall --restore` returns a fake home to its exact pre-install state
 - [x] All of the above covered by subprocess tests with an isolated fake home
-- [ ] Real install on this machine done after reviewing its dry-run output
-- [ ] Smoke in Claude Code from a project outside the home folder: a COA theory question is answered from chapter notes via the installed copy
+- [x] Real install on this machine done after reviewing its dry-run output
+- [x] Smoke in Claude Code from a project outside the home folder: a COA theory question is answered from chapter notes via the installed copy
 
 ## Comments
 
@@ -73,3 +73,18 @@ Overwritten files are backed up first, and the known legacy copies are cleaned u
   The emptied `~/.claude/knowledge/` folder is left in place. Claude Scholar's `skill-forced-eval-underwater-regression.js` and its `underwater-routing-cases.json` stay.
 - **Tests parse frontmatter with `src/yaml.js`.** That parser accepts only a strict YAML subset, so output it accepts is plain YAML. A third-party parser would break the zero-dependency rule.
 - **Smoke risk.** Claude Code may prompt before reading `~/.local/share/…` from a project outside it. The installer sets no Claude permissions; the smoke test will show whether it needs to.
+
+**Real install and smoke done (2026-10-10).**
+- **Install.** The user approved the dry-run, and `install` then ran in link mode on this machine. `status` reports 4 files, 3 links and 6 backups, and an immediate re-run reports "up to date; nothing to do". The backup folder holds:
+  - the old agent;
+  - both router copies;
+  - the 34 notes of the old `~/.claude/knowledge/ocean-acoustics`;
+  - the regression test and its fixture.
+- **Smoke.** `claude -p` (Claude Code 2.1.295) ran from `/tmp/oae-smoke`, outside the home folder, with default permissions. The question was a normal-mode question: how many modes propagate, and when is the adiabatic approximation valid.
+  - The main session delegated to `ocean-acoustics-expert`.
+  - The subagent read `00-hub.md`, `routing-map.yaml`, `chapters/ch05-normal-modes.md`, `concept-index.yaml` (via Grep), `runbooks/kraken-runbook.md` and `chapters/ch02-wave-propagation-theory.md`, all through the installed copy.
+  - It then read page ranges 138–141, 360–370 and 420–430 of `sources/jensen-2011-computational-ocean-acoustics.pdf`. Book fallbacks beyond page 100 now work.
+  - There was no permission prompt and no denial (`permission_denials: []`). The run cost $0.99 in 2 turns.
+- **Observed.**
+  - The subagent fell through to the PDF because `ch05-normal-modes.md` has no cutoff formulas or adiabatic validity conditions. Ticket 13 adds them.
+  - One of its own Grep patterns (`k_{rm}`) was rejected by ripgrep, and it recovered. Ticket 07 may want a hint to search literally.
