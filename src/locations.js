@@ -13,6 +13,7 @@ import { isAbsolute, join } from "node:path";
  * @property {string} backups Folder of timestamped backup folders.
  * @property {string} sharedSkills Canonical skills folder, read by Codex and OpenCode.
  * @property {string} claudeDir Claude Code's user config folder.
+ * @property {string} opencodeDir OpenCode's user config folder.
  */
 
 /**
@@ -35,5 +36,15 @@ export function installLocations() {
     backups: join(dataDir, "backups"),
     sharedSkills: join(home, ".agents", "skills"),
     claudeDir: CLAUDE_CONFIG_DIR && isAbsolute(CLAUDE_CONFIG_DIR) ? CLAUDE_CONFIG_DIR : join(home, ".claude"),
+    opencodeDir: join(configHome(home), "opencode"),
   };
+}
+
+/**
+ * @param {string} home
+ * @returns {string} `XDG_CONFIG_HOME` when it is set and absolute, else `~/.config`.
+ */
+function configHome(home) {
+  const { XDG_CONFIG_HOME } = process.env;
+  return XDG_CONFIG_HOME && isAbsolute(XDG_CONFIG_HOME) ? XDG_CONFIG_HOME : join(home, ".config");
 }
