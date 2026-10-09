@@ -1,0 +1,2 @@
+# Book PDFs must never be diffed, merged or line-ending converted.
+*.pdf binary
