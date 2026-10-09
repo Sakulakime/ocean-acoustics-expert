@@ -1,32 +1,44 @@
 ---
 name: ocean-acoustics-router
 description: This skill should be used when the user asks about underwater acoustics, ocean acoustic propagation, transmission loss, sound-speed effects, ray methods, normal modes, parabolic equations, wavenumber integration, broadband propagation, ambient noise, sonar equation, beamforming, or matched-field processing. It routes the request through the local COA structured notes first and only falls back to the local PDF when the notes are insufficient.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Ocean Acoustics Router
 
-Route underwater acoustics questions through the global COA knowledge base before reading the source PDF.
+Route underwater acoustics questions through the installed knowledge base before reading a book PDF.
 
 ## Knowledge sources
 
 - Hub: `{{knowledge_base}}/00-hub.md`
-- Source note: `{{knowledge_base}}/01-source-coa.md`
 - Topic routing: `{{knowledge_base}}/routing-map.yaml`
 - Reverse concept map: `{{knowledge_base}}/concept-index.yaml`
-- Workflow guide: `{{knowledge_base}}/workflows/model-selection.md`
 - Chapter notes: `{{knowledge_base}}/chapters/`
-- Fallback PDF: `{{knowledge_base}}/sources/jensen-2011-computational-ocean-acoustics.pdf`
+- Solver notes: `{{knowledge_base}}/solvers/` (start at `solvers/00-solvers-hub.md`)
+- Runbooks: `{{knowledge_base}}/runbooks/`
+- Visualization standard: `{{knowledge_base}}/visualization.md`
+- Workflow guide: `{{knowledge_base}}/workflows/model-selection.md`
+- COA source note: `{{knowledge_base}}/01-source-coa.md`
+- When present: the benchmark-cases note and source notes for the other books. Use them only when the hub or the routing map lists them.
+- Book PDFs: `{{knowledge_base}}/sources/`, with COA at `{{knowledge_base}}/sources/jensen-2011-computational-ocean-acoustics.pdf`
 - Local path map (resolves the double-brace logical names in notes): `{{local_path_map}}`
+
+Note paths in the hub, the routing map and the concept index are relative to `{{knowledge_base}}`.
 
 ## Mandatory retrieval order
 
-1. Read `00-hub.md`
-2. Read `routing-map.yaml`
-3. Read `concept-index.yaml` when the prompt names a specific concept or subsection idea
-4. Read the smallest relevant note set
-5. Only if note coverage is insufficient, read the smallest relevant PDF page range
-6. Answer with both physical interpretation and model-assumption clarity
+1. Read `00-hub.md`.
+2. Read `routing-map.yaml` and pick the matching route.
+3. Check `concept-index.yaml` for the concepts or subsection ideas the prompt names (searching it for the term is enough).
+4. Read the smallest relevant note set from the route and the concept entry:
+   - chapter notes (`chapters/`);
+   - solver notes (`solvers/`);
+   - runbooks (`runbooks/`) for building inputs or running BELLHOP, KRAKEN or RAM;
+   - the visualization standard (`visualization.md`) for plotting questions;
+   - when present, the benchmark-cases note and book source notes. Check the hub or the routing map for them; do not assume the files exist.
+5. Only if the notes do not settle the question, read a fallback window: the smallest relevant page range of a book PDF in `{{knowledge_base}}/sources/`, cited with its page range.
+
+When searching notes, search for literal text (a fixed-string search) or escape regex metacharacters such as `{ } [ ] ( ) . * + ? |`; a pattern copied from an equation, such as `k_{rm}`, otherwise fails.
 
 ## Classification buckets
 
@@ -40,6 +52,7 @@ Route underwater acoustics questions through the global COA knowledge base befor
 - broadband modeling
 - ambient noise
 - signals in noise / sonar signal processing
+- visualization of TL and fields
 - model selection across methods
 
 ## Routing payload
@@ -47,9 +60,19 @@ Route underwater acoustics questions through the global COA knowledge base befor
 Before deep analysis, produce this compact routing payload for yourself:
 - `bucket`: one classification bucket
 - `concept`: matched concept from `concept-index.yaml` when applicable
-- `notes`: selected note paths
-- `fallback_windows`: relevant targeted PDF windows from `routing-map.yaml`
+- `notes`: selected note paths (chapter, solver, runbook, visualization, and benchmark-case or source notes when present)
+- `fallback_windows`: relevant PDF page ranges from `routing-map.yaml`, the concept entry or a source note
 - `fallback_reason`: only set when notes are insufficient
+
+## Evidence tags
+
+Every claim in the answer carries one evidence tag:
+- `[textbook: <source> <section/pages>]` when a book states it: the book (COA, or a book with a source note) and its section, PDF page range, or both.
+- `[inference]` when no book page states it: your own reasoning, estimates and judgement, and guidance from notes that cite no book, such as runbooks and the visualization standard.
+
+Examples:
+- Gaussian beam tracing usually starts each beam with zero curvature and a width of 10-50 wavelengths [textbook: COA §3.5, PDF pp. 198-201].
+- At 1.5 kHz in water, where the wavelength is about 1 m, that means starting beams roughly 10-50 m wide [inference].
 
 ## Expected answer structure
 
@@ -57,11 +80,11 @@ Before deep analysis, produce this compact routing payload for yourself:
 2. Governing idea or model family
 3. Assumptions and validity range
 4. Numerical or signal-processing implications
-5. Which COA notes or PDF ranges were used
+5. Sources used: note paths read, and PDF page ranges read per book
 
 ## Escalation rule
 
-When the answer needs exact derivations, exact equations, subtle caveats, or section-specific evidence not present in the notes, read the COA PDF selectively using the targeted fallback windows (PDF page ranges) from `routing-map.yaml`. Never load the whole book.
+When the answer needs exact derivations, exact equations, subtle caveats, or section-specific evidence not present in the notes, read the book PDF selectively using the fallback windows (PDF page ranges) from `routing-map.yaml`, the concept entry or a source note. COA is the default book; read another book only through its source note, when present. Never load a whole book.
 
 ## Preferred specialized executor
 

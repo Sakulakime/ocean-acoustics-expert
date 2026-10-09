@@ -69,6 +69,40 @@
       }
     },
     {
+      "name": "concept - Gaussian beam",
+      "prompt": "How do Gaussian beams avoid the infinite amplitudes that geometric rays give at caustics?",
+      "expected": {
+        "concept_key": "gaussian_beam",
+        "bucket": "ray_methods",
+        "primary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-bellhop.md"
+        ],
+        "fallback_windows": [
+          "ray_methods.anomalies_and_gaussian_beams"
+        ]
+      }
+    },
+    {
+      "name": "concept - eigenray",
+      "prompt": "How does BELLHOP find the eigenrays that connect a source to a receiver?",
+      "expected": {
+        "concept_key": "eigenray",
+        "bucket": "ray_methods",
+        "primary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-bellhop.md"
+        ],
+        "fallback_windows": [
+          "ray_methods.numerical_solution_and_eigenrays"
+        ]
+      }
+    },
+    {
       "name": "concept - direct global matrix",
       "prompt": "How does the direct global matrix approach stabilize wavenumber integration?",
       "expected": {
