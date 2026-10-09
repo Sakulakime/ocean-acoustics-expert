@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "title": "COA Reverse Concept Index",
+  "description": "Deterministic concept-to-route map for COA concepts, linking prompt-level technical terms to primary notes, secondary notes, and targeted fallback windows.",
+  "match_policy": {
+    "normalize_to_lowercase": true,
+    "prefer_longest_alias": true,
+    "when_to_use": "Use when a prompt names a specific COA concept, subsection idea, or technical term rather than only a broad method family."
+  },
+  "concepts": [
+    {
+      "key": "sound_speed_profile",
+      "aliases": ["sound speed profile", "sound-speed profile", "ssp", "声速剖面"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "fallback_windows": ["fundamentals.environment_and_ssp"]
+    },
+    {
+      "key": "thermocline",
+      "aliases": ["thermocline", "热跃层"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": ["chapters/ch03-ray-methods.md"],
+      "fallback_windows": ["fundamentals.environment_and_ssp"]
+    },
+    {
+      "key": "surface_duct",
+      "aliases": ["surface duct", "表面波导"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": ["chapters/ch03-ray-methods.md"],
+      "fallback_windows": ["fundamentals.environment_and_ssp"]
+    },
+    {
+      "key": "deep_sound_channel",
+      "aliases": ["deep sound channel", "deep sound channel axis", "深海声道"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md", "chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["fundamentals.environment_and_ssp"]
+    },
+    {
+      "key": "bottom_loss",
+      "aliases": ["bottom loss", "海底损失"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["fundamentals.attenuation_and_bottom_loss"]
+    },
+    {
+      "key": "wave_equation",
+      "aliases": ["wave equation", "nonlinear wave equation", "linear wave equation", "波动方程"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch01-fundamentals.md"],
+      "fallback_windows": ["wave_propagation_theory.wave_equation_and_helmholtz"]
+    },
+    {
+      "key": "helmholtz_equation",
+      "aliases": ["helmholtz equation", "亥姆霍兹方程"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md", "chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["wave_propagation_theory.wave_equation_and_helmholtz"]
+    },
+    {
+      "key": "green_function",
+      "aliases": ["green function", "green's function", "格林函数"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch09-ambient-noise.md"],
+      "fallback_windows": ["wave_propagation_theory.greens_functions_and_halfspace"]
+    },
+    {
+      "key": "reciprocity",
+      "aliases": ["reciprocity", "principle of reciprocity", "互易"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "fallback_windows": ["wave_propagation_theory.greens_functions_and_halfspace"]
+    },
+    {
+      "key": "pekeris_waveguide",
+      "aliases": ["pekeris waveguide", "pekeris", "Pekeris波导"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides"]
+    },
+    {
+      "key": "waveguide_invariant",
+      "aliases": ["waveguide invariant", "波导不变量"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides"]
+    },
+    {
+      "key": "horizontal_wavenumber",
+      "aliases": ["horizontal wavenumber", "波数积分"],
+      "bucket": "wavenumber_integration",
+      "primary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "secondary_notes": ["solvers/solver-scooter.md"],
+      "fallback_windows": ["wavenumber_integration.spectral_derivation"]
+    },
+    {
+      "key": "direct_global_matrix",
+      "aliases": ["direct global matrix", "dgm", "直接整体矩阵"],
+      "bucket": "wavenumber_integration",
+      "primary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "secondary_notes": ["solvers/solver-scooter.md", "solvers/solver-oases.md"],
+      "fallback_windows": ["wavenumber_integration.depth_equation_and_dgm"]
+    },
+    {
+      "key": "aliasing",
+      "aliases": ["aliasing", "混叠"],
+      "bucket": "wavenumber_integration",
+      "primary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "secondary_notes": ["chapters/ch08-broadband-modeling.md"],
+      "fallback_windows": ["wavenumber_integration.aliasing_and_ffp"]
+    },
+    {
+      "key": "normal_modes",
+      "aliases": ["normal modes", "normal mode", "简正模"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["solvers/solver-kraken.md"],
+      "fallback_windows": ["normal_modes.derivation_and_greens_function"]
+    },
+    {
+      "key": "mode_coupling",
+      "aliases": ["mode coupling", "模耦合"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["normal_modes.range_dependence_and_mode_coupling"]
+    },
+    {
+      "key": "group_velocity",
+      "aliases": ["group velocity", "群速度"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch08-broadband-modeling.md"],
+      "fallback_windows": ["normal_modes.perturbation_and_group_velocity"]
+    },
+    {
+      "key": "starter_field",
+      "aliases": ["starter field", "起始场"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["chapters/ch08-broadband-modeling.md"],
+      "fallback_windows": ["parabolic_equations.starters_and_split_step"]
+    },
+    {
+      "key": "parabolic_equation",
+      "aliases": ["parabolic equation", "pe", "抛物方程"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["solvers/solver-ram.md"],
+      "fallback_windows": ["parabolic_equations.derivation_and_limits"]
+    },
+    {
+      "key": "split_step_fourier",
+      "aliases": ["split-step fourier", "split step fourier", "分步傅里叶"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["solvers/solver-ram.md"],
+      "fallback_windows": ["parabolic_equations.starters_and_split_step"]
+    },
+    {
+      "key": "pml",
+      "aliases": ["pml", "perfectly matched layer", "完全匹配层"],
+      "bucket": "numerical_methods",
+      "primary_notes": ["chapters/ch07-fd-fe-methods.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["numerical_methods.fe_and_pml"]
+    },
+    {
+      "key": "virtual_source",
+      "aliases": ["virtual source", "虚拟源"],
+      "bucket": "numerical_methods",
+      "primary_notes": ["chapters/ch07-fd-fe-methods.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "fallback_windows": ["numerical_methods.be_and_virtual_source"]
+    },
+    {
+      "key": "ambient_noise",
+      "aliases": ["ambient noise", "环境噪声"],
+      "bucket": "ambient_noise",
+      "primary_notes": ["chapters/ch09-ambient-noise.md"],
+      "secondary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "fallback_windows": ["ambient_noise.stratified_noise_models"]
+    },
+    {
+      "key": "cross_spectral_density",
+      "aliases": ["cross-spectral density", "cross spectral density", "互谱密度"],
+      "bucket": "ambient_noise",
+      "primary_notes": ["chapters/ch09-ambient-noise.md"],
+      "secondary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "fallback_windows": ["ambient_noise.noise_correlation_and_greens_function"]
+    },
+    {
+      "key": "green_function_recovery",
+      "aliases": ["green's function recovery", "green function recovery", "被动成像"],
+      "bucket": "ambient_noise",
+      "primary_notes": ["chapters/ch09-ambient-noise.md"],
+      "secondary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "fallback_windows": ["ambient_noise.noise_correlation_and_greens_function"]
+    },
+    {
+      "key": "sonar_equation",
+      "aliases": ["sonar equation", "声呐方程"],
+      "bucket": "sonar_signal_processing",
+      "primary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "secondary_notes": ["chapters/ch09-ambient-noise.md"],
+      "fallback_windows": ["sonar_signal_processing.sonar_equation_and_array_gain"]
+    },
+    {
+      "key": "beamforming",
+      "aliases": ["beamforming", "波束形成"],
+      "bucket": "sonar_signal_processing",
+      "primary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "secondary_notes": ["chapters/ch09-ambient-noise.md"],
+      "fallback_windows": ["sonar_signal_processing.beamforming"]
+    },
+    {
+      "key": "matched_field_processing",
+      "aliases": ["matched-field processing", "matched field processing", "mfp", "匹配场处理"],
+      "bucket": "sonar_signal_processing",
+      "primary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md", "chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["sonar_signal_processing.matched_field_processing"]
+    },
+    {
+      "key": "vector_sensor",
+      "aliases": ["vector sensor", "矢量传感器"],
+      "bucket": "sonar_signal_processing",
+      "primary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "secondary_notes": ["chapters/ch01-fundamentals.md"],
+      "fallback_windows": ["sonar_signal_processing.vector_sensors_and_time_reversal"]
+    },
+    {
+      "key": "time_reversal",
+      "aliases": ["time reversal", "时间反转"],
+      "bucket": "sonar_signal_processing",
+      "primary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "fallback_windows": ["sonar_signal_processing.vector_sensors_and_time_reversal"]
+    }
+  ]
+}

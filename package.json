@@ -1,0 +1,29 @@
+{
+  "name": "ocean-acoustics-expert",
+  "version": "0.1.0",
+  "description": "Underwater-acoustics expert agent and knowledge base, installable into Claude Code, Codex and OpenCode",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "ocean-acoustics-expert": "bin/ocean-acoustics-expert.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "agent/",
+    "skills/",
+    "knowledge/",
+    "tools/",
+    "checks/",
+    "!**/*.pdf",
+    "!**/.zotero-*"
+  ],
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "check": "node bin/ocean-acoustics-expert.js check"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "UNLICENSED"
+}

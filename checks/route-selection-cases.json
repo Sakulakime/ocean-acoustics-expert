@@ -1,0 +1,187 @@
+{
+  "cases": [
+    {
+      "name": "concept - sound speed profile",
+      "prompt": "How does the sound-speed profile affect ocean refraction?",
+      "expected": {
+        "concept_key": "sound_speed_profile",
+        "bucket": "fundamentals",
+        "primary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "fallback_windows": [
+          "fundamentals.environment_and_ssp"
+        ]
+      }
+    },
+    {
+      "name": "concept - wave equation",
+      "prompt": "Derive the linear wave equation for underwater acoustics.",
+      "expected": {
+        "concept_key": "wave_equation",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.wave_equation_and_helmholtz"
+        ]
+      }
+    },
+    {
+      "name": "concept - Green function",
+      "prompt": "What is the Green's function for a point source in a fluid halfspace?",
+      "expected": {
+        "concept_key": "green_function",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch09-ambient-noise.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.greens_functions_and_halfspace"
+        ]
+      }
+    },
+    {
+      "name": "concept - Pekeris waveguide",
+      "prompt": "Explain the Pekeris waveguide and why it matters in shallow water.",
+      "expected": {
+        "concept_key": "pekeris_waveguide",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.layered_media_and_waveguides"
+        ]
+      }
+    },
+    {
+      "name": "concept - direct global matrix",
+      "prompt": "How does the direct global matrix approach stabilize wavenumber integration?",
+      "expected": {
+        "concept_key": "direct_global_matrix",
+        "bucket": "wavenumber_integration",
+        "primary_notes": [
+          "chapters/ch04-wavenumber-integration.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-scooter.md",
+          "solvers/solver-oases.md"
+        ],
+        "fallback_windows": [
+          "wavenumber_integration.depth_equation_and_dgm"
+        ]
+      }
+    },
+    {
+      "name": "concept - mode coupling",
+      "prompt": "Compare adiabatic modes and mode coupling in a range-dependent waveguide.",
+      "expected": {
+        "concept_key": "mode_coupling",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.range_dependence_and_mode_coupling"
+        ]
+      }
+    },
+    {
+      "name": "concept - starter field",
+      "prompt": "Why does the starter field matter in PE initialization?",
+      "expected": {
+        "concept_key": "starter_field",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch08-broadband-modeling.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "concept - PML",
+      "prompt": "What does a perfectly matched layer do in finite-element ocean acoustics?",
+      "expected": {
+        "concept_key": "pml",
+        "bucket": "numerical_methods",
+        "primary_notes": [
+          "chapters/ch07-fd-fe-methods.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "numerical_methods.fe_and_pml"
+        ]
+      }
+    },
+    {
+      "name": "concept - cross spectral density",
+      "prompt": "What is cross-spectral density in ambient-noise coherence modeling?",
+      "expected": {
+        "concept_key": "cross_spectral_density",
+        "bucket": "ambient_noise",
+        "primary_notes": [
+          "chapters/ch09-ambient-noise.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch10-signals-in-noise.md"
+        ],
+        "fallback_windows": [
+          "ambient_noise.noise_correlation_and_greens_function"
+        ]
+      }
+    },
+    {
+      "name": "concept - matched field processing",
+      "prompt": "How does matched-field processing depend on the replica field?",
+      "expected": {
+        "concept_key": "matched_field_processing",
+        "bucket": "sonar_signal_processing",
+        "primary_notes": [
+          "chapters/ch10-signals-in-noise.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md",
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "sonar_signal_processing.matched_field_processing"
+        ]
+      }
+    },
+    {
+      "name": "concept - no match",
+      "prompt": "Explain salinity-front instability in physical oceanography.",
+      "expected": {
+        "concept_key": null,
+        "bucket": null,
+        "primary_notes": [],
+        "secondary_notes": [],
+        "fallback_windows": []
+      }
+    }
+  ]
+}

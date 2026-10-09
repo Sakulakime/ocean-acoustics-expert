@@ -1,0 +1,132 @@
+source_root: /home/jay/.claude/knowledge/ocean-acoustics
+primary_pdf: /home/jay/Zotero/storage/B4W6S79R/Jensen 等 - 2011 - Computational Ocean Acoustics.pdf
+policy:
+  default_order:
+    - read 00-hub.md
+    - read routing-map.yaml
+    - read concept-index.yaml when the prompt names a specific concept or subsection idea
+    - read smallest relevant notes
+    - read targeted PDF pages only if needed
+  answer_requirements:
+    - separate physical assumptions from numerical assumptions
+    - say when the method is appropriate and when it is not
+    - cite note paths and PDF ranges used
+    - if using .zotero-ft-cache, cite section headings rather than invented page numbers
+routes:
+  visualization:
+    trigger_keywords: [plot, plotting, visualization, visualize, figure, colormap, colorbar, caxis, clim, color scale, color bar, dynamic range, jet_r, plotshd, TL plot, field plot, imagesc, pcolor, 画图, 绘图, 可视化, 色标, 色棒, 色图, 颜色范围, 动态范围, 出图]
+    notes:
+      - visualization.md
+    source_refs:
+      at2020_plotshd: /home/jay/WorkContent/Underwater_Acoustics/ACOUSTICS-TOOLS/atWin10_2020_11_4/Matlab/Plot/plotshd.m
+    note: TL/场可视化权威规范——色标范围按 AT2020 plotshd.m 自适应算(median+0.75std, 50dB窗口),多图对比共用同一 caxis,离散标签不用连续色标。涉及任何 TL/声场出图、色标、配色问题必读此 note。
+  fundamentals:
+    trigger_keywords: [fundamentals, ocean-acoustic environment, acoustic preliminaries, source and receiver, sources and receivers, intensity, power, energy density, decibel, spectrum level, sound speed, SSP, sound-speed profile, thermocline, mixed layer, surface duct, deep sound channel, deep sound channel axis, bubble layer, bubble suspension, bottom loss, volume attenuation, boundary scattering, volume scattering, transmission loss, shallow water, deep water, 水声环境, 声速剖面, 热跃层, 表面波导, 深海声道, 海洋波导, 传输损失, 海底损失]
+    notes:
+      - chapters/ch01-fundamentals.md
+      - workflows/model-selection.md
+    chapter_span: 20-83
+    fallback_windows:
+      environment_and_ssp: 20-39
+      attenuation_and_bottom_loss: 54-72
+      ambient_noise_and_models: 73-83
+  wave_propagation_theory:
+    trigger_keywords: [wave equation, nonlinear wave equation, linear wave equation, Helmholtz equation, velocity potential, displacement potential, particle velocity, Green function, Green's function, Green theorem, reciprocity, radiation condition, fluid halfspace, layered media, waveguide, integral transform, Pekeris waveguide, deep-ocean waveguide, waveguide invariant, transmission loss normalization, 波动方程, 亥姆霍兹方程, 速度势, 位移势, 格林函数, 格林定理, 互易, 辐射条件, 分层介质, Pekeris波导, 深海波导, 波导不变量]
+    notes:
+      - chapters/ch02-wave-propagation-theory.md
+      - chapters/ch01-fundamentals.md
+    chapter_span: 84-172
+    fallback_windows:
+      wave_equation_and_helmholtz: 84-103
+      greens_functions_and_halfspace: 104-133
+      layered_media_and_waveguides: 134-172
+  ray_methods:
+    trigger_keywords: [ray, rays, eigenray, eikonal, Gaussian beam, caustic, Snell, ray tracing, convergence zone, CZ, Lloyd mirror, 射线, 本征射线, 高斯波束, 焦散, 会聚区, bellhop, BELLHOP]
+    notes:
+      - chapters/ch03-ray-methods.md
+      - runbooks/bellhop-runbook.md
+      - workflows/model-selection.md
+    chapter_span: 173-250
+    fallback_windows:
+      derivation: 176-194
+      anomalies_and_gaussian_beams: 195-212
+      numerical_solution_and_eigenrays: 213-230
+  wavenumber_integration:
+    trigger_keywords: [wavenumber integration, horizontal wavenumber, fast field, fast field program, FFP, Hankel, contour integration, aliasing, evanescent, depth-separated wave equation, direct global matrix, DGM, propagator matrix, invariant embedding, homogeneous fluid layers, homogeneous elastic layers, n2 linear, n^2 linear, pseudo-linear, stratified reverberation, stratified scattering, 波数积分, 快速场, 直接整体矩阵, 传播矩阵, 不变量嵌入, 混叠, scooter, SCOOTER, oases, OASES]
+    notes:
+      - chapters/ch04-wavenumber-integration.md
+      - solvers/solver-scooter.md
+      - solvers/solver-oases.md
+      - workflows/model-selection.md
+    chapter_span: 251-353
+    fallback_windows:
+      spectral_derivation: 251-269
+      depth_equation_and_dgm: 270-296
+      aliasing_and_ffp: 297-320
+      scattering_and_reverberation: 321-336
+  normal_modes:
+    trigger_keywords: [normal mode, normal modes, modes, modal, adiabatic, mode coupling, Prufer, group velocity, dispersion, waveguide invariant, 简正模, 模耦合, 普吕弗, 群速度, 色散, 绝热近似, kraken, KRAKEN]
+    notes:
+      - chapters/ch05-normal-modes.md
+      - solvers/solver-kraken.md
+      - runbooks/kraken-runbook.md
+      - workflows/model-selection.md
+    chapter_span: 354-472
+    fallback_windows:
+      derivation_and_greens_function: 354-372
+      perturbation_and_group_velocity: 402-420
+      range_dependence_and_mode_coupling: 420-442
+  parabolic_equations:
+    trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, elastic PE, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM]
+    notes:
+      - chapters/ch06-parabolic-equations.md
+      - solvers/solver-ram.md
+      - runbooks/ram-runbook.md
+      - workflows/model-selection.md
+    chapter_span: 473-545
+    fallback_windows:
+      derivation_and_limits: 473-492
+      starters_and_split_step: 493-512
+      energy_and_3d: 519-528
+  numerical_methods:
+    trigger_keywords: [finite difference, finite differences, finite element, finite elements, boundary element, BEM, PML, perfectly matched layer, virtual source, Galerkin, weighted residual, CFL, stability, convergence, variational formulation, fluid-elastic coupling, direct discretization, wave equation solver, 有限差分, 有限元, 边界元, 完全匹配层, 虚拟源, 伽辽金, 稳定性, 收敛性]
+    notes:
+      - chapters/ch07-fd-fe-methods.md
+      - workflows/model-selection.md
+    chapter_span: 546-625
+    fallback_windows:
+      fd_basics: 549-566
+      fe_and_pml: 566-585
+      be_and_virtual_source: 586-603
+  broadband:
+    trigger_keywords: [broadband, pulse propagation, Fourier synthesis, Doppler, time domain, waveform synthesis, impulse response, 宽带, 脉冲传播, 多普勒, 时域, 傅里叶合成]
+    notes:
+      - chapters/ch08-broadband-modeling.md
+      - chapters/ch10-signals-in-noise.md
+    chapter_span: 626-787
+    fallback_windows:
+      synthesis_and_time_domain: 626-640
+      doppler: 641-652
+      examples: 653-664
+  ambient_noise:
+    trigger_keywords: [ambient noise, noise correlation, cross spectral density, cross-spectral density, Green function, Green's function recovery, surface noise, source statistics, noise coherence, passive imaging, ambient-noise correlation, 环境噪声, 噪声相关, 互谱密度, 格林函数, 被动成像]
+    notes:
+      - chapters/ch09-ambient-noise.md
+      - chapters/ch10-signals-in-noise.md
+    chapter_span: 676-787
+    fallback_windows:
+      stratified_noise_models: 676-692
+      noise_correlation_and_greens_function: 693-701
+      three_dimensional_noise: 702-719
+  sonar_signal_processing:
+    trigger_keywords: [sonar equation, beamforming, matched-field, matched field processing, MFP, vector sensor, time reversal, array gain, detection threshold, reverberation, localization, 声呐方程, 波束形成, 匹配场处理, 矢量传感器, 时间反转, 阵增益, 混响]
+    notes:
+      - chapters/ch10-signals-in-noise.md
+      - chapters/ch08-broadband-modeling.md
+      - chapters/ch09-ambient-noise.md
+    chapter_span: 626-787
+    fallback_windows:
+      sonar_equation_and_array_gain: 720-735
+      beamforming: 736-749
+      matched_field_processing: 750-758
+      vector_sensors_and_time_reversal: 759-777
