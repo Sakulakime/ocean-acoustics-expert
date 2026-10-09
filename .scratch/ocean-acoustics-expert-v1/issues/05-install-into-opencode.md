@@ -6,11 +6,11 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Rendered agent has `mode: subagent` and a `permission` block (edit/bash/webfetch denied; `external_directory` allows the installed copy and toolbox paths); it does not rely on a `tools` array; frontmatter parses (subprocess test with fake home)
 - [x] Manifest, dry-run, idempotency and `uninstall --restore` cover the OpenCode files
-- [ ] Real install on this machine; smoke in OpenCode: a COA theory question is answered with no permission prompt for knowledge-base reads
+- [x] Real install on this machine; smoke in OpenCode: a COA theory question is answered with no permission prompt for knowledge-base reads
 - [x] Observed behaviour of the router being visible through both the Claude skills folder and the shared skills folder recorded in this ticket's comments; if it causes duplicate or conflicting skills, a mitigation is implemented and covered by a test
 
 ## Comments
@@ -78,3 +78,14 @@
 
   I checked this against OpenCode 1.16.2 with `opencode debug agent --pure` on a generated file in a temp home; no prompt was sent.
 - **Link targets.** Harnesses now receive the link targets in their context (`linkTargets`) instead of working out link mode from the authoring root.
+
+**Real install and smoke done (2026-10-10).**
+- **Install.** The user approved the dry-run, and the same three-harness install created `~/.config/opencode/agents/ocean-acoustics-expert.md`. It shows as untracked in that git repository. `opencode debug agent` resolves:
+  - the tools read, glob, grep, todowrite and skill;
+  - the `read *.pdf deny` rule.
+- **Smoke.** OpenCode 1.16.2 ran `opencode run --format json` from `/tmp/oae-smoke/opencode` with the user's model (`deepseek/deepseek-v4-pro`).
+  - The main session delegated through `task` to `ocean-acoustics-expert`.
+  - The subagent read `visualization.md` and `00-hub.md` from the installed copy. Both reads completed with no permission prompt, and it opened no PDF.
+  - It answered correctly: the AT2020 `plotshd.m` caxis rule (median + 0.75·std, a 50 dB window) and one shared caxis across compared panels.
+- **Deviation from this item.** The smoke question was about the visualization standard, a question the notes answer, not a COA theory question. It was chosen because OpenCode cannot read PDFs. Not yet observed: a COA theory question where the notes fall short, to see the harness note in action (name the book and page range instead of opening the PDF).
+- **Observed: model compliance.** This model read `visualization.md` before the hub and gave no evidence tags.

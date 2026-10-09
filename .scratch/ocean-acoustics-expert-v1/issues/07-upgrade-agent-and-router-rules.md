@@ -6,14 +6,14 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Template and router state the v1 retrieval order and the evidence-tag formats `[textbook: …]` and `[inference]`
 - [x] Book fallbacks are page-range reads of the PDFs in `knowledge/sources/`; no Zotero cache is used
 - [x] Template and router reference concept index, solver notes and visualization standard, and the benchmark cases and book source notes when present
 - [x] Ray-methods route lists the BELLHOP solver note; a route-selection case covers it
-- [ ] `check` passes; reinstall propagates the new rules to every installed harness
-- [ ] Smoke: a question whose evidence lies beyond COA page 100 is answered with a cited page-range read and evidence tags
+- [x] `check` passes; reinstall propagates the new rules to every installed harness
+- [x] Smoke: a question whose evidence lies beyond COA page 100 is answered with a cited page-range read and evidence tags
 
 ## Comments
 
@@ -60,3 +60,11 @@ The retrieval order, the evidence tags and the note-family references are still 
   - OpenCode is blocked from PDFs and names the page range instead, because its read tool attaches the whole PDF.
 
   The shared template is unchanged. The harness notes are added by the Codex and OpenCode adapters (tickets 04, 05).
+
+**Reinstall and smoke done (2026-10-10).**
+- **Reinstall.** It rewrote the Claude agent and router (no backup needed: they were unchanged install output) and rendered the new rules into the Codex and OpenCode agents.
+- **Smoke.** Claude Code ran `claude -p` from `/tmp/oae-smoke/claude`, asking about Gaussian beam initial beamwidth and curvature.
+  - The expert followed the five steps: hub, routing map, concept index (`gaussian_beam` entry), `chapters/ch03-ray-methods.md`, `solvers/solver-bellhop.md`, runbooks.
+  - It then read COA PDF pp. 198–205 and 189–193 by page range.
+  - Every claim carried `[textbook: COA §…, PDF p. …]` or `[inference]`. There were no permission denials; it cost $0.69.
+- **Codex.** The Codex smoke also cited page ranges beyond page 100 (pp. 138–145) with tags.

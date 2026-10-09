@@ -6,13 +6,13 @@
 
 **Blocked by:** 03
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Rendered TOML has `name`, `description`, `developer_instructions` and `sandbox_mode = "read-only"`, and parses as valid TOML (subprocess test with fake home)
 - [x] `developer_instructions` carries the same retrieval and answer rules as the Claude agent, with absolute paths to the installed copy
 - [x] Legacy cleanup with backup: the broken Codex agent TOML and the stale Codex skills snapshot of the expert
 - [x] Manifest, dry-run, idempotency and `uninstall --restore` cover the Codex files
-- [ ] Real install on this machine; smoke in Codex: a COA theory question is answered from the installed copy under the read-only sandbox
+- [x] Real install on this machine; smoke in Codex: a COA theory question is answered from the installed copy under the read-only sandbox
 
 ## Comments
 
@@ -45,3 +45,15 @@
 
   The template stays harness-neutral, and Claude gets no note. `pdftotext` comes from poppler-utils, which is installed here at `/usr/bin`.
 - **Test dependency.** The TOML tests skip, instead of failing, when Python 3.11+ (`tomllib`) is missing.
+
+**Real install and smoke done (2026-10-10).**
+- **Install.** The user approved the dry-run. `install --harness claude --harness codex --harness opencode` then ran in link mode. It backed up and removed the May snapshot `~/.codex/skills/ocean-acoustics-expert`, and backed up and replaced the `/import` TOML. `codex doctor` reports no agent-role problems.
+- **Smoke.** Codex 0.162.0 ran `codex exec --sandbox read-only --json` from `/tmp/oae-smoke/codex`, asking about the Pekeris cutoff and the trapped-mode count.
+- **What the expert did** (role `ocean-acoustics-expert`, sandbox `read-only`, per its own session log):
+  1. read `00-hub.md`, `routing-map.yaml` and the router through the installed copy;
+  2. searched `concept-index.yaml` with a fixed-string `rg -F`;
+  3. read `chapters/ch02-wave-propagation-theory.md`;
+  4. ran `pdftotext -f 138 -l 141 -layout … -` and `-f 142 -l 145 …` on the COA PDF (to stdout).
+
+  It wrote nothing and made no web search. The answer gave COA eq. (2.191) with `[textbook: COA §2.4.5.2, PDF pp. 143–144]` and `[inference]` tags.
+- **Observed: web search.** Codex's **main** session, not the expert, ran web searches and cited external pages, including a third-party copy of COA. That is Codex's own web-search setting, outside this installer.
