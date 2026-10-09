@@ -308,13 +308,13 @@ test("install refuses harnesses it does not support and needs one to be present"
   const bare = writeDirectory(t, { "notes.txt": "no harness here\n" });
   const before = snapshot(bare);
 
-  const unsupported = runInstaller(pkg, bare, ["install", "--harness", "codex"]);
+  const unsupported = runInstaller(pkg, bare, ["install", "--harness", "gemini"]);
   const none = runInstaller(pkg, bare, ["install"]);
 
   assert.equal(unsupported.status, 2);
-  assert.match(unsupported.stderr, /harness codex is not supported \(supported: claude\)/);
+  assert.match(unsupported.stderr, /harness gemini is not supported \(supported: [^)]*\bclaude\b[^)]*\)/);
   assert.equal(none.status, 2);
-  assert.match(none.stderr, /no supported harness found; pass --harness \(supported: claude\)/);
+  assert.match(none.stderr, /no supported harness found; pass --harness \(supported: [^)]*\bclaude\b[^)]*\)/);
   assert.deepEqual(snapshot(bare), before);
 });
 
