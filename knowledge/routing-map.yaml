@@ -1,8 +1,8 @@
 # Note paths are relative to the knowledge-base root. Chapter spans and
-# fallback windows are PDF page ranges of the primary source, whose PDF sits
-# in {{zotero_storage}}/<primary_zotero_storage_key>/ (see 00-hub.md).
+# fallback windows are PDF page ranges of the primary source, whose PDF is
+# primary_source_pdf (see 01-source-coa.md).
 primary_source: 01-source-coa.md
-primary_zotero_storage_key: B4W6S79R
+primary_source_pdf: sources/jensen-2011-computational-ocean-acoustics.pdf
 policy:
   default_order:
     - read 00-hub.md
@@ -14,7 +14,6 @@ policy:
     - separate physical assumptions from numerical assumptions
     - say when the method is appropriate and when it is not
     - cite note paths and PDF ranges used
-    - if using .zotero-ft-cache, cite section headings rather than invented page numbers
 routes:
   visualization:
     trigger_keywords: [plot, plotting, visualization, visualize, figure, colormap, colorbar, caxis, clim, color scale, color bar, dynamic range, jet_r, plotshd, TL plot, field plot, imagesc, pcolor, 画图, 绘图, 可视化, 色标, 色棒, 色图, 颜色范围, 动态范围, 出图]

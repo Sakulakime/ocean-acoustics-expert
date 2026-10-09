@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { readDataFile, readTextFiles } from "./data-file.js";
+import { readDataFile, readTextFiles, textLines } from "./data-file.js";
 import { parseYaml } from "./yaml.js";
 
 /** The knowledge base shipped with this package (the authoring copy when run from a checkout). */
@@ -93,6 +93,38 @@ export function parseWindowRef(ref) {
 export function hasFallbackWindow(kb, ref) {
   const parsed = parseWindowRef(ref);
   return Boolean(parsed && kb.routes.get(parsed.route)?.fallbackWindows.has(parsed.window));
+}
+
+/**
+ * A `source_pdf` or `primary_source_pdf` field. Its value, optionally quoted,
+ * is the path of a book PDF relative to the root.
+ */
+const SOURCE_PDF_FIELD = /^\s*(?:primary_)?source_pdf:\s*(["']?)(.+?)\1\s*$/;
+
+/**
+ * A book PDF mentioned in text (ADR 0005): `sources/<file>.pdf`, relative to
+ * the root, written alone or behind `{{knowledge_base}}/`. Under any other
+ * prefix (a URL, another logical name, a longer path) it is not a book PDF.
+ * PDF file names have no spaces, so a mention ends at the first space.
+ */
+const SOURCE_PDF_MENTION =
+  /(?<=^|[^\w./-]|\{\{knowledge_base\}\}\/)sources\/[\p{L}\p{N}_.\/-]+\.pdf(?![\w-]|\.\w)/giu;
+
+/**
+ * The book PDFs the notes and data files point at, through a source PDF field
+ * or a mention in text, in path and line order; each at most once per line.
+ * @param {KnowledgeBase} kb
+ * @returns {{file: string, lineNumber: number, path: string}[]} Each path is relative to the root.
+ */
+export function sourcePdfReferences(kb) {
+  const references = [];
+  for (const { file, lineNumber, line } of textLines(kb.texts)) {
+    const paths = new Set(Array.from(line.matchAll(SOURCE_PDF_MENTION), ([path]) => path));
+    const field = line.match(SOURCE_PDF_FIELD);
+    if (field) paths.add(field[2]);
+    for (const path of paths) references.push({ file, lineNumber, path });
+  }
+  return references;
 }
 
 function toRoutes(rawRoutes) {

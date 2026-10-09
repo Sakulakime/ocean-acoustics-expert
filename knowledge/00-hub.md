@@ -2,7 +2,7 @@
 title: Ocean Acoustics Knowledge Hub
 type: hub
 primary_source: 01-source-coa.md
-primary_zotero_storage_key: B4W6S79R
+primary_source_pdf: sources/jensen-2011-computational-ocean-acoustics.pdf
 status: active
 ---
 
@@ -38,10 +38,9 @@ When the question is about actually building an input file or running a model (n
 
 Notes contain no absolute paths:
 
-- **Sources** are named by Zotero key. A note's `zotero_key` is the source's Zotero library item; its `zotero_storage_key` names the Zotero storage folder `{{zotero_storage}}/<zotero_storage_key>/` that holds the source's PDF, together with any Zotero outline or full-text cache.
+- **Books** ship with this knowledge base: their PDFs sit in `sources/`, and a note points at one by its path relative to the knowledge-base root (the `source_pdf` field), such as `sources/jensen-2011-computational-ocean-acoustics.pdf` for COA. A source note's `zotero_key` names the book's item in the author's Zotero library; it is a citation identifier only, and answering never needs Zotero.
 - **Tools** and other machine-specific locations are named by logical name, written in double braces, such as `{{at_2023}}/RAM/ram.exe`. Resolve each name through the local path map (local-paths.yaml, written at install time; the agent definition gives its location):
   - `{{knowledge_base}}`: the installed copy of this knowledge base
-  - `{{zotero_storage}}`: the Zotero storage folder
   - `{{at_2023}}`: the Acoustics Toolbox 2023 tree, which holds the working Linux RAM binary (RAM/ram.exe)
   - `{{at_2020}}`: the Acoustics Toolbox 2020 tree (atWin10_2020_11_4), which holds the MATLAB scripts and plotting (Matlab) and the BELLHOP and KRAKEN binaries (linux-bin)
   - `{{matlab_helpers}}`: the MATLAB solver helpers (validators and runners for BELLHOP, KRAKEN and RAM)

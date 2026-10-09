@@ -1,5 +1,6 @@
 import { join } from "node:path";
 
+import { textLines } from "./data-file.js";
 import { LOGICAL_NAMES } from "./local-paths.js";
 
 /**
@@ -21,8 +22,9 @@ const PLACEHOLDER_PREFIX = "/path/to/";
 const LOGICAL_NAME_REFERENCE = /\{\{([^{}]*)\}\}/g;
 
 /**
- * Find machine paths and undefined logical names in a set of texts. Sources
- * must be named by Zotero key and tools by logical name (ADR 0004).
+ * Find machine paths and undefined logical names in a set of texts. Book PDFs
+ * must be named by their `sources/…` path inside the knowledge base and tools
+ * by logical name (ADRs 0004, 0005).
  * @param {Map<string, string>} texts Text keyed by file name.
  * @param {string} [dir] Directory the file names are relative to, shown in messages.
  * @returns {string[]} Problems, each starting with "<file>:<line>:".
@@ -30,18 +32,16 @@ const LOGICAL_NAME_REFERENCE = /\{\{([^{}]*)\}\}/g;
 export function machinePathProblems(texts, dir = "") {
   const defined = [...LOGICAL_NAMES].join(", ");
   const problems = [];
-  for (const [name, text] of texts) {
-    text.split(/\r?\n/).forEach((line, index) => {
-      const at = `${join(dir, name)}:${index + 1}:`;
-      for (const [path] of line.matchAll(ABSOLUTE_PATH)) {
-        if (isPlaceholder(path)) continue;
-        problems.push(`${at} absolute path ${path}; name sources by Zotero key and tools by logical name ({{name}})`);
-      }
-      for (const [reference, logicalName] of line.matchAll(LOGICAL_NAME_REFERENCE)) {
-        if (LOGICAL_NAMES.has(logicalName)) continue;
-        problems.push(`${at} undefined logical name ${reference}; defined names: ${defined}`);
-      }
-    });
+  for (const { file, lineNumber, line } of textLines(texts)) {
+    const at = `${join(dir, file)}:${lineNumber}:`;
+    for (const [path] of line.matchAll(ABSOLUTE_PATH)) {
+      if (isPlaceholder(path)) continue;
+      problems.push(`${at} absolute path ${path}; point at book PDFs by their sources/… path and name tools by logical name ({{name}})`);
+    }
+    for (const [reference, logicalName] of line.matchAll(LOGICAL_NAME_REFERENCE)) {
+      if (LOGICAL_NAMES.has(logicalName)) continue;
+      problems.push(`${at} undefined logical name ${reference}; defined names: ${defined}`);
+    }
   }
   return problems;
 }

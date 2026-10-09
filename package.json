@@ -16,6 +16,7 @@
     "tools/",
     "checks/",
     "!**/*.pdf",
+    "knowledge/sources/*.pdf",
     "!**/.zotero-*",
     "!tools/matlab/oae_local_paths.m"
   ],

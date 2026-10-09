@@ -2,7 +2,8 @@
  * Schema of the local path map (ADR 0004). Notes never contain machine paths:
  * they name a machine-specific location by a logical name written `{{name}}`,
  * e.g. `{{at_2023}}/RAM/ram.exe`, and the generated `local-paths.yaml` maps
- * each name to a path on this machine.
+ * each name to a path on this machine. Book PDFs are not machine-specific:
+ * they ship inside the knowledge base (ADR 0005).
  */
 
 /**
@@ -17,10 +18,6 @@ export const LOCAL_PATHS = [
   {
     name: "knowledge_base",
     description: "Installed copy of the knowledge base",
-  },
-  {
-    name: "zotero_storage",
-    description: "Zotero storage folder; a source's PDF lives in the subfolder named by its Zotero key",
   },
   {
     name: "at_2023",

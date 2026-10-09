@@ -250,7 +250,7 @@ test("check fails when a note contains an absolute machine path", async (t) => {
 
       assert.equal(result.status, 1);
       assert.match(result.stderr, message);
-      assert.match(result.stderr, /Zotero key|logical name/);
+      assert.match(result.stderr, /point at book PDFs by their sources\/… path and name tools by logical name/);
     });
   }
 });
@@ -267,8 +267,17 @@ test("check fails when a note uses an undefined logical name", (t) => {
   assert.match(result.stderr, /runbooks\/run\.md:2: undefined logical name \{\{ at_2020 \}\}/);
 });
 
+test("check rejects the retired Zotero storage logical name", (t) => {
+  const kb = writeKnowledgeBase(t, { "01-source.md": "PDF: `{{zotero_storage}}/ABCD1234/`\n" });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /01-source\.md:1: undefined logical name \{\{zotero_storage\}\}/);
+});
+
 test("check accepts every logical name of the local path map", (t) => {
-  const names = ["knowledge_base", "zotero_storage", "at_2023", "at_2020", "matlab_helpers", "authoring_root"];
+  const names = ["knowledge_base", "at_2023", "at_2020", "matlab_helpers", "authoring_root"];
   const kb = writeKnowledgeBase(t, {
     "runbooks/run.md": names.map((name) => `- \`{{${name}}}/sub/dir\``).join("\n"),
   });
@@ -287,6 +296,93 @@ test("check does not mistake URLs, units, relative paths or placeholders for mac
       "See `../solvers/solver-ram.md` and `{{at_2020}}/Matlab/Plot/plotshd.m`.",
       "Run `cd /path/to/case` first.",
       "射线/简正模/抛物方程 都可用。",
+      "",
+    ].join("\n"),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("check fails when a note points at a source PDF that does not exist", async (t) => {
+  const notes = {
+    "a mention in prose": [
+      "chapters/ch01.md",
+      "See also sources/colosi-2016-stochastic-ocean.pdf, pp. 1-20.\n",
+      /chapters\/ch01\.md:1: source PDF sources\/colosi-2016-stochastic-ocean\.pdf does not exist/,
+    ],
+    "a mention right after CJK text": [
+      "chapters/ch01.md",
+      "参见sources/colosi-2016-stochastic-ocean.pdf第5页。\n",
+      /chapters\/ch01\.md:1: source PDF sources\/colosi-2016-stochastic-ocean\.pdf does not exist/,
+    ],
+    "an upper-case extension": [
+      "chapters/ch01.md",
+      "PDF: `sources/COLOSI.PDF`\n",
+      /chapters\/ch01\.md:1: source PDF sources\/COLOSI\.PDF does not exist/,
+    ],
+    "a subfolder of sources": [
+      "chapters/ch01.md",
+      "PDF: `sources/books/etter.pdf`\n",
+      /chapters\/ch01\.md:1: source PDF sources\/books\/etter\.pdf does not exist/,
+    ],
+    "a path behind the knowledge-base logical name": [
+      "routing-map.yaml",
+      [
+        "routes:",
+        "  fundamentals:",
+        "    notes:",
+        "      - chapters/ch01.md",
+        "    source_refs:",
+        "      etter: \"{{knowledge_base}}/sources/etter-2018-modeling.pdf\"",
+        "    fallback_windows:",
+        "      environment: 20-39",
+        "",
+      ].join("\n"),
+      /routing-map\.yaml:6: source PDF sources\/etter-2018-modeling\.pdf does not exist/,
+    ],
+    "a source_pdf field whose file name has spaces": [
+      "chapters/ch01.md",
+      "---\nsource_pdf: \"sources/Jensen 2011.pdf\"\n---\n",
+      /chapters\/ch01\.md:2: source PDF sources\/Jensen 2011\.pdf does not exist/,
+    ],
+    "a primary_source_pdf field outside sources": [
+      "00-hub.md",
+      "---\nprimary_source_pdf: books/jensen.pdf\n---\n# Hub\n\n- Fundamentals: `chapters/ch01.md`\n",
+      /00-hub\.md:2: source PDF books\/jensen\.pdf does not exist/,
+    ],
+  };
+
+  for (const [form, [note, content, message]] of Object.entries(notes)) {
+    await t.test(form, (st) => {
+      const kb = writeKnowledgeBase(st, { [note]: content });
+
+      const result = runCli(["check", "--kb", kb]);
+
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, message);
+    });
+  }
+});
+
+test("check reports a missing source PDF once per line", (t) => {
+  const kb = writeKnowledgeBase(t, { "chapters/ch01.md": "---\nsource_pdf: sources/missing.pdf\n---\n" });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.stderr.match(/source PDF sources\/missing\.pdf does not exist/g)?.length, 1, result.stderr);
+});
+
+test("check accepts notes that point at source PDFs present in the knowledge base", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "sources/jensen-2011-coa.pdf": "%PDF-1.4\n",
+    "chapters/ch01.md": [
+      "---",
+      "source_pdf: sources/jensen-2011-coa.pdf",
+      "---",
+      "Read sources/jensen-2011-coa.pdf. Also `{{knowledge_base}}/sources/jensen-2011-coa.pdf`.",
+      "Not book PDFs: https://example.org/sources/report.pdf, {{at_2020}}/sources/x.pdf, sources/x.pdf.bak.",
       "",
     ].join("\n"),
   });

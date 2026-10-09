@@ -41,7 +41,7 @@ export function readDataFile(path, parse, label = path) {
 
 /**
  * Read the text of every file under a directory whose name a pattern accepts,
- * skipping hidden entries (such as Zotero caches) and hidden directories.
+ * skipping hidden entries (such as editor or OS metadata) and hidden directories.
  * @param {string} root
  * @param {RegExp} include Tested against each file name.
  * @returns {Map<string, string>} Text keyed by "/"-separated path relative to root, in path order.
@@ -61,4 +61,16 @@ export function readTextFiles(root, include) {
     .filter((name) => !name.split("/").some((part) => part.startsWith(".")))
     .sort();
   return new Map(names.map((name) => [name, readDataFile(join(root, name), (text) => text, name)]));
+}
+
+/**
+ * The lines of a set of texts, numbered from 1.
+ * @param {Map<string, string>} texts Text keyed by file name.
+ * @returns {Generator<{file: string, lineNumber: number, line: string}>}
+ */
+export function* textLines(texts) {
+  for (const [file, text] of texts) {
+    const lines = text.split(/\r?\n/);
+    for (let index = 0; index < lines.length; index++) yield { file, lineNumber: index + 1, line: lines[index] };
+  }
 }

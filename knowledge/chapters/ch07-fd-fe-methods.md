@@ -4,7 +4,7 @@ type: chapter-note
 chapter: 7
 book_pages: 531-610
 pdf_pages: 546-625
-zotero_storage_key: B4W6S79R
+source_pdf: sources/jensen-2011-computational-ocean-acoustics.pdf
 status: expanded
 ---
 

@@ -9,6 +9,7 @@ import {
   loadKnowledgeBase,
   noteExists,
   parseWindowRef,
+  sourcePdfReferences,
 } from "./knowledge-base.js";
 import { machinePathProblems } from "./machine-paths.js";
 import {
@@ -86,6 +87,13 @@ function noMachinePaths(kb) {
   return machinePathProblems(kb.texts);
 }
 
+/** @type {Rule} */
+function sourcePdfsExist(kb) {
+  return sourcePdfReferences(kb)
+    .filter((reference) => !noteExists(kb, reference.path))
+    .map(({ file, lineNumber, path }) => `${file}:${lineNumber}: source PDF ${path} does not exist`);
+}
+
 const RULES = [
   routeNotesExist,
   conceptRoutesExist,
@@ -93,6 +101,7 @@ const RULES = [
   conceptFallbackWindowsResolve,
   hubReferencesExist,
   noMachinePaths,
+  sourcePdfsExist,
 ];
 
 /** The MATLAB solver helpers shipped with this package. */

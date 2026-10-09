@@ -2,7 +2,7 @@
 title: Source Note - Computational Ocean Acoustics
 type: source-note
 zotero_key: NWQ228R5
-zotero_storage_key: B4W6S79R
+source_pdf: sources/jensen-2011-computational-ocean-acoustics.pdf
 doi: 10.1007/978-1-4419-8678-8
 isbn: 978-1-4419-8677-1
 year: 2011
@@ -21,6 +21,7 @@ status: active
 - Year: 2011
 - Edition: Second Edition
 - DOI: `10.1007/978-1-4419-8678-8`
+- Zotero item key: `NWQ228R5` (a citation identifier; the expert does not read Zotero)
 
 ## Why this source anchors the knowledge base
 
@@ -60,8 +61,4 @@ The second edition adds or expands material on:
 
 ## File anchors
 
-All in the Zotero storage folder `{{zotero_storage}}/B4W6S79R/`:
-
-- Outline: `jasminum-outline.json`
-- Searchable text cache: `.zotero-ft-cache`
-- Full book PDF: `Jensen 等 - 2011 - Computational Ocean Acoustics.pdf` (the folder's only PDF; Zotero may name it differently in another library)
+- Full book PDF: `sources/jensen-2011-computational-ocean-acoustics.pdf`, relative to the knowledge-base root. Page ranges in the notes and the routing map are PDF pages of this file.
