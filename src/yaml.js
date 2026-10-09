@@ -1,5 +1,7 @@
 /**
- * Parser for the YAML subset used by the knowledge base's hand-edited files.
+ * Parser for the YAML subset used by the knowledge base's hand-edited files
+ * and by the frontmatter the installer generates (quoted keys come from
+ * OpenCode's `external_directory` patterns).
  *
  * Supported: block mappings, block sequences of scalars, flow sequences of
  * scalars (`[a, b]`), plain and quoted scalars and mapping keys, blank lines

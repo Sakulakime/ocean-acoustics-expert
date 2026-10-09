@@ -74,6 +74,12 @@
       "expected": {
         "concept_key": "gaussian_beam",
         "bucket": "ray_methods",
+        "route_notes": [
+          "chapters/ch03-ray-methods.md",
+          "solvers/solver-bellhop.md",
+          "runbooks/bellhop-runbook.md",
+          "workflows/model-selection.md"
+        ],
         "primary_notes": [
           "chapters/ch03-ray-methods.md"
         ],

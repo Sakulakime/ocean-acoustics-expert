@@ -14,7 +14,7 @@ import { isAbsolute, join } from "node:path";
  * @property {string} sharedSkills Canonical skills folder, read by Codex and OpenCode.
  * @property {string} claudeDir Claude Code's user config folder.
  * @property {string} codexDir Codex's config folder: `CODEX_HOME` when absolute, else `~/.codex`.
- * @property {string} opencodeDir OpenCode's user config folder.
+ * @property {string} opencodeDir OpenCode's user config folder: `XDG_CONFIG_HOME/opencode`, else `~/.config/opencode`.
  */
 
 /**
@@ -23,10 +23,9 @@ import { isAbsolute, join } from "node:path";
  * @returns {Locations}
  */
 export function installLocations() {
-  const { XDG_DATA_HOME, CLAUDE_CONFIG_DIR, CODEX_HOME } = process.env;
+  const { XDG_DATA_HOME, XDG_CONFIG_HOME, CLAUDE_CONFIG_DIR, CODEX_HOME } = process.env;
   const home = homedir();
-  const dataHome = XDG_DATA_HOME && isAbsolute(XDG_DATA_HOME) ? XDG_DATA_HOME : join(home, ".local", "share");
-  const dataDir = join(dataHome, "ocean-acoustics-expert");
+  const dataDir = join(absoluteOr(XDG_DATA_HOME, join(home, ".local", "share")), "ocean-acoustics-expert");
   return {
     home,
     dataDir,
@@ -36,17 +35,17 @@ export function installLocations() {
     manifest: join(dataDir, "manifest.json"),
     backups: join(dataDir, "backups"),
     sharedSkills: join(home, ".agents", "skills"),
-    claudeDir: CLAUDE_CONFIG_DIR && isAbsolute(CLAUDE_CONFIG_DIR) ? CLAUDE_CONFIG_DIR : join(home, ".claude"),
-    codexDir: CODEX_HOME && isAbsolute(CODEX_HOME) ? CODEX_HOME : join(home, ".codex"),
-    opencodeDir: join(configHome(home), "opencode"),
+    claudeDir: absoluteOr(CLAUDE_CONFIG_DIR, join(home, ".claude")),
+    codexDir: absoluteOr(CODEX_HOME, join(home, ".codex")),
+    opencodeDir: join(absoluteOr(XDG_CONFIG_HOME, join(home, ".config")), "opencode"),
   };
 }
 
 /**
- * @param {string} home
- * @returns {string} `XDG_CONFIG_HOME` when it is set and absolute, else `~/.config`.
+ * @param {string|undefined} value A path from the environment.
+ * @param {string} fallback
+ * @returns {string} The value when it is an absolute path, else the fallback.
  */
-function configHome(home) {
-  const { XDG_CONFIG_HOME } = process.env;
-  return XDG_CONFIG_HOME && isAbsolute(XDG_CONFIG_HOME) ? XDG_CONFIG_HOME : join(home, ".config");
+function absoluteOr(value, fallback) {
+  return value && isAbsolute(value) ? value : fallback;
 }

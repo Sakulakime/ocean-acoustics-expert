@@ -9,11 +9,13 @@ export const BUNDLED_ROUTE_SELECTION_CASES = fileURLToPath(
 
 /**
  * A prompt and the routing it must resolve to. Field names follow the cases file.
+ * `route_notes`, when given, is the exact note list the resolved route must
+ * have in the routing map; concepts alone never exercise a route's own notes.
  * @typedef {object} RouteSelectionCase
  * @property {string} name
  * @property {string} prompt
- * @property {{concept_key: string|null, bucket: string|null, primary_notes: string[],
- *   secondary_notes: string[], fallback_windows: string[]}} expected
+ * @property {{concept_key: string|null, bucket: string|null, route_notes?: string[],
+ *   primary_notes: string[], secondary_notes: string[], fallback_windows: string[]}} expected
  */
 
 /**
@@ -81,6 +83,9 @@ export function evaluateCase(routeCase, kb) {
     ["secondary notes", expected.secondary_notes ?? [], resolved.secondaryNotes],
     ["fallback windows", expected.fallback_windows ?? [], resolved.fallbackWindows],
   ];
+  if (expected.route_notes) {
+    comparisons.push(["route notes", expected.route_notes, kb.routes.get(resolved.route)?.notes ?? []]);
+  }
   return comparisons
     .filter(([, wanted, actual]) => JSON.stringify(wanted) !== JSON.stringify(actual))
     .map(([label, wanted, actual]) => `expected ${label} ${JSON.stringify(wanted)}, got ${JSON.stringify(actual)}`);

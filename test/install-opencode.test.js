@@ -48,7 +48,7 @@ test("install renders a read-only OpenCode subagent that points at the installed
   assert.equal(frontmatter.mode, "subagent");
   assert.equal("tools" in frontmatter, false, "OpenCode ignores a Claude-style tools list");
   const { external_directory: externalDirectory, ...denials } = frontmatter.permission;
-  assert.deepEqual(denials, { edit: "deny", bash: "deny", webfetch: "deny", websearch: "deny" });
+  assert.deepEqual(denials, { edit: "deny", bash: "deny", webfetch: "deny", websearch: "deny", task: "deny" });
   assert.deepEqual(Object.entries(externalDirectory), [
     [`${paths.data}/**`, "allow"],
     [`${join(home, "Tools/AT/at_2023")}/**`, "allow"],

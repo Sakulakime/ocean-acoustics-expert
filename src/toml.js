@@ -3,7 +3,7 @@
  * TOML value that parses back to exactly the given text.
  */
 
-/** Characters a basic string must escape, other than the ones a multi-line string may hold raw. */
+/** Characters a basic string escapes: control characters, `"`, `\\` and DEL. A multi-line string keeps line feeds and tabs raw. */
 const ESCAPED = /[\u0000-\u001f"\\\u007f]/g;
 
 /** Control characters a literal string cannot hold: all but tab and line feed. */

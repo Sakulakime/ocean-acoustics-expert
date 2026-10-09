@@ -56,6 +56,11 @@ function codexPaths(home, codexDir = join(home, ".codex")) {
   };
 }
 
+/** Python's tomllib (3.11+) when present; tests that parse TOML are skipped without it. */
+const TOML_PARSER = {
+  skip: spawnSync("python3", ["-I", "-c", "import tomllib"]).status === 0 ? false : "needs python3 with tomllib (3.11+)",
+};
+
 /**
  * Parse a TOML file with Python's standard library, a strict TOML 1.0 parser.
  * @param {string} path
@@ -68,7 +73,7 @@ function parseToml(path) {
   return JSON.parse(result.stdout);
 }
 
-test("install renders a read-only Codex agent TOML that points at the installed copy", (t) => {
+test("install renders a read-only Codex agent TOML that points at the installed copy", TOML_PARSER, (t) => {
   const pkg = writePackage(t);
   const home = writeHome(t, CODEX_CONFIG);
   const paths = installPaths(home);
@@ -93,7 +98,7 @@ test("install renders a read-only Codex agent TOML that points at the installed 
   assert.equal(instructions.trim(), claude.body.trim(), "Codex gets the same rules as Claude");
 });
 
-test("the Codex agent TOML holds quotes, backslashes and control characters in the template exactly", async (t) => {
+test("the Codex agent TOML holds quotes, backslashes and control characters in the template exactly", TOML_PARSER, async (t) => {
   const description = `Answers "quoted" questions about C:\\temp\\new, 'single' quotes and """triples"""`;
   const bodies = {
     "backslashes and triple double quotes": 'Read `{{knowledge_base}}/00-hub.md`.\nUse $\\alpha$ and \\\\server\\share.\n"""Quoted"""\tand tabbed.\n',
@@ -118,7 +123,7 @@ test("the Codex agent TOML holds quotes, backslashes and control characters in t
   }
 });
 
-test("install honours CODEX_HOME and gives Codex the shared router without a skill link", (t) => {
+test("install honours CODEX_HOME and gives Codex the shared router without a skill link", TOML_PARSER, (t) => {
   const pkg = writePackage(t);
   const home = writeDirectory(t, { "elsewhere/codex/config.toml": "" });
   const codexDir = join(home, "elsewhere", "codex");
@@ -136,7 +141,7 @@ test("install honours CODEX_HOME and gives Codex the shared router without a ski
   assert.match(runInstaller(pkg, home, ["status"], { CODEX_HOME: codexDir }).stdout, /^harnesses: codex$/m);
 });
 
-test("install ignores a relative CODEX_HOME and uses ~/.codex", (t) => {
+test("install ignores a relative CODEX_HOME and uses ~/.codex", TOML_PARSER, (t) => {
   const pkg = writePackage(t);
   const home = writeDirectory(t, CODEX_CONFIG);
 
@@ -164,7 +169,7 @@ test("install detects Claude and Codex together, and --harness picks one of them
   assert.equal(existsSync(installPaths(picked).claudeSkill), false);
 });
 
-test("install backs up and cleans up the legacy Codex agent and skill snapshot, leaving neighbours alone", (t) => {
+test("install backs up and cleans up the legacy Codex agent and skill snapshot, leaving neighbours alone", TOML_PARSER, (t) => {
   const pkg = writePackage(t);
   const home = writeHome(t, { ...CODEX_LEGACY_FILES, ...CODEX_NEIGHBOUR_FILES });
   const paths = installPaths(home);
@@ -233,7 +238,7 @@ test("re-running install over Claude and Codex with nothing changed is a no-op",
   assert.deepEqual({ home: snapshot(home, { mtimes: true }), pkg: snapshot(pkg, { mtimes: true }) }, before);
 });
 
-test("install backs up a Codex agent the user has edited before replacing it", (t) => {
+test("install backs up a Codex agent the user has edited before replacing it", TOML_PARSER, (t) => {
   const pkg = writePackage(t);
   const home = writeHome(t, CODEX_CONFIG);
   const paths = installPaths(home);

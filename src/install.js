@@ -36,6 +36,7 @@ import { readAgentTemplate, renderPlaceholders } from "./template.js";
  * @property {import("./template.js").AgentTemplate} template
  * @property {Record<string, string|null>} variables Values for template placeholders.
  * @property {{name: string, path: string}[]} skills Canonical skill folders.
+ * @property {string[]} linkTargets Package folders the installed copy links to; empty in copy mode.
  */
 
 /** @type {Harness[]} */
@@ -230,7 +231,10 @@ function installUnits({ mode, locations, paths, harnesses }) {
   }
 
   const template = readAgentTemplate(AGENT_TEMPLATE);
-  for (const harness of harnesses) units.push(...harness.units({ locations, template, variables, skills }));
+  const linkTargets = mode === "link" ? [KNOWLEDGE, MATLAB_HELPERS] : [];
+  for (const harness of harnesses) {
+    units.push(...harness.units({ locations, template, variables, skills, linkTargets }));
+  }
   return units;
 }
 

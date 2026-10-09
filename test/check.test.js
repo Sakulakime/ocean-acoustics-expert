@@ -48,6 +48,35 @@ test("check fails when a route-selection case resolves to the wrong route", (t) 
   assert.match(result.stderr, /route-selection "ssp goes to ray methods": expected route "ray_methods", got "fundamentals"/);
 });
 
+test("check fails when the resolved route does not list the notes a case expects of it", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "cases.json": JSON.stringify({
+      cases: [
+        {
+          name: "ssp route lists the solver note",
+          prompt: "How does the sound speed profile shape the field?",
+          expected: {
+            concept_key: "sound_speed_profile",
+            bucket: "fundamentals",
+            route_notes: ["chapters/ch01.md", "solvers/solver-bellhop.md"],
+            primary_notes: ["chapters/ch01.md"],
+            secondary_notes: [],
+            fallback_windows: ["fundamentals.environment"],
+          },
+        },
+      ],
+    }),
+  });
+
+  const result = runCli(["check", "--kb", kb, "--cases", join(kb, "cases.json")]);
+
+  assert.equal(result.status, 1);
+  assert.match(
+    result.stderr,
+    /route-selection "ssp route lists the solver note": expected route notes \["chapters\/ch01\.md","solvers\/solver-bellhop\.md"\], got \["chapters\/ch01\.md"\]/,
+  );
+});
+
 test("check reports a knowledge base it cannot load instead of crashing", (t) => {
   const kb = writeKnowledgeBase(t, { "routing-map.yaml": "routes:\n  fundamentals\n" });
 
