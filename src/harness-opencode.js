@@ -1,7 +1,7 @@
 import { join } from "node:path";
 
 import { TOOLBOX_PATHS } from "./path-map.js";
-import { renderPlaceholders } from "./template.js";
+import { inspectMarkdown, renderPlaceholders } from "./template.js";
 
 /**
  * Tools the expert must not use in OpenCode: edit (which also covers write
@@ -13,6 +13,14 @@ import { renderPlaceholders } from "./template.js";
 const DENIED_TOOLS = ["edit", "bash", "webfetch", "websearch", "task"];
 
 /**
+ * @param {import("./locations.js").Locations} locations
+ * @param {string} name
+ */
+function agentPath(locations, name) {
+  return join(locations.opencodeDir, "agents", `${name}.md`);
+}
+
+/**
  * OpenCode: a read-only subagent in the user agents folder of OpenCode's
  * config folder. OpenCode reads the skills from the shared skills folder
  * itself, so it gets no skill entries of its own.
@@ -21,16 +29,46 @@ const DENIED_TOOLS = ["edit", "bash", "webfetch", "websearch", "task"];
 export const OPENCODE_HARNESS = {
   name: "opencode",
   configDir: (locations) => locations.opencodeDir,
+  agentPath,
   units({ locations, template, variables, linkTargets }) {
     return [
       {
         kind: "file",
-        path: join(locations.opencodeDir, "agents", `${template.name}.md`),
+        path: agentPath(locations, template.name),
         content: renderOpencodeAgent(template, variables, readableDirs(locations, variables, linkTargets)),
       },
     ];
   },
+  inspectAgent(text, locations) {
+    const agent = inspectMarkdown(text, ["description"]);
+    const dataDir = `${locations.dataDir}/**`;
+    if (agent.frontmatter && agent.frontmatter.permission?.external_directory?.[dataDir] !== "allow") {
+      agent.problems.push(
+        `permission.external_directory does not allow ${dataDir}, so every read of the installed copy asks first`,
+      );
+    }
+    return agent;
+  },
 };
+
+/**
+ * Where OpenCode (1.16.2) finds skills outside a project: under `skills/` in
+ * `~/.claude` and `~/.agents`, and under `skill/` or `skills/` in its config
+ * folders. It searches them recursively for `SKILL.md`, following symbolic
+ * links, and keys skills by the `name` in their frontmatter, so two files
+ * with one name are duplicates even when they are the same file.
+ * @param {import("./locations.js").Locations} locations
+ * @returns {{dir: string, hidden: boolean}[]} In search order; `hidden`:
+ *   whether the search enters hidden folders.
+ */
+export function opencodeSkillRoots({ home, opencodeDir }) {
+  const configDirs = [opencodeDir, join(home, ".opencode")];
+  return [
+    { dir: join(home, ".claude", "skills"), hidden: true },
+    { dir: join(home, ".agents", "skills"), hidden: true },
+    ...configDirs.flatMap((dir) => ["skill", "skills"].map((name) => ({ dir: join(dir, name), hidden: false }))),
+  ];
+}
 
 /**
  * Folders outside the working directory the agent may read without a

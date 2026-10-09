@@ -16,14 +16,15 @@ const PACKAGE_PARTS = ["bin", "src", "agent", "skills", "tools", "package.json"]
  * Write a copy of this package with a minimal knowledge base to a temp
  * directory, so installs never touch the real checkout.
  * @param {import("node:test").TestContext} t
- * @param {{checkout?: boolean}} [options] Whether the copy looks like a git checkout.
+ * @param {{checkout?: boolean, knowledge?: Record<string, string>}} [options] Whether the
+ *   copy looks like a git checkout, and knowledge-base files replacing or adding to the minimal ones.
  * @returns {string} The package root.
  */
-export function writePackage(t, { checkout = true } = {}) {
-  const knowledge = { ...MINIMAL_KNOWLEDGE_BASE, "sources/book.pdf": "%PDF-1.4\n" };
+export function writePackage(t, { checkout = true, knowledge = {} } = {}) {
+  const files = { ...MINIMAL_KNOWLEDGE_BASE, "sources/book.pdf": "%PDF-1.4\n", ...knowledge };
   const root = writeDirectory(
     t,
-    Object.fromEntries(Object.entries(knowledge).map(([path, content]) => [join("knowledge", path), content])),
+    Object.fromEntries(Object.entries(files).map(([path, content]) => [join("knowledge", path), content])),
   );
   for (const part of PACKAGE_PARTS) {
     cpSync(join(REPO_ROOT, part), join(root, part), {

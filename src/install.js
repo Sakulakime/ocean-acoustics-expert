@@ -26,8 +26,13 @@ import { readAgentTemplate, renderPlaceholders } from "./template.js";
  * @property {string} name
  * @property {(locations: import("./locations.js").Locations) => string} configDir
  *   Its user config folder; the harness counts as present when it exists.
+ * @property {(locations: import("./locations.js").Locations, name: string) => string} agentPath
+ *   Where the agent of a given name goes.
  * @property {(context: HarnessContext) => import("./install-plan.js").Unit[]} units
  *   Its agent file, skill entries and legacy paths to clean up.
+ * @property {(text: string, locations: import("./locations.js").Locations) => import("./template.js").InstalledFile} inspectAgent
+ *   Read an installed agent file for doctor: its instructions, and why the
+ *   harness may not load it as install meant.
  */
 
 /**
@@ -44,7 +49,8 @@ export const HARNESSES = [CLAUDE_HARNESS, CODEX_HARNESS, OPENCODE_HARNESS];
 
 const MODES = ["link", "copy"];
 
-const AGENT_TEMPLATE = join(PACKAGE_ROOT, "agent", "ocean-acoustics-expert.md");
+/** The harness-neutral agent template every harness's agent is rendered from. */
+export const AGENT_TEMPLATE = join(PACKAGE_ROOT, "agent", "ocean-acoustics-expert.md");
 const SKILLS = join(PACKAGE_ROOT, "skills");
 const KNOWLEDGE = join(PACKAGE_ROOT, "knowledge");
 const MATLAB_HELPERS = join(PACKAGE_ROOT, "tools", "matlab");

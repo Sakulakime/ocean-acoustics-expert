@@ -1,7 +1,7 @@
 import { join } from "node:path";
 
 import { renderPlaceholders } from "./template.js";
-import { tomlMultilineString, tomlString } from "./toml.js";
+import { parseToml, TomlError, tomlMultilineString, tomlString } from "./toml.js";
 
 /**
  * Legacy paths of the hand-made Codex setup, relative to Codex's config
@@ -12,6 +12,17 @@ import { tomlMultilineString, tomlString } from "./toml.js";
  */
 const LEGACY_PATHS = ["skills/ocean-acoustics-expert"];
 
+/** Fields Codex needs to load an agent role. */
+const REQUIRED_FIELDS = ["name", "description", "developer_instructions"];
+
+/**
+ * @param {import("./locations.js").Locations} locations
+ * @param {string} name
+ */
+function agentPath(locations, name) {
+  return join(locations.codexDir, "agents", `${name}.toml`);
+}
+
 /**
  * Codex: an agent TOML in the user agents folder, confined to the read-only
  * sandbox, since Codex has no per-tool allowlist. Codex reads the skills
@@ -21,15 +32,30 @@ const LEGACY_PATHS = ["skills/ocean-acoustics-expert"];
 export const CODEX_HARNESS = {
   name: "codex",
   configDir: (locations) => locations.codexDir,
+  agentPath,
   units({ locations, template, variables }) {
     return [
       ...LEGACY_PATHS.map((path) => ({ kind: "absent", path: join(locations.codexDir, path) })),
       {
         kind: "file",
-        path: join(locations.codexDir, "agents", `${template.name}.toml`),
+        path: agentPath(locations, template.name),
         content: renderCodexAgent(template, variables),
       },
     ];
+  },
+  inspectAgent(text) {
+    let agent;
+    try {
+      agent = parseToml(text);
+    } catch (error) {
+      if (!(error instanceof TomlError)) throw error;
+      return { instructions: null, problems: [`is not valid TOML: ${error.message}`] };
+    }
+    const problems = REQUIRED_FIELDS.filter((field) => typeof agent[field] !== "string" || agent[field] === "").map(
+      (field) => `lacks ${field}`,
+    );
+    const instructions = agent.developer_instructions;
+    return { instructions: typeof instructions === "string" && instructions !== "" ? instructions : null, problems };
   },
 };
 

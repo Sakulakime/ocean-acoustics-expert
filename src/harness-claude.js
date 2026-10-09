@@ -1,6 +1,6 @@
 import { dirname, join, relative } from "node:path";
 
-import { renderPlaceholders } from "./template.js";
+import { inspectMarkdown, renderPlaceholders } from "./template.js";
 
 /**
  * Legacy paths of the hand-made Claude setup, relative to Claude's config
@@ -15,6 +15,14 @@ const LEGACY_PATHS = [
 ];
 
 /**
+ * @param {import("./locations.js").Locations} locations
+ * @param {string} name
+ */
+function agentPath(locations, name) {
+  return join(locations.claudeDir, "agents", `${name}.md`);
+}
+
+/**
  * Claude Code: a read-only agent in the user agents folder, and each skill
  * as a symbolic link to its canonical folder in the shared skills folder.
  * @type {import("./install.js").Harness}
@@ -22,6 +30,7 @@ const LEGACY_PATHS = [
 export const CLAUDE_HARNESS = {
   name: "claude",
   configDir: (locations) => locations.claudeDir,
+  agentPath,
   units({ locations, template, variables, skills }) {
     const skillLinks = skills.map((skill) => {
       const path = join(locations.claudeDir, "skills", skill.name);
@@ -32,11 +41,12 @@ export const CLAUDE_HARNESS = {
       ...skillLinks,
       {
         kind: "file",
-        path: join(locations.claudeDir, "agents", `${template.name}.md`),
+        path: agentPath(locations, template.name),
         content: renderClaudeAgent(template, variables),
       },
     ];
   },
+  inspectAgent: (text) => inspectMarkdown(text, ["name", "description"]),
 };
 
 /**

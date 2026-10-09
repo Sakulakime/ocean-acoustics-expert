@@ -1,4 +1,5 @@
 import { runCheck } from "./check.js";
+import { runDoctor } from "./doctor.js";
 import { runInstall } from "./install.js";
 import { runStatus } from "./status.js";
 import { runUninstall } from "./uninstall.js";
@@ -9,12 +10,14 @@ Commands:
   install    Install the expert into coding-agent harnesses
              [--harness <name>]... [--mode link|copy] [--dry-run] [--at-2023 <dir>] [--at-2020 <dir>]
   status     Show what is installed
+  doctor     Diagnose the installation; reports problems, changes nothing
   uninstall  Remove what install wrote [--restore: also put back its backups]
   check      Validate the knowledge base [--kb <dir>] [--cases <file>] [--helpers <dir>]`;
 
 const COMMANDS = {
   install: runInstall,
   status: runStatus,
+  doctor: runDoctor,
   uninstall: runUninstall,
   check: runCheck,
 };
