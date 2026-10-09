@@ -51,3 +51,12 @@ The retrieval order, the evidence tags and the note-family references are still 
   - Link mode already shows the knowledge-base changes. The agent and the router are rendered files, so `install` must run again for each harness. It replaces unchanged installer output without a backup.
   - Smoke candidate: "What initial beamwidth should Gaussian beam tracing use, and why?" The answer should cite §3.5, PDF pp. 198–201, with tags.
   - Alternative: a normal-mode cutoff question. `ch05-normal-modes.md` has no cutoff formulas, so the answer must fall back to PDF pp. 354–372.
+
+**Merged and reviewed (2026-10-10).**
+- **Route-selection gap closed.** Cases may now give `route_notes`, the exact notes the resolved route must list. The "concept - Gaussian beam" case uses it. A mutation check confirmed it: dropping `solvers/solver-bellhop.md` from the ray route makes `check` fail.
+- **Book fallbacks differ by harness**, decided by the user:
+  - Claude Code reads PDF page ranges natively.
+  - Codex gets a harness note to print page ranges with `pdftotext … -`.
+  - OpenCode is blocked from PDFs and names the page range instead, because its read tool attaches the whole PDF.
+
+  The shared template is unchanged. The harness notes are added by the Codex and OpenCode adapters (tickets 04, 05).

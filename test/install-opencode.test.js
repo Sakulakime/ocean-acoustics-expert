@@ -47,14 +47,18 @@ test("install renders a read-only OpenCode subagent that points at the installed
   assert.match(frontmatter.description, /underwater acoustics/);
   assert.equal(frontmatter.mode, "subagent");
   assert.equal("tools" in frontmatter, false, "OpenCode ignores a Claude-style tools list");
-  const { external_directory: externalDirectory, ...denials } = frontmatter.permission;
+  const { external_directory: externalDirectory, read, ...denials } = frontmatter.permission;
   assert.deepEqual(denials, { edit: "deny", bash: "deny", webfetch: "deny", websearch: "deny", task: "deny" });
+  assert.deepEqual({ ...read }, { "*.pdf": "deny" }, "PDFs are blocked; OpenCode's own read defaults stay");
   assert.deepEqual(Object.entries(externalDirectory), [
     [`${paths.data}/**`, "allow"],
     [`${join(home, "Tools/AT/at_2023")}/**`, "allow"],
     [`${join(home, "Tools/AT/atWin10_2020_11_4")}/**`, "allow"],
   ]);
   assert.match(body, new RegExp(`${paths.knowledge}/00-hub\\.md`));
+  assert.match(body.trimStart(), /^## Harness note: OpenCode\n/);
+  assert.match(body, /replaces step 5 of the retrieval order/);
+  assert.match(body, /name the book and the PDF page range/);
   assert.doesNotMatch(body, /\{\{/);
   for (const [path] of body.matchAll(ABSOLUTE_PATH)) {
     assert.ok(path.startsWith(`${paths.data}/`), `${path} is outside the installed copy`);

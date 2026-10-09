@@ -49,10 +49,22 @@ function readableDirs(locations, variables, linkTargets) {
 }
 
 /**
+ * What OpenCode needs on top of the shared rules. Its read tool attaches a
+ * whole PDF whatever page range is asked for (a book is tens of megabytes),
+ * so the permission block blocks PDFs and the agent names page ranges instead.
+ */
+const HARNESS_NOTE = `## Harness note: OpenCode
+
+OpenCode cannot read a page range of a PDF: opening one attaches the whole book, which fails, so reading the PDFs in \`{{knowledge_base}}/sources/\` is blocked. This replaces step 5 of the retrieval order and the fallback rules below. When the notes do not settle a question, answer from the notes, say plainly that a book fallback is needed, and name the book and the PDF page range to read (from the route, the concept entry or a source note), so the user can check it or ask again in Claude Code or Codex.
+
+`;
+
+/**
  * The agent markdown. OpenCode names the agent after the file. Its own
  * defaults ask before any read outside the project; the rules here come
  * after them, and OpenCode applies the last matching rule, with `*`
- * matching across folders.
+ * matching across folders. The PDF rule adds to OpenCode's own read
+ * defaults (which ask before reading `.env` files) instead of replacing them.
  * @param {import("./template.js").AgentTemplate} template
  * @param {Record<string, string|null>} variables
  * @param {string[]} readable Folders the agent may read.
@@ -65,10 +77,12 @@ function renderOpencodeAgent(template, variables, readable) {
     "mode: subagent",
     "permission:",
     ...DENIED_TOOLS.map((tool) => `  ${tool}: deny`),
+    "  read:",
+    '    "*.pdf": deny',
     "  external_directory:",
     ...readable.map((dir) => `    ${JSON.stringify(`${dir}/**`)}: allow`),
     "---",
     "",
-    renderPlaceholders(template.body, variables, "agent template"),
+    renderPlaceholders(HARNESS_NOTE + template.body, variables, "agent template"),
   ].join("\n");
 }

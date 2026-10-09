@@ -69,3 +69,12 @@
 - **Pass the harnesses explicitly.** The existing manifest pins `harnesses: [claude]`, and a re-run without `--harness` keeps that list, so it will not add OpenCode. Run `install --harness claude --harness opencode` (plus `--harness codex` after ticket 04).
 - **PDF fallbacks don't work in OpenCode yet.** OpenCode's `read` of a PDF ignores `offset` and `limit` and attaches the whole file: COA's 22.7 MB PDF became a 30.3 MB base64 attachment in the probe. Most providers will reject it. Pick a smoke question the notes can answer. Ticket 07 should decide how the OpenCode agent handles book fallbacks.
 - **Subagent defaults.** When the task tool runs the expert, OpenCode denies it `task` and `todowrite`, because its permission block names neither.
+
+**Merged and reviewed (2026-10-10).** Merged into `develop` with tickets 04 and 07, then reviewed on two axes. Follow-ups:
+- **`task` is denied.** Without that, the read-only expert could hand work to an agent that may write. `opencode debug agent` now resolves `task: false`. The tools it can use are read, glob, grep, todowrite and skill.
+- **Book PDFs are blocked in OpenCode** (the user's choice). The permission block adds `read: "*.pdf": deny`, after OpenCode's own read defaults, so the `.env` ask rules stay. The rendered body starts with a "Harness note: OpenCode" section, which:
+  - replaces step 5 of the retrieval order;
+  - tells the agent to answer from the notes, say that a book fallback is needed, and name the book and the PDF page range, so the user can check them or ask Claude Code or Codex.
+
+  I checked this against OpenCode 1.16.2 with `opencode debug agent --pure` on a generated file in a temp home; no prompt was sent.
+- **Link targets.** Harnesses now receive the link targets in their context (`linkTargets`) instead of working out link mode from the authoring root.

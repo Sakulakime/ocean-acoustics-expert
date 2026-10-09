@@ -37,3 +37,11 @@
   - Doctor accepts an unknown key and an invalid `sandbox_mode` value without a warning too, so it shows only that the required fields load.
   - `codex debug prompt-input` lists the router from the shared skills folder.
 - **Real install.** The current manifest records `harnesses: ["claude"]`. `install` without `--harness` reuses that list, so the real install needs explicit flags: `--harness claude --harness codex`, plus `--harness opencode` once ticket 05 is merged. Run the dry run from the main checkout. It should show backup and remove for `~/.codex/skills/ocean-acoustics-expert`, and backup, remove and write for `~/.codex/agents/ocean-acoustics-expert.toml`.
+
+**Merged and reviewed (2026-10-10).** Merged into `develop` with tickets 05 and 07, then reviewed on two axes. Follow-ups:
+- **Book PDFs in Codex.** The user chose to give Codex a harness note on how to read PDFs. The rendered `developer_instructions` start with a "Harness note: Codex" section, followed by the shared rules:
+  - read a fallback window with `pdftotext -f <first> -l <last> -layout <pdf> -`;
+  - print to the terminal only, never to an output file, and never write files.
+
+  The template stays harness-neutral, and Claude gets no note. `pdftotext` comes from poppler-utils, which is installed here at `/usr/bin`.
+- **Test dependency.** The TOML tests skip, instead of failing, when Python 3.11+ (`tomllib`) is missing.

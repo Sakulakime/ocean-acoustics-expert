@@ -34,17 +34,28 @@ export const CODEX_HARNESS = {
 };
 
 /**
+ * What Codex needs on top of the shared rules: it has no page-range PDF
+ * reader, but its read-only sandbox lets it print pages as text.
+ */
+const HARNESS_NOTE = `## Harness note: Codex
+
+Codex has no page-range PDF reader. To read a fallback window (step 5 of the retrieval order below), print only those pages as text with \`pdftotext -f <first page> -l <last page> -layout <pdf> -\`, where \`<pdf>\` is a book in \`{{knowledge_base}}/sources/\`. The final \`-\` prints to the terminal: never name an output file, and never write files. Extracted equations can come out garbled; when one matters, say so and cite its page range.
+
+`;
+
+/**
  * @param {import("./template.js").AgentTemplate} template
  * @param {Record<string, string|null>} variables
  * @returns {string}
  */
 function renderCodexAgent(template, variables) {
+  const instructions = renderPlaceholders(HARNESS_NOTE + template.body, variables, "agent template");
   return [
     "# Codex agent of ocean-acoustics-expert, written by install from its agent template; reinstall to change it.",
     `name = ${tomlString(template.name)}`,
     `description = ${tomlString(template.description)}`,
     'sandbox_mode = "read-only"',
-    `developer_instructions = ${tomlMultilineString(renderPlaceholders(template.body, variables, "agent template"))}`,
+    `developer_instructions = ${tomlMultilineString(instructions)}`,
     "",
   ].join("\n");
 }

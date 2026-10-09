@@ -95,7 +95,11 @@ test("install renders a read-only Codex agent TOML that points at the installed 
   }
   const claude = parseFrontmatter(readFileSync(paths.agent, "utf8"));
   assert.equal(agent.description, claude.frontmatter.description);
-  assert.equal(instructions.trim(), claude.body.trim(), "Codex gets the same rules as Claude");
+  assert.ok(instructions.trimEnd().endsWith(claude.body.trim()), "Codex gets the same rules as Claude");
+  assert.match(instructions, /^## Harness note: Codex\n/);
+  assert.match(instructions, /`pdftotext -f <first page> -l <last page> -layout <pdf> -`/);
+  assert.match(instructions, /never name an output file/);
+  assert.doesNotMatch(claude.body, /pdftotext|Harness note/, "the shared template stays harness-neutral");
 });
 
 test("the Codex agent TOML holds quotes, backslashes and control characters in the template exactly", TOML_PARSER, async (t) => {
@@ -118,7 +122,7 @@ test("the Codex agent TOML holds quotes, backslashes and control characters in t
       assert.equal(result.status, 0, result.stderr);
       const agent = parseToml(codexPaths(home).agent);
       assert.equal(agent.description, description);
-      assert.equal(agent.developer_instructions, body.replaceAll("{{knowledge_base}}", installPaths(home).knowledge));
+      assert.ok(agent.developer_instructions.endsWith(body.replaceAll("{{knowledge_base}}", installPaths(home).knowledge)));
     });
   }
 });
