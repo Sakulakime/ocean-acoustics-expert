@@ -12,10 +12,10 @@ This library is the default local knowledge base for underwater acoustics questi
 
 ## Default retrieval policy
 
-1. Read this hub and `routing-map.yaml` first.
-2. Read `concept-index.yaml` when the user prompt names a specific COA concept, subsection idea, or technical term.
-3. Read the smallest relevant chapter notes next.
-4. Escalate to the local COA PDF only when the notes are insufficient.
+1. Read this hub, then `routing-map.yaml`.
+2. Check `concept-index.yaml` for the concepts, subsection ideas or technical terms the question names.
+3. Read the smallest relevant note set: chapter notes, solver notes, runbooks and `visualization.md`, plus the benchmark-cases note and book source notes once this hub lists them.
+4. Only when the notes are insufficient, read a fallback window: a targeted page range of a book PDF in `sources/`, cited with its range.
 5. Prefer targeted page reads over whole-chapter reads.
 
 ## Source of truth
@@ -82,6 +82,7 @@ Notes contain no absolute paths:
 - State when a method is valid, not only how it works.
 - For model-selection answers, compare at least: geometry, range dependence, frequency content, computational cost, and phase fidelity.
 - When the notes do not settle the question, read only the relevant COA PDF pages and cite the page interval used.
+- Tag every claim in an answer `[textbook: <source> <section/pages>]` when a book states it, or `[inference]` when no book page does.
 
 ## Related files
 

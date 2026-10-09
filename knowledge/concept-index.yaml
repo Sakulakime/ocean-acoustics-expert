@@ -97,6 +97,22 @@
       "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides"]
     },
     {
+      "key": "gaussian_beam",
+      "aliases": ["gaussian beam", "gaussian-beam", "高斯波束"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["solvers/solver-bellhop.md"],
+      "fallback_windows": ["ray_methods.anomalies_and_gaussian_beams"]
+    },
+    {
+      "key": "eigenray",
+      "aliases": ["eigenray", "本征射线"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["solvers/solver-bellhop.md"],
+      "fallback_windows": ["ray_methods.numerical_solution_and_eigenrays"]
+    },
+    {
       "key": "horizontal_wavenumber",
       "aliases": ["horizontal wavenumber", "波数积分"],
       "bucket": "wavenumber_integration",

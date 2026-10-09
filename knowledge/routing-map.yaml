@@ -7,13 +7,14 @@ policy:
   default_order:
     - read 00-hub.md
     - read routing-map.yaml
-    - read concept-index.yaml when the prompt names a specific concept or subsection idea
-    - read smallest relevant notes
-    - read targeted PDF pages only if needed
+    - check concept-index.yaml for the concepts the prompt names
+    - read the smallest relevant note set (chapter, solver, runbook and visualization notes, plus benchmark cases and book source notes when present)
+    - read a targeted page range of a book PDF in sources/ only if the notes are insufficient
   answer_requirements:
     - separate physical assumptions from numerical assumptions
     - say when the method is appropriate and when it is not
     - cite note paths and PDF ranges used
+    - "tag every claim [textbook: <source> <section/pages>] or [inference]"
 routes:
   visualization:
     trigger_keywords: [plot, plotting, visualization, visualize, figure, colormap, colorbar, caxis, clim, color scale, color bar, dynamic range, jet_r, plotshd, TL plot, field plot, imagesc, pcolor, 画图, 绘图, 可视化, 色标, 色棒, 色图, 颜色范围, 动态范围, 出图]
@@ -46,6 +47,7 @@ routes:
     trigger_keywords: [ray, rays, eigenray, eikonal, Gaussian beam, caustic, Snell, ray tracing, convergence zone, CZ, Lloyd mirror, 射线, 本征射线, 高斯波束, 焦散, 会聚区, bellhop, BELLHOP]
     notes:
       - chapters/ch03-ray-methods.md
+      - solvers/solver-bellhop.md
       - runbooks/bellhop-runbook.md
       - workflows/model-selection.md
     chapter_span: 173-250
