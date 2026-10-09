@@ -1,6 +1,7 @@
 import { dirname, join, relative } from "node:path";
 
-import { inspectMarkdown, renderPlaceholders } from "./template.js";
+import { inspectMarkdown } from "./inspection.js";
+import { renderPlaceholders } from "./template.js";
 
 /**
  * Legacy paths of the hand-made Claude setup, relative to Claude's config

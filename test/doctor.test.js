@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { installPaths, runInstaller, snapshot, TOOLBOXES, writeHome, writePackage } from "./helpers/install.js";
@@ -38,7 +38,20 @@ function installEverywhere(t, { mode = "link", files = {}, knowledge = NOTE_WITH
   const home = writeHome(t, { ...HARNESS_CONFIGS, ...TOOLBOXES, ...files });
   const result = runInstaller(pkg, home, ["install", "--mode", mode]);
   assert.equal(result.status, 0, result.stderr);
-  return { pkg, home, paths: installPaths(home), agents: agentPaths(home) };
+  const paths = installPaths(home);
+  const agents = agentPaths(home);
+  const router = join(paths.sharedSkill, "SKILL.md");
+  return {
+    pkg,
+    home,
+    paths,
+    agents,
+    /** Each file doctor inspects, with the label its messages start with. */
+    files: {
+      ...Object.fromEntries(Object.entries(agents).map(([harness, path]) => [harness, { path, label: `${harness} agent ${path}` }])),
+      router: { path: router, label: `skill ocean-acoustics-router ${router}` },
+    },
+  };
 }
 
 /**
@@ -145,9 +158,30 @@ test("doctor fails when a path-map entry no longer exists or the path map is unr
     assert.equal(result.status, 1);
     assert.match(result.stderr, new RegExp(`^FAIL cannot read the local path map: ${paths.pathMap}: ENOENT`, "m"));
   });
+
+  await t.test("the path map is not a mapping", (st) => {
+    const { pkg, home, paths } = installEverywhere(st);
+    writeFileSync(paths.pathMap, "- /somewhere\n");
+
+    const result = runDoctor(pkg, home);
+
+    assert.equal(result.status, 1);
+    assert.ok(result.stderrLines.includes(`FAIL local path map ${paths.pathMap} is not a mapping of names to paths`), result.stderr);
+  });
+
+  await t.test("an entry that is not a toolbox was emptied", (st) => {
+    const { pkg, home, paths } = installEverywhere(st);
+    const text = readFileSync(paths.pathMap, "utf8");
+    writeFileSync(paths.pathMap, text.replace(/^knowledge_base: .*$/m, "knowledge_base:"));
+
+    const result = runDoctor(pkg, home);
+
+    assert.equal(result.status, 1);
+    assert.ok(result.stderrLines.includes("FAIL local path map: knowledge_base is not set"), result.stderr);
+  });
 });
 
-test("doctor fails when a symbolic link no longer resolves", async (t) => {
+test("doctor fails when a symbolic link is gone, replaced or no longer resolves", async (t) => {
   await t.test("the shared router the Claude skill links to is gone", (st) => {
     const { pkg, home, paths } = installEverywhere(st);
     rmSync(paths.sharedSkill, { recursive: true });
@@ -163,7 +197,7 @@ test("doctor fails when a symbolic link no longer resolves", async (t) => {
     assert.ok(lines.includes(`FAIL skill ocean-acoustics-router ${join(paths.sharedSkill, "SKILL.md")} is missing`), result.stderr);
   });
 
-  await t.test("the checkout folder the installed copy links to was moved", (st) => {
+  await t.test("the authoring copy the installed copy links to was moved", (st) => {
     const { pkg, home, paths } = installEverywhere(st);
     renameSync(join(pkg, "knowledge"), join(pkg, "knowledge-moved"));
 
@@ -175,42 +209,78 @@ test("doctor fails when a symbolic link no longer resolves", async (t) => {
     assert.ok(lines.includes(`FAIL local path map: knowledge_base ${paths.knowledge} does not exist`), result.stderr);
     assert.match(result.stderr, new RegExp(`^FAIL cannot read the installed copy ${paths.knowledge}: `, "m"));
   });
-});
 
-test("doctor fails when an installed agent file is missing or does not parse", async (t) => {
-  const cases = [
-    ["claude", "a Claude agent without frontmatter", "You are an expert.\n", "has no YAML frontmatter"],
-    ["claude", "a Claude agent without a name", "---\ndescription: x\n---\nbody\n", "lacks name in its frontmatter"],
-    [
-      "opencode",
-      "an OpenCode agent with frontmatter that is not valid YAML",
-      "---\ndescription: x\npermission: {edit: deny}\n---\nbody\n",
-      "has frontmatter that is not valid YAML: line 2: flow mappings are not supported",
-    ],
-    ["codex", "a Codex agent that is not valid TOML", 'name = "ocean-acoustics-expert\n', "is not valid TOML: line 1: unterminated string"],
-    ["codex", "a Codex agent with a table", 'name = "x"\n[mcp_servers]\n', "is not valid TOML: line 2: tables are not supported"],
-    ["codex", "a Codex agent without instructions", 'name = "x"\ndescription = "y"\n', "lacks developer_instructions"],
-  ];
-  for (const [harness, name, content, problem] of cases) {
-    await t.test(name, (st) => {
-      const { pkg, home, agents } = installEverywhere(st);
-      writeFileSync(agents[harness], content);
-
-      const result = runDoctor(pkg, home);
-
-      assert.equal(result.status, 1);
-      assert.ok(result.stderrLines.includes(`FAIL ${harness} agent ${agents[harness]}: ${problem}`), result.stderr);
-    });
-  }
-
-  await t.test("a deleted Claude agent", (st) => {
-    const { pkg, home, agents } = installEverywhere(st);
-    rmSync(agents.claude);
+  await t.test("the Claude skill link was deleted", (st) => {
+    const { pkg, home, paths } = installEverywhere(st, { mode: "copy" });
+    rmSync(paths.claudeSkill);
 
     const result = runDoctor(pkg, home);
 
     assert.equal(result.status, 1);
-    assert.ok(result.stderrLines.includes(`FAIL claude agent ${agents.claude} is missing`), result.stderr);
+    assert.ok(result.stderrLines.includes(`FAIL symbolic link ${paths.claudeSkill} is missing`), result.stderr);
+  });
+
+  await t.test("the Claude skill link was replaced by a folder holding an old router", (st) => {
+    const { pkg, home, paths } = installEverywhere(st, { mode: "copy" });
+    rmSync(paths.claudeSkill);
+    mkdirSync(paths.claudeSkill);
+    writeFileSync(join(paths.claudeSkill, "SKILL.md"), "---\nname: ocean-acoustics-router\ndescription: old\n---\nold router\n");
+
+    const result = runDoctor(pkg, home);
+
+    assert.equal(result.status, 1);
+    const target = "../../.agents/skills/ocean-acoustics-router";
+    assert.ok(result.stderrLines.includes(`FAIL ${paths.claudeSkill} is no longer the symbolic link to ${target} that install made`), result.stderr);
+  });
+});
+
+test("doctor fails when an installed agent or skill file is missing, unreadable or does not parse", async (t) => {
+  // [case, file, content, problem]; file is a harness's agent or the shared router.
+  const cases = [
+    ["a Claude agent without frontmatter", "claude", "You are an expert.\n", "has no YAML frontmatter"],
+    ["a Claude agent without a name", "claude", "---\ndescription: x\n---\nbody\n", "lacks name in its frontmatter"],
+    [
+      "an OpenCode agent with frontmatter outside the YAML doctor reads",
+      "opencode",
+      "---\ndescription: x\npermission: {edit: deny}\n---\nbody\n",
+      "has frontmatter doctor cannot parse: line 2: flow mappings are not supported",
+    ],
+    ["a Codex agent that is not TOML", "codex", 'name = "ocean-acoustics-expert\n', "is TOML doctor cannot parse: line 1: unterminated string"],
+    ["a Codex agent with a table", "codex", 'name = "x"\n[mcp_servers]\n', "is TOML doctor cannot parse: line 2: tables are not supported"],
+    ["a Codex agent without instructions", "codex", 'name = "x"\ndescription = "y"\n', "lacks developer_instructions"],
+    ["a shared router without frontmatter", "router", "# Ocean Acoustics Router\n", "has no YAML frontmatter"],
+  ];
+  for (const [name, file, content, problem] of cases) {
+    await t.test(name, (st) => {
+      const { pkg, home, files } = installEverywhere(st);
+      writeFileSync(files[file].path, content);
+
+      const result = runDoctor(pkg, home);
+
+      assert.equal(result.status, 1);
+      assert.ok(result.stderrLines.includes(`FAIL ${files[file].label}: ${problem}`), result.stderr);
+    });
+  }
+
+  await t.test("a deleted Claude agent", (st) => {
+    const { pkg, home, files } = installEverywhere(st);
+    rmSync(files.claude.path);
+
+    const result = runDoctor(pkg, home);
+
+    assert.equal(result.status, 1);
+    assert.ok(result.stderrLines.includes(`FAIL ${files.claude.label} is missing`), result.stderr);
+  });
+
+  await t.test("a folder where the Codex agent should be", (st) => {
+    const { pkg, home, files } = installEverywhere(st);
+    rmSync(files.codex.path);
+    mkdirSync(files.codex.path);
+
+    const result = runDoctor(pkg, home);
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, new RegExp(`^FAIL ${files.codex.label} cannot be read: .*EISDIR`, "m"));
   });
 });
 
@@ -306,12 +376,14 @@ test("doctor fails when OpenCode sees the router in a folder install did not wri
   );
 });
 
-test("doctor reads Codex agents whose template holds quotes, backslashes and control characters", async (t) => {
+test("doctor reads Codex agents whose template holds quotes, backslashes, control characters, URLs and tags", async (t) => {
   // The renderer writes a literal string unless the text holds ''', ends with ' or has control characters.
   const bodies = {
     "a basic string with quotes and backslashes": "Read `{{knowledge_base}}/00-hub.md`.\nUse $\\alpha$ and \\\\server\\share.\n\"\"\"Quoted\"\"\"\tand '''tabbed'''.\n",
     "a basic string with control characters": "Read `{{knowledge_base}}/00-hub.md`.\nIt's '''odd''' and \\n is not a newline.\r\nCarriage return and \u0001 control.\nEnds with a quote'",
     "a literal string": "Read `{{knowledge_base}}/00-hub.md`.\nC:\\temp\\new keeps its backslashes, and \"\"\" stays.\n",
+    "a literal string with a URL and an HTML tag, which are not paths":
+      "Read `{{knowledge_base}}/00-hub.md`; see https://oalib-acoustics.org/models/ and <b>bold</b>.\n",
   };
   for (const [name, body] of Object.entries(bodies)) {
     await t.test(name, (st) => {
@@ -329,4 +401,20 @@ test("doctor reads Codex agents whose template holds quotes, backslashes and con
       assert.ok(result.stdoutLines.includes(`OK   codex agent ${agentPaths(home).codex}`), result.stdout);
     });
   }
+});
+
+test("doctor reports a folder it may not read and still runs the other checks", { skip: process.getuid?.() === 0 ? "root reads every folder" : false }, (t) => {
+  const { pkg, home, files } = installEverywhere(t);
+  const agents = join(home, ".codex", "agents");
+  chmodSync(agents, 0o000);
+  let result;
+  try {
+    result = runInstaller(pkg, home, ["doctor"]);
+  } finally {
+    chmodSync(agents, 0o755);
+  }
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, new RegExp(`^FAIL agents: could not finish: EACCES: permission denied, stat '${files.codex.path}'$`, "m"));
+  assert.match(result.stdout, /^OK   book PDFs the notes point at: 1, all in the installed copy$/m);
 });

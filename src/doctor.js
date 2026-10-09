@@ -1,25 +1,51 @@
-import { readdirSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { readdirSync, readlinkSync, realpathSync, statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 
 import { DataFileError, readDataFile } from "./data-file.js";
 import { lstatOrNull, statOrNull } from "./fs-entries.js";
 import { opencodeSkillRoots } from "./harness-opencode.js";
+import { inspectMarkdown } from "./inspection.js";
 import { AGENT_TEMPLATE, HARNESSES } from "./install.js";
 import { loadKnowledgeBase, noteExists, sourcePdfReferences } from "./knowledge-base.js";
 import { installLocations } from "./locations.js";
 import { loadManifest } from "./manifest.js";
 import { flagName, TOOLBOX_PATHS } from "./path-map.js";
-import { inspectMarkdown, readAgentTemplate, splitFrontmatter } from "./template.js";
+import { readAgentTemplate, splitFrontmatter } from "./template.js";
 import { parseYaml } from "./yaml.js";
 
-/** An absolute path in agent instructions: not part of a word, unit or relative path. */
-const ABSOLUTE_PATH = /(?<![\w.~)\]}])\/[^\s`'")\]]+/g;
+/**
+ * An absolute path in agent instructions: not part of a word, unit, relative
+ * path, URL (`https://…`) or closing HTML tag (`</div>`).
+ */
+const ABSOLUTE_PATH = /(?<![\w.~)\]}:/<])\/[^\s`'")\]]+/g;
 
 /** How many notes a missing book PDF lists before it summarises the rest. */
 const LISTED_NOTES = 5;
 
 /** Folders the skill search skips instead of failing: unreadable, gone, or a link loop. */
 const UNSEARCHABLE_CODES = new Set(["EACCES", "EPERM", "ENOENT", "ENOTDIR", "ELOOP"]);
+
+/**
+ * What every check reads and reports to.
+ * @typedef {object} DoctorContext
+ * @property {Report} report
+ * @property {import("./locations.js").Locations} locations
+ * @property {import("./manifest.js").Manifest} manifest
+ */
+
+/**
+ * The checks in report order, each with what it covers, for a failure that
+ * stops it part way.
+ * @type {[string, (context: DoctorContext) => void][]}
+ */
+const CHECKS = [
+  ["local path map", checkPathMap],
+  ["symbolic links", checkLinks],
+  ["agents", checkAgents],
+  ["shared skills", checkSharedSkills],
+  ["book PDFs", checkSourcePdfs],
+  ["OpenCode skills", checkOpencodeSkills],
+];
 
 /**
  * Diagnose an installation in one step: the local path map, the symbolic
@@ -46,20 +72,19 @@ export function runDoctor(args) {
   console.log(
     `Checking ocean-acoustics-expert ${manifest.version}, installed in ${manifest.mode} mode for ${manifest.harnesses.join(", ")}`,
   );
-  const report = new Report();
-  try {
-    checkPathMap(report, locations);
-    checkLinks(report, manifest);
-    checkAgents(report, locations, manifest);
-    checkSharedSkills(report, locations, manifest);
-    checkSourcePdfs(report, locations);
-    if (manifest.harnesses.includes("opencode")) checkOpencodeSkills(report, locations, manifest);
-  } catch (error) {
-    if (typeof error.code !== "string") throw error;
-    report.fail(error.message);
+  const context = { report: new Report(), locations, manifest };
+  for (const [covers, check] of CHECKS) {
+    try {
+      check(context);
+    } catch (error) {
+      // A file-system call failed in a way the check does not expect, such as a
+      // folder it may not read; the other checks still run.
+      if (typeof error.syscall !== "string") throw error;
+      context.report.fail(`${covers}: could not finish: ${error.message}`);
+    }
   }
-  console.log(report.summary());
-  return report.problems > 0 ? 1 : 0;
+  console.log(context.report.summary());
+  return context.report.problems > 0 ? 1 : 0;
 }
 
 /** Prints findings as they come and counts problems and warnings. */
@@ -94,8 +119,9 @@ class Report {
 /**
  * Every entry of the local path map exists. An unset toolbox only warns:
  * the expert works without it, but its solver helpers cannot run.
+ * @param {DoctorContext} context
  */
-function checkPathMap(report, locations) {
+function checkPathMap({ report, locations }) {
   let paths;
   try {
     paths = readDataFile(locations.pathMap, parseYaml);
@@ -112,29 +138,42 @@ function checkPathMap(report, locations) {
   for (const [name, value] of Object.entries(paths)) {
     const toolbox = TOOLBOX_PATHS.find((entry) => entry.name === name);
     const reinstall = toolbox ? `; reinstall with --${flagName(toolbox)} <dir>` : "";
-    if (typeof value !== "string" || value === "") {
-      if (toolbox) report.warn(`local path map: ${name} is not set on this machine${reinstall}`);
-      else report.fail(`local path map: ${name} is not set`);
-    } else if (!statOrNull(value)) {
-      report.fail(`local path map: ${name} ${value} does not exist${reinstall}`);
+    if (typeof value === "string" && value !== "") {
+      if (!statOrNull(value)) report.fail(`local path map: ${name} ${value} does not exist${reinstall}`);
+    } else if (toolbox) {
+      report.warn(`local path map: ${name} is not set on this machine${reinstall}`);
+    } else {
+      report.fail(`local path map: ${name} is not set`);
     }
   }
   if (report.problems === before) report.ok(`local path map ${locations.pathMap}: every entry that is set exists`);
 }
 
-/** Every symbolic link install made resolves: the installed copy's links in link mode, and Claude's skill links. */
-function checkLinks(report, manifest) {
+/**
+ * Every symbolic link install made is still that link and resolves: the
+ * installed copy's links in link mode, and Claude's skill links.
+ * @param {DoctorContext} context
+ */
+function checkLinks({ report, manifest }) {
   const links = manifest.units.filter((unit) => unit.kind === "link");
   const before = report.problems;
-  for (const link of links) {
-    if (!lstatOrNull(link.path)) report.fail(`symbolic link ${link.path} is missing`);
-    else if (!statOrNull(link.path)) report.fail(`symbolic link ${link.path} -> ${link.target} does not resolve`);
+  for (const { path, target } of links) {
+    const stats = lstatOrNull(path);
+    if (!stats) report.fail(`symbolic link ${path} is missing`);
+    else if (!stats.isSymbolicLink() || readlinkSync(path) !== target) {
+      report.fail(`${path} is no longer the symbolic link to ${target} that install made`);
+    } else if (!statOrNull(path)) report.fail(`symbolic link ${path} -> ${target} does not resolve`);
   }
   if (links.length > 0 && report.problems === before) report.ok(`symbolic links: all ${links.length} resolve`);
 }
 
-/** Each installed harness's agent parses and points at the installed copy. */
-function checkAgents(report, locations, manifest) {
+/**
+ * Each installed harness's agent parses and points at the installed copy.
+ * Agents are looked for where each harness reads them now, which may differ
+ * from where install put them if a config-folder variable has changed since.
+ * @param {DoctorContext} context
+ */
+function checkAgents({ report, locations, manifest }) {
   const { name } = readAgentTemplate(AGENT_TEMPLATE);
   for (const harness of HARNESSES.filter((candidate) => manifest.harnesses.includes(candidate.name))) {
     const path = harness.agentPath(locations, name);
@@ -144,8 +183,12 @@ function checkAgents(report, locations, manifest) {
   }
 }
 
-/** Each skill in the shared skills folder parses and points at the installed copy. */
-function checkSharedSkills(report, locations, manifest) {
+/**
+ * Each skill in the shared skills folder parses and points at the installed
+ * copy. The router is the only shared skill, and it names the hub.
+ * @param {DoctorContext} context
+ */
+function checkSharedSkills({ report, locations, manifest }) {
   for (const name of sharedSkillNames(locations, manifest)) {
     const path = join(locations.sharedSkills, name, "SKILL.md");
     checkInstalledFile(report, locations, `skill ${name} ${path}`, path, (text) =>
@@ -159,7 +202,7 @@ function checkSharedSkills(report, locations, manifest) {
  * @param {import("./locations.js").Locations} locations
  * @param {string} label What the file is, for messages.
  * @param {string} path
- * @param {(text: string) => import("./template.js").InstalledFile} inspect
+ * @param {(text: string) => import("./inspection.js").Inspection} inspect
  */
 function checkInstalledFile(report, locations, label, path, inspect) {
   if (!statOrNull(path)) {
@@ -201,8 +244,11 @@ function pointingProblems(instructions, { dataDir, knowledgeBase }) {
   return problems;
 }
 
-/** Every book PDF a note or data file points at is in the installed copy. */
-function checkSourcePdfs(report, locations) {
+/**
+ * Every book PDF a note or data file points at is in the installed copy.
+ * @param {DoctorContext} context
+ */
+function checkSourcePdfs({ report, locations }) {
   let kb;
   try {
     kb = loadKnowledgeBase(locations.knowledgeBase);
@@ -226,11 +272,14 @@ function checkSourcePdfs(report, locations) {
 }
 
 /**
- * OpenCode loads one skill per name. The expert's skills seen through links
- * to one folder (Claude's skill links) are harmless duplicates; the same
- * name in another folder may shadow the installed skill.
+ * When OpenCode is installed: OpenCode loads one skill per name. The
+ * expert's skills seen through links to one folder (Claude's skill links)
+ * are harmless duplicates; the same name in another folder may shadow the
+ * installed skill. Other skills' duplicates are not this package's concern.
+ * @param {DoctorContext} context
  */
-function checkOpencodeSkills(report, locations, manifest) {
+function checkOpencodeSkills({ report, locations, manifest }) {
+  if (!manifest.harnesses.includes("opencode")) return;
   const names = new Set(sharedSkillNames(locations, manifest));
   /** @type {Map<string, string[]>} Skill name to the folders OpenCode finds it in. */
   const found = new Map();
@@ -307,15 +356,15 @@ function skillFiles(root, hidden) {
 
 /**
  * @param {string} file A `SKILL.md`.
- * @returns {string|null} The `name` in its frontmatter, if it has one.
+ * @returns {string|null} The `name` in its frontmatter, if it has one and can be read.
  */
 function skillName(file) {
   let text;
   try {
-    text = readFileSync(file, "utf8");
+    text = readDataFile(file, (content) => content);
   } catch (error) {
-    if (UNSEARCHABLE_CODES.has(error.code)) return null;
-    throw error;
+    if (!(error instanceof DataFileError)) throw error;
+    return null;
   }
   const frontmatter = splitFrontmatter(text)?.frontmatter ?? "";
   return frontmatter.match(/^name:[ \t]*(["']?)(.*?)\1[ \t]*$/m)?.[2] ?? null;

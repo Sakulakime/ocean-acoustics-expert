@@ -30,7 +30,7 @@ import { readAgentTemplate, renderPlaceholders } from "./template.js";
  *   Where the agent of a given name goes.
  * @property {(context: HarnessContext) => import("./install-plan.js").Unit[]} units
  *   Its agent file, skill entries and legacy paths to clean up.
- * @property {(text: string, locations: import("./locations.js").Locations) => import("./template.js").InstalledFile} inspectAgent
+ * @property {(text: string, locations: import("./locations.js").Locations) => import("./inspection.js").Inspection} inspectAgent
  *   Read an installed agent file for doctor: its instructions, and why the
  *   harness may not load it as install meant.
  */

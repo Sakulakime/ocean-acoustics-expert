@@ -71,7 +71,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 
 **Copy mode** is the default when the package is not a git checkout, which is the case with npx. Install copies the knowledge base and the MATLAB helpers into the data folder. To update, install a newer tag.
 
-**Link mode** is the default in a git checkout, and is for working on the knowledge base. The data folder's `knowledge/` and `matlab/` are links to the checkout's `knowledge/` and `tools/matlab/`, so an edit in the checkout reaches every harness at once. The MATLAB configuration `oae_local_paths.m` is written into the checkout's `tools/matlab/`, where git ignores it.
+**Link mode** is the default in a git checkout, and is for working on the knowledge base. The data folder's `knowledge/` and `matlab/` are links to the checkout's `knowledge/` (the authoring copy) and `tools/matlab/`, so an edit to the authoring copy reaches every harness at once. The MATLAB configuration `oae_local_paths.m` is written into the checkout's `tools/matlab/`, where git ignores it.
 
 ```sh
 git clone git@github.com:<owner>/ocean-acoustics-expert.git
@@ -119,7 +119,7 @@ Run each command as `npx github:<owner>/ocean-acoustics-expert#<tag> <command>`,
 `doctor` checks five things:
 
 1. Every entry of the local path map exists. An unset toolbox only gets a `WARN`.
-2. Every symbolic link install made resolves.
+2. Every symbolic link install made is still that link and resolves.
 3. Each harness's agent file and the shared router skill parse, name the installed hub, and name no path outside the data folder. For OpenCode, the agent must also be allowed to read the data folder without asking.
 4. Every book PDF a note points at is in the installed copy. It lists each missing PDF and the notes that point at it.
 5. When OpenCode is installed, OpenCode does not see the router in two different folders. Seeing it twice through Claude's link to the same folder is harmless; OpenCode logs a duplicate-name warning for it.
@@ -128,13 +128,15 @@ Run each command as `npx github:<owner>/ocean-acoustics-expert#<tag> <command>`,
 
 ## Bundled books
 
-`knowledge/sources/` holds the PDFs of the five books the expert reads (ADR 0005):
+`knowledge/sources/` holds the PDFs of five books (ADR 0005):
 
 - Jensen, Kuperman, Porter & Schmidt, *Computational Ocean Acoustics*, 2nd ed. (2011), the default book
 - Collins & Siegmann, *Parabolic Wave Equations with Applications* (2019)
 - Colosi, *Sound Propagation through the Stochastic Ocean* (2016)
 - Etter, *Underwater Acoustic Modeling and Simulation*, 5th ed. (2018)
 - Brekhovskikh & Lysanov, *Fundamentals of Ocean Acoustics*, 3rd ed. (2003)
+
+The expert reads a book only through notes that point at its pages. Today only COA has such notes; the other four books are read once their source notes exist.
 
 They are copyrighted, and the package redistributes them. So:
 

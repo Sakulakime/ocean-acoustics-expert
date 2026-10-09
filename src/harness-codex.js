@@ -1,5 +1,6 @@
 import { join } from "node:path";
 
+import { missingFields } from "./inspection.js";
 import { renderPlaceholders } from "./template.js";
 import { parseToml, TomlError, tomlMultilineString, tomlString } from "./toml.js";
 
@@ -49,13 +50,14 @@ export const CODEX_HARNESS = {
       agent = parseToml(text);
     } catch (error) {
       if (!(error instanceof TomlError)) throw error;
-      return { instructions: null, problems: [`is not valid TOML: ${error.message}`] };
+      // The reader takes a subset of TOML, so the file may still be TOML that Codex reads.
+      return { instructions: null, problems: [`is TOML doctor cannot parse: ${error.message}`] };
     }
-    const problems = REQUIRED_FIELDS.filter((field) => typeof agent[field] !== "string" || agent[field] === "").map(
-      (field) => `lacks ${field}`,
-    );
-    const instructions = agent.developer_instructions;
-    return { instructions: typeof instructions === "string" && instructions !== "" ? instructions : null, problems };
+    const missing = missingFields(agent, REQUIRED_FIELDS);
+    return {
+      instructions: missing.includes("developer_instructions") ? null : /** @type {string} */ (agent.developer_instructions),
+      problems: missing.map((field) => `lacks ${field}`),
+    };
   },
 };
 

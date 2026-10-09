@@ -1,7 +1,8 @@
 import { join } from "node:path";
 
+import { inspectMarkdown } from "./inspection.js";
 import { TOOLBOX_PATHS } from "./path-map.js";
-import { inspectMarkdown, renderPlaceholders } from "./template.js";
+import { renderPlaceholders } from "./template.js";
 
 /**
  * Tools the expert must not use in OpenCode: edit (which also covers write
