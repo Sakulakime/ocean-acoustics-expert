@@ -1,11 +1,21 @@
 import { runCheck } from "./check.js";
+import { runInstall } from "./install.js";
+import { runStatus } from "./status.js";
+import { runUninstall } from "./uninstall.js";
 
 const USAGE = `Usage: ocean-acoustics-expert <command> [options]
 
 Commands:
-  check    Validate the knowledge base`;
+  install    Install the expert into coding-agent harnesses
+             [--harness <name>]... [--mode link|copy] [--dry-run] [--at-2023 <dir>] [--at-2020 <dir>]
+  status     Show what is installed
+  uninstall  Remove what install wrote [--restore: also put back its backups]
+  check      Validate the knowledge base [--kb <dir>] [--cases <file>] [--helpers <dir>]`;
 
 const COMMANDS = {
+  install: runInstall,
+  status: runStatus,
+  uninstall: runUninstall,
   check: runCheck,
 };
 

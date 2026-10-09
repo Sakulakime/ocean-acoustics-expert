@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
 /** A minimal, valid knowledge base: one route, one concept, one chapter note. */
-const MINIMAL_KNOWLEDGE_BASE = {
+export const MINIMAL_KNOWLEDGE_BASE = {
   "00-hub.md": "# Hub\n\n- Fundamentals: `chapters/ch01.md`\n",
   "routing-map.yaml": [
     "routes:",

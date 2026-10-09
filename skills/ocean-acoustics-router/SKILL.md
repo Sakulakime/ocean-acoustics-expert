@@ -10,14 +10,14 @@ Route underwater acoustics questions through the global COA knowledge base befor
 
 ## Knowledge sources
 
-- Hub: `/home/jay/.claude/knowledge/ocean-acoustics/00-hub.md`
-- Source note: `/home/jay/.claude/knowledge/ocean-acoustics/01-source-coa.md`
-- Topic routing: `/home/jay/.claude/knowledge/ocean-acoustics/routing-map.yaml`
-- Reverse concept map: `/home/jay/.claude/knowledge/ocean-acoustics/concept-index.yaml`
-- Workflow guide: `/home/jay/.claude/knowledge/ocean-acoustics/workflows/model-selection.md`
-- Chapter notes: `/home/jay/.claude/knowledge/ocean-acoustics/chapters/`
-- Fallback PDF: `/home/jay/Zotero/storage/B4W6S79R/Jensen 等 - 2011 - Computational Ocean Acoustics.pdf`
-- Fallback text cache: `/home/jay/Zotero/storage/B4W6S79R/.zotero-ft-cache`
+- Hub: `{{knowledge_base}}/00-hub.md`
+- Source note: `{{knowledge_base}}/01-source-coa.md`
+- Topic routing: `{{knowledge_base}}/routing-map.yaml`
+- Reverse concept map: `{{knowledge_base}}/concept-index.yaml`
+- Workflow guide: `{{knowledge_base}}/workflows/model-selection.md`
+- Chapter notes: `{{knowledge_base}}/chapters/`
+- Fallback PDF: `{{knowledge_base}}/sources/jensen-2011-computational-ocean-acoustics.pdf`
+- Local path map (resolves the double-brace logical names in notes): `{{local_path_map}}`
 
 ## Mandatory retrieval order
 
@@ -25,7 +25,7 @@ Route underwater acoustics questions through the global COA knowledge base befor
 2. Read `routing-map.yaml`
 3. Read `concept-index.yaml` when the prompt names a specific concept or subsection idea
 4. Read the smallest relevant note set
-5. Only if note coverage is insufficient, read the smallest relevant PDF or text-cache segment
+5. Only if note coverage is insufficient, read the smallest relevant PDF page range
 6. Answer with both physical interpretation and model-assumption clarity
 
 ## Classification buckets
@@ -61,9 +61,7 @@ Before deep analysis, produce this compact routing payload for yourself:
 
 ## Escalation rule
 
-When the answer needs exact derivations, exact equations, subtle caveats, or section-specific evidence not present in the notes, consult the local COA PDF or `.zotero-ft-cache` selectively using the targeted fallback windows from `routing-map.yaml`. Never load the whole book.
-
-If `.zotero-ft-cache` is used, cite section headings rather than invented page numbers.
+When the answer needs exact derivations, exact equations, subtle caveats, or section-specific evidence not present in the notes, read the COA PDF selectively using the targeted fallback windows (PDF page ranges) from `routing-map.yaml`. Never load the whole book.
 
 ## Preferred specialized executor
 
