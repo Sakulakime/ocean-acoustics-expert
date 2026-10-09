@@ -2,6 +2,23 @@
 
 Status: ready-for-agent
 
+## Revision 2026-10-10: books bundled, papers out of scope (ADR 0005)
+
+This revision overrides the rest of the spec wherever they conflict.
+
+- **Papers are out of scope.** Journal and conference papers do not enter the knowledge base.
+  - Withdrawn: stories 1–6 and 16–26; the paper-card and topic-synthesis schemas; the ingestion skill; the "Papers" and "Literature" content scope; retrieval step 6 (full-text search of paper caches); the `[paper: …]` evidence tag and uncurated evidence.
+  - Tickets 08–11 and 16 are `wontfix`. Evidence tags are `[textbook: …]` and `[inference]`.
+- **Book PDFs live in the knowledge base.** COA and the four monographs (Collins & Siegmann, Colosi, Etter 5th ed., Brekhovskikh & Lysanov) are copied from Zotero into `knowledge/sources/`. Zotero stays untouched.
+  - The PDFs are committed and shipped in the package. Story 46 is replaced: the package carries these five books, so the repository must stay private, and `"private": true` blocks npm publishing.
+  - Notes point at a PDF by its `sources/…` path and keep the Zotero item key as a bibliographic identifier. Ticket 17 does this before ticket 03.
+- **Zotero is no longer needed at answer time.**
+  - The local path map loses Zotero storage.
+  - `doctor` checks that the PDFs the notes point at exist in the installed copy, not in Zotero (stories 38 and 49).
+  - Story 48 is withdrawn: a colleague gets the books with the private repository.
+  - Story 12 is met by page-range reads of the PDFs in `sources/`.
+- **Ticket order.** Ticket 17 comes after 02 and before 03.
+
 ## Problem Statement
 
 I do PhD research on machine learning for underwater acoustic propagation (PINNs, neural operators, data-driven TL prediction, conformal/UQ, differentiable-physics inversion). The ocean-acoustics-expert agent knows only one source, *Computational Ocean Acoustics* (COA), and only at summary depth. It cannot tell me who did what in my research area, compare methods across papers, or separate textbook consensus from one paper's claim, and those are what I need for related work, baselines, and experiment design. Several hundred relevant papers and a shelf of monographs sit in my Zotero library, invisible to the agent.

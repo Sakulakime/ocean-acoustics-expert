@@ -12,7 +12,7 @@
 
 Overwritten files are backed up first, and the known legacy copies are cleaned up with backup. `status`, `uninstall` and `--restore` complete the round trip. After the tests pass, the installer runs for real on this machine.
 
-**Blocked by:** 02
+**Blocked by:** 02, 17
 
 **Status:** ready-for-agent
 

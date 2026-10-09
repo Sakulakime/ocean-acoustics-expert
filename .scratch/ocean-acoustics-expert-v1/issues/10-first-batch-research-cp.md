@@ -6,9 +6,13 @@
 
 **Blocked by:** 09
 
-**Status:** ready-for-agent
+**Status:** wontfix
 
 - [ ] Every remaining item with a PDF has a card (~58 at time of writing); no duplicate keys
 - [ ] Items without a PDF, or with an unreadable PDF, are listed in this ticket's comments with the reason
 - [ ] Each card's topic synthesis skeleton links it
 - [ ] `check` passes after the batch
+
+## Comments
+
+**Won't fix (ADR 0005 (2026-10-10)).** Journal and conference papers are out of scope for the knowledge base. v1 drops paper cards, topic syntheses, the ingestion skill and full-text search of Zotero caches.

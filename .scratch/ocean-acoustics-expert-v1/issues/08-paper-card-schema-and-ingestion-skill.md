@@ -15,7 +15,7 @@ It refuses in copy mode, and refuses to duplicate an existing card unless an upd
 
 **Blocked by:** 07
 
-**Status:** ready-for-agent
+**Status:** wontfix
 
 - [ ] Card schema as in the spec (frontmatter fields, body sections, `status` draft|reviewed, schema version); `check` validates required fields and unique `zotero_key`, with failing fixtures for each
 - [ ] Ingestion skill shipped in the repo and installed through the shared skills folder by `install`
@@ -23,3 +23,7 @@ It refuses in copy mode, and refuses to duplicate an existing card unless an upd
 - [ ] Refuses when no authoring root is configured (copy mode) and when a card for the key exists without an explicit update request
 - [ ] One real paper from `Research-CP-Acoustics-2026` ingested end to end; `check` passes
 - [ ] Smoke: the expert answers a question about that paper with a `[paper: …]` tag and its conditions
+
+## Comments
+
+**Won't fix (ADR 0005 (2026-10-10)).** Journal and conference papers are out of scope for the knowledge base. v1 drops paper cards, topic syntheses, the ingestion skill and full-text search of Zotero caches.

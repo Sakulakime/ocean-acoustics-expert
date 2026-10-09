@@ -12,7 +12,7 @@
   - [ ] every path-map entry exists
   - [ ] each installed harness file parses and points at the installed copy
   - [ ] skill symlinks resolve
-  - [ ] each Zotero key referenced by notes has a PDF in the configured Zotero storage (missing ones listed)
+  - [ ] every book PDF a note points at exists in the installed copy (missing ones listed)
   - [ ] duplicate skill names visible to OpenCode
 - [ ] `doctor` exits non-zero with a specific message for each failure class, each covered by a fake-home fixture test; it never modifies files
 - [ ] README covers:
@@ -22,6 +22,5 @@
   - [ ] link vs copy mode
   - [ ] path overrides
   - [ ] `status` / `doctor` / `check` / `uninstall`
-  - [ ] ingestion (link mode only)
-  - [ ] the no-bundled-sources policy
+  - [ ] the bundled-books policy: the package carries five copyrighted book PDFs, so the repository must stay private (ADR 0005)
 - [ ] Nothing pushed, tagged or published

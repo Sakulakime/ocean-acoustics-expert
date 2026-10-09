@@ -46,3 +46,5 @@
   - `agent/` and `skills/` still hold absolute paths. They are raw material for ticket 03 (rendering) and ticket 07 (rules) and are outside this ticket's scope ("notes in the authoring copy").
 - **Pre-existing bug (not fixed here).** `run_bellhop`, `run_kraken` and `run_ram` prepend `genpath(<at_2020>/Matlab)`. The toolbox's own `Matlab/Slicer/run_ram.m` then shadows ours for the rest of the MATLAB session, so calling `run_ram` after one of them fails.
 - **Glossary gap** for `/domain-modeling`: "logical name", "local path map".
+
+**Partly superseded by ticket 17 (ADR 0005 (2026-10-10)).** The book PDFs move into `knowledge/sources/`. Notes will point at that path instead of `zotero_storage_key`, and the `zotero_storage` logical name goes away. `zotero_key` stays as the item key in source notes. The handoffs above to 06 and 08 about Zotero storage no longer apply.

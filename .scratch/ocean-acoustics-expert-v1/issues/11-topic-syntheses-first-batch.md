@@ -13,9 +13,13 @@ All claims carry evidence tags. Literature questions now route to syntheses firs
 
 **Blocked by:** 10
 
-**Status:** ready-for-agent
+**Status:** wontfix
 
 - [ ] Every synthesis has the comparison table plus agreements, disagreements and gaps, each claim evidence-tagged and linked to cards
 - [ ] Routing map and concept index route literature questions per topic to its synthesis
 - [ ] At least one route-selection case per topic; `check` passes
 - [ ] Smoke: "what has been done on ML surrogates for TL prediction" returns a synthesis-based comparison with `[paper: …]` tags
+
+## Comments
+
+**Won't fix (ADR 0005 (2026-10-10)).** Journal and conference papers are out of scope for the knowledge base. v1 drops paper cards, topic syntheses, the ingestion skill and full-text search of Zotero caches.

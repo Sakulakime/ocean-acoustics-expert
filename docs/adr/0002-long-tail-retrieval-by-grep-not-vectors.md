@@ -1,5 +1,7 @@
 # Long-tail retrieval greps full text instead of using the vector cache
 
+> **Superseded by ADR 0005 (2026-10-10):** papers are out of scope, so there is no long-tail retrieval. Book fallbacks still read PDF page ranges, now from `knowledge/sources/`.
+
 Papers without a paper card are still reachable: the agent greps their Zotero full-text cache and labels what it finds as uncurated evidence. A 275 MB FAISS cache from `pdf-vector-search` already covers COA, Etter, Colosi, Brekhovskikh and many ML papers, so semantic search was the obvious alternative. We rejected it because it needs the `pdf-rag` MCP server or Bash plus a cloud embedding API, which would break the agent's read-only tool set (Read/Grep/Glob) and would not port to every harness.
 
 ## Consequences

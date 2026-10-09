@@ -2,9 +2,9 @@
 
 **Spec:** `.scratch/ocean-acoustics-expert-v1/spec.md`
 
-**What to build:** The expert can answer from Collins & Siegmann (*Parabolic Wave Equations*), Colosi (*Sound Propagation through the Stochastic Ocean*), Etter (5th ed.) and Brekhovskikh & Lysanov. For each book, a source note gives the bibliographic record, the Zotero key, the book-page to PDF-page offset, and a section → PDF page-range map. The agent reads targeted page ranges of these books when COA does not settle a question. No chapter notes are written for them.
+**What to build:** The expert can answer from Collins & Siegmann (*Parabolic Wave Equations*), Colosi (*Sound Propagation through the Stochastic Ocean*), Etter (5th ed.) and Brekhovskikh & Lysanov. For each book, a source note gives the bibliographic record, the Zotero item key, the path of its PDF in `knowledge/sources/` (ticket 17), the book-page to PDF-page offset, and a section → PDF page-range map. The agent reads targeted page ranges of these books when COA does not settle a question. No chapter notes are written for them.
 
-**Blocked by:** 07
+**Blocked by:** 07, 17
 
 **Status:** ready-for-agent
 
