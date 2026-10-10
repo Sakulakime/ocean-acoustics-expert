@@ -126,7 +126,7 @@
       "bucket": "wave_propagation_theory",
       "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
       "secondary_notes": ["chapters/ch05-normal-modes.md"],
-      "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides"]
+      "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides", "wave_propagation_theory.waveguide_invariant_realistic"]
     },
     {
       "key": "lateral_wave",
@@ -194,7 +194,7 @@
     },
     {
       "key": "mode_coupling",
-      "aliases": ["mode coupling", "模耦合"],
+      "aliases": ["mode coupling", "one-way coupled modes", "adiabatic mode", "adiabatic modes", "adiabatic normal mode", "adiabatic normal modes", "模耦合", "绝热简正模", "绝热近似"],
       "bucket": "normal_modes",
       "primary_notes": ["chapters/ch05-normal-modes.md"],
       "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
@@ -217,8 +217,64 @@
       "fallback_windows": ["normal_modes.brekhovskikh_lysanov_wkb_modes"]
     },
     {
+      "key": "mode_cutoff",
+      "aliases": ["mode cutoff", "modal cutoff", "waveguide cutoff", "mode count", "简正模截止", "波导截止频率"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "fallback_windows": ["normal_modes.derivation_and_greens_function"]
+    },
+    {
+      "key": "leaky_modes",
+      "aliases": ["leaky mode", "leaky modes", "泄漏模"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md", "chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["normal_modes.derivation_and_greens_function"]
+    },
+    {
+      "key": "mode_counting",
+      "aliases": ["prüfer", "prufer", "mode counting", "sturm sequence", "普吕弗"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["solvers/solver-kraken.md"],
+      "fallback_windows": ["normal_modes.numerical_methods_and_mode_counting"]
+    },
+    {
+      "key": "modal_attenuation",
+      "aliases": ["modal attenuation", "modal perturbation", "modal perturbation theory", "modal propagation loss", "modal loss", "模态衰减"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch01-fundamentals.md"],
+      "fallback_windows": ["normal_modes.perturbation_and_group_velocity"]
+    },
+    {
+      "key": "elastic_normal_modes",
+      "aliases": ["elastic normal mode", "elastic normal modes", "acousto-elastic mode", "acousto-elastic modes", "compound matrix", "compound-matrix", "弹性简正模"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["normal_modes.elastic_media"]
+    },
+    {
+      "key": "waveguide_target_scattering",
+      "aliases": ["object in a waveguide", "objects in a waveguide", "target in a waveguide", "sphere in a waveguide", "plane-wave scattering function", "波导中目标散射"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch07-fd-fe-methods.md"],
+      "fallback_windows": ["normal_modes.scattering_from_objects"]
+    },
+    {
+      "key": "three_dimensional_modes",
+      "aliases": ["horizontal refraction equation", "3-d normal modes", "3d normal modes", "three-dimensional normal modes", "3-d modes", "三维简正模"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["normal_modes.three_dimensional_modes"]
+    },
+    {
       "key": "starter_field",
-      "aliases": ["starter field", "起始场"],
+      "aliases": ["starter field", "starting field", "starting fields", "modal starter", "greene's source", "greene source", "thomson's source", "thomson source", "gaussian starter", "gaussian source", "起始场"],
       "bucket": "parabolic_equations",
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
       "secondary_notes": ["chapters/ch08-broadband-modeling.md"],
@@ -234,7 +290,7 @@
     },
     {
       "key": "split_step_fourier",
-      "aliases": ["split-step fourier", "split step fourier", "分步傅里叶"],
+      "aliases": ["split-step fourier", "split step fourier", "split-step pe", "split step pe", "分步傅里叶"],
       "bucket": "parabolic_equations",
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
       "secondary_notes": ["solvers/solver-ram.md"],
@@ -246,7 +302,7 @@
       "bucket": "parabolic_equations",
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
       "secondary_notes": ["solvers/solver-ram.md"],
-      "fallback_windows": ["parabolic_equations.starters_and_split_step", "parabolic_equations.collins_siegmann_rational_approximations", "parabolic_equations.collins_siegmann_split_step_pade"]
+      "fallback_windows": ["parabolic_equations.derivation_and_limits", "parabolic_equations.starters_and_split_step", "parabolic_equations.collins_siegmann_rational_approximations", "parabolic_equations.collins_siegmann_split_step_pade"]
     },
     {
       "key": "elastic_pe",
@@ -263,6 +319,38 @@
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
       "secondary_notes": [],
       "fallback_windows": ["parabolic_equations.collins_siegmann_poro_elastic"]
+    },
+    {
+      "key": "pe_angle_limits",
+      "aliases": ["pe phase error", "pe phase errors", "phase error of the pe", "phase errors of the pe", "wide-angle pe", "wide angle pe", "narrow-angle pe", "narrow angle pe", "standard pe", "claerbout", "pe angle limit", "pe angle limits", "宽角pe", "宽角抛物方程"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["solvers/solver-ram.md"],
+      "fallback_windows": ["parabolic_equations.derivation_and_limits"]
+    },
+    {
+      "key": "ifd_pe",
+      "aliases": ["ifd", "ifd pe", "implicit finite-difference pe", "implicit finite difference pe", "finite-difference pe", "finite difference pe", "crank-nicolson pe"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["chapters/ch07-fd-fe-methods.md"],
+      "fallback_windows": ["parabolic_equations.fd_fe_solutions"]
+    },
+    {
+      "key": "energy_conserving_pe",
+      "aliases": ["energy-conserving pe", "energy conserving pe", "energy conservation in pe", "energy conservation in the pe", "energy conservation in pes", "stair-step", "stair step", "能量守恒抛物方程"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["chapters/ch07-fd-fe-methods.md"],
+      "fallback_windows": ["parabolic_equations.energy_and_3d"]
+    },
+    {
+      "key": "three_d_pe",
+      "aliases": ["3d pe", "3-d pe", "three-dimensional pe", "3d parabolic equation", "3-d parabolic equation", "three-dimensional parabolic equation", "n×2-d", "n×2d", "nx2d", "n x 2d", "三维抛物方程", "三维pe"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["parabolic_equations.energy_and_3d"]
     },
     {
       "key": "pml",

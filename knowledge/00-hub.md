@@ -15,7 +15,7 @@ This library is the default local knowledge base for underwater acoustics questi
 1. Read this hub, then `routing-map.yaml`.
 2. Check `concept-index.yaml` for the concepts, subsection ideas or technical terms the question names.
 3. Read the smallest relevant note set: chapter notes, solver notes, runbooks and `visualization.md`, plus the benchmark-cases note once this hub lists it. A route or concept may also point at a book's source note.
-4. Only when the notes are insufficient, read a fallback window: a targeted page range of a book PDF in `sources/`, cited with its range. A window written as a page range (`473-492`) is COA's. A window with a `source` is another book's: read that source note for the book's PDF and section map, then read the window's pages.
+4. Only when the notes are insufficient, read a fallback window: a targeted page range of a book PDF in `sources/`, cited with its range. A window written as a page range (`473-488`) is COA's. A window with a `source` is another book's: read that source note for the book's PDF and section map, then read the window's pages.
 5. Prefer targeted page reads over whole-chapter reads.
 
 ## Source of truth
@@ -30,7 +30,7 @@ This library is the default local knowledge base for underwater acoustics questi
 - Reverse concept map: `concept-index.yaml`
 - Model comparison: `workflows/model-selection.md`
 - Glossary: `glossary.md`
-- Chapter notes: `chapters/`
+- Chapter notes: `chapters/`. The deepened ones (`status: deepened`: Ch. 5 and Ch. 6) give, per subsection, key equations with symbols, COA equation numbers and PDF pages, and validity conditions with COA's numbers; take equations and validity limits from them before reading the PDF.
 - Solver notes: `solvers/`
 - Run recipes (Linux + MATLAB run recipe, input-file format, validators, gotchas):
   - BELLHOP (ray, `.env`): `runbooks/bellhop-runbook.md` (+ `runbooks/bellhop-env-template.md`, `runbooks/bellhop-checklist.md`)

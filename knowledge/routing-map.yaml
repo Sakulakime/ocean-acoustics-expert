@@ -61,6 +61,9 @@ routes:
       wave_equation_and_helmholtz: 84-103
       greens_functions_and_halfspace: 104-133
       layered_media_and_waveguides: 134-172
+      # COA §5.14, in Ch. 5: the waveguide invariant in realistic, range-dependent
+      # environments. It sits here because the waveguide_invariant concept is on this route.
+      waveguide_invariant_realistic: 455-462
       brekhovskikh_lysanov_lateral_wave:
         source: 01-source-brekhovskikh-lysanov.md
         pages: 103-107
@@ -107,9 +110,13 @@ routes:
       - workflows/model-selection.md
     chapter_span: 354-472
     fallback_windows:
-      derivation_and_greens_function: 354-372
-      perturbation_and_group_velocity: 402-420
-      range_dependence_and_mode_coupling: 420-442
+      derivation_and_greens_function: 354-373
+      numerical_methods_and_mode_counting: 377-402
+      perturbation_and_group_velocity: 402-408
+      elastic_media: 408-419
+      range_dependence_and_mode_coupling: 419-430
+      scattering_from_objects: 430-439
+      three_dimensional_modes: 440-455
       brekhovskikh_lysanov_wkb_modes:
         source: 01-source-brekhovskikh-lysanov.md
         pages: 148-160
@@ -128,9 +135,10 @@ routes:
       - workflows/model-selection.md
     chapter_span: 473-545
     fallback_windows:
-      derivation_and_limits: 473-492
-      starters_and_split_step: 493-512
-      energy_and_3d: 519-528
+      derivation_and_limits: 473-488
+      starters_and_split_step: 488-513
+      fd_fe_solutions: 513-521
+      energy_and_3d: 522-527
       collins_siegmann_rational_approximations:
         source: 01-source-collins-siegmann.md
         pages: 34-41

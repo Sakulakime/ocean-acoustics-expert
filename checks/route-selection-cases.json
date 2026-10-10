@@ -243,6 +243,7 @@
           "solvers/solver-ram.md"
         ],
         "fallback_windows": [
+          "parabolic_equations.derivation_and_limits",
           "parabolic_equations.starters_and_split_step",
           "parabolic_equations.collins_siegmann_rational_approximations",
           "parabolic_equations.collins_siegmann_split_step_pade"
@@ -319,6 +320,383 @@
         "fallback_windows": [
           "wave_propagation_theory.greens_functions_and_halfspace",
           "wave_propagation_theory.brekhovskikh_lysanov_lateral_wave"
+        ]
+      }
+    },
+    {
+      "name": "concept - adiabatic modes stay with mode coupling",
+      "prompt": "When is the adiabatic mode approximation accurate over a sloping shelf?",
+      "expected": {
+        "concept_key": "mode_coupling",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.range_dependence_and_mode_coupling",
+          "normal_modes.brekhovskikh_lysanov_adiabatic_and_coupled_modes"
+        ]
+      }
+    },
+    {
+      "name": "concept - the adiabatic equation of state stays off the mode routes",
+      "prompt": "How does the adiabatic equation of state link pressure to density?",
+      "expected": {
+        "concept_key": null,
+        "bucket": null,
+        "primary_notes": [],
+        "secondary_notes": [],
+        "fallback_windows": []
+      }
+    },
+    {
+      "name": "concept - one-way coupled modes stay with mode coupling",
+      "prompt": "How do one-way coupled modes march through range segments without backscatter?",
+      "expected": {
+        "concept_key": "mode_coupling",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.range_dependence_and_mode_coupling",
+          "normal_modes.brekhovskikh_lysanov_adiabatic_and_coupled_modes"
+        ]
+      }
+    },
+    {
+      "name": "concept - mode cutoff",
+      "prompt": "What is the mode cutoff frequency of a 100 m isovelocity waveguide with a rigid bottom?",
+      "expected": {
+        "concept_key": "mode_cutoff",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.derivation_and_greens_function"
+        ]
+      }
+    },
+    {
+      "name": "concept - Prüfer mode counting",
+      "prompt": "How does the Prüfer transformation count modes so that a mode code skips none?",
+      "expected": {
+        "concept_key": "mode_counting",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-kraken.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.numerical_methods_and_mode_counting"
+        ]
+      }
+    },
+    {
+      "name": "concept - modal attenuation",
+      "prompt": "How does modal perturbation theory give the attenuation of each mode from bottom absorption?",
+      "expected": {
+        "concept_key": "modal_attenuation",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.perturbation_and_group_velocity"
+        ]
+      }
+    },
+    {
+      "name": "concept - elastic normal modes",
+      "prompt": "How are acousto-elastic modes found with the compound matrix method?",
+      "expected": {
+        "concept_key": "elastic_normal_modes",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch04-wavenumber-integration.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.elastic_media"
+        ]
+      }
+    },
+    {
+      "name": "concept - scattering from an object in a waveguide",
+      "prompt": "How is the echo from a rigid sphere in a waveguide computed with normal modes?",
+      "expected": {
+        "concept_key": "waveguide_target_scattering",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch07-fd-fe-methods.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.scattering_from_objects"
+        ]
+      }
+    },
+    {
+      "name": "concept - 3-D normal modes",
+      "prompt": "How does the horizontal refraction equation describe 3-D normal modes around a seamount?",
+      "expected": {
+        "concept_key": "three_dimensional_modes",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.three_dimensional_modes"
+        ]
+      }
+    },
+    {
+      "name": "concept - leaky modes",
+      "prompt": "Why do leaky modes improve the nearfield but make the mode sum diverge?",
+      "expected": {
+        "concept_key": "leaky_modes",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md",
+          "chapters/ch04-wavenumber-integration.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.derivation_and_greens_function"
+        ]
+      }
+    },
+    {
+      "name": "concept - waveguide invariant reads COA's realistic-environment section",
+      "prompt": "Why does the waveguide invariant change sign between reflection- and refraction-dominated paths?",
+      "expected": {
+        "concept_key": "waveguide_invariant",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.layered_media_and_waveguides",
+          "wave_propagation_theory.waveguide_invariant_realistic"
+        ]
+      }
+    },
+    {
+      "name": "concept - PE angle limits",
+      "prompt": "What propagation angle can a Claerbout wide-angle PE handle for a phase error of 0.002?",
+      "expected": {
+        "concept_key": "pe_angle_limits",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-ram.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.derivation_and_limits"
+        ]
+      }
+    },
+    {
+      "name": "concept - Greene's source goes to starter field",
+      "prompt": "Should I start a PE run with Greene's source or a Gaussian source?",
+      "expected": {
+        "concept_key": "starter_field",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch08-broadband-modeling.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "concept - split-step PE stays with split-step Fourier",
+      "prompt": "How large a range step can a split-step PE take near a sharp seabed?",
+      "expected": {
+        "concept_key": "split_step_fourier",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-ram.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "concept - implicit finite-difference PE",
+      "prompt": "What truncation error does the implicit finite-difference PE make per range step?",
+      "expected": {
+        "concept_key": "ifd_pe",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch07-fd-fe-methods.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.fd_fe_solutions"
+        ]
+      }
+    },
+    {
+      "name": "concept - implicit finite differences for the wave equation stay off the PE",
+      "prompt": "How stable is an implicit finite-difference scheme for the wave equation?",
+      "expected": {
+        "concept_key": "wave_equation",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.wave_equation_and_helmholtz"
+        ]
+      }
+    },
+    {
+      "name": "concept - energy-conserving PE",
+      "prompt": "Why does a stair-step PE lose energy going upslope, and what does an energy-conserving PE match?",
+      "expected": {
+        "concept_key": "energy_conserving_pe",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch07-fd-fe-methods.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.energy_and_3d"
+        ]
+      }
+    },
+    {
+      "name": "concept - 3-D PE",
+      "prompt": "When is an N×2-D run enough instead of a full 3-D PE?",
+      "expected": {
+        "concept_key": "three_d_pe",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.energy_and_3d"
+        ]
+      }
+    },
+    {
+      "name": "concept - the adiabatic approximation for internal waves stays with internal waves",
+      "prompt": "Is the adiabatic approximation valid for internal waves?",
+      "expected": {
+        "concept_key": "internal_waves",
+        "bucket": "ocean_fluctuations",
+        "primary_notes": [
+          "01-source-colosi.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "ocean_fluctuations.colosi_internal_waves",
+          "ocean_fluctuations.brekhovskikh_lysanov_internal_wave_fluctuations",
+          "ocean_fluctuations.etter_fronts_eddies_internal_waves"
+        ]
+      }
+    },
+    {
+      "name": "concept - coupled modes for internal-wave scattering stay with internal waves",
+      "prompt": "Coupled modes for internal wave scattering",
+      "expected": {
+        "concept_key": "internal_waves",
+        "bucket": "ocean_fluctuations",
+        "primary_notes": [
+          "01-source-colosi.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "ocean_fluctuations.colosi_internal_waves",
+          "ocean_fluctuations.brekhovskikh_lysanov_internal_wave_fluctuations",
+          "ocean_fluctuations.etter_fronts_eddies_internal_waves"
+        ]
+      }
+    },
+    {
+      "name": "concept - the adiabatic waveguide invariant stays with the waveguide invariant",
+      "prompt": "Apply the adiabatic approximation to the waveguide invariant",
+      "expected": {
+        "concept_key": "waveguide_invariant",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.layered_media_and_waveguides",
+          "wave_propagation_theory.waveguide_invariant_realistic"
+        ]
+      }
+    },
+    {
+      "name": "concept - mode count in the Pekeris waveguide stays with the Pekeris waveguide",
+      "prompt": "Number of propagating modes in the Pekeris waveguide",
+      "expected": {
+        "concept_key": "pekeris_waveguide",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.layered_media_and_waveguides"
         ]
       }
     },
