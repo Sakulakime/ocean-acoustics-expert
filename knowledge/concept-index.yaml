@@ -82,7 +82,7 @@
     },
     {
       "key": "wave_equation",
-      "aliases": ["wave equation", "nonlinear wave equation", "linear wave equation", "波动方程"],
+      "aliases": ["wave equation", "nonlinear wave equation", "linear wave equation", "velocity potential", "displacement potential", "波动方程", "速度势", "位移势"],
       "bucket": "wave_propagation_theory",
       "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
       "secondary_notes": ["chapters/ch01-fundamentals.md"],
@@ -98,7 +98,7 @@
     },
     {
       "key": "green_function",
-      "aliases": ["green function", "green's function", "格林函数"],
+      "aliases": ["green function", "green's function", "green's theorem", "green theorem", "格林函数", "格林定理"],
       "bucket": "wave_propagation_theory",
       "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
       "secondary_notes": ["chapters/ch09-ambient-noise.md"],
@@ -110,7 +110,7 @@
       "bucket": "wave_propagation_theory",
       "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
       "secondary_notes": ["chapters/ch10-signals-in-noise.md"],
-      "fallback_windows": ["wave_propagation_theory.greens_functions_and_halfspace"]
+      "fallback_windows": ["wave_propagation_theory.reciprocity_appendix", "wave_propagation_theory.greens_functions_and_halfspace"]
     },
     {
       "key": "pekeris_waveguide",
@@ -137,6 +137,30 @@
       "fallback_windows": ["wave_propagation_theory.greens_functions_and_halfspace", "wave_propagation_theory.brekhovskikh_lysanov_lateral_wave"]
     },
     {
+      "key": "tl_normalization",
+      "aliases": ["transmission loss normalization", "transmission-loss normalization", "tl normalization", "传播损失归一化"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch01-fundamentals.md"],
+      "fallback_windows": ["wave_propagation_theory.greens_functions_and_halfspace"]
+    },
+    {
+      "key": "ideal_waveguide",
+      "aliases": ["ideal waveguide", "ideal fluid waveguide", "pressure-release waveguide", "image method", "method of images", "理想波导"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides"]
+    },
+    {
+      "key": "deep_ocean_waveguide",
+      "aliases": ["deep-ocean waveguide", "deep-ocean waveguides", "deep ocean waveguide", "deep ocean waveguides", "深海波导"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": ["chapters/ch03-ray-methods.md"],
+      "fallback_windows": ["wave_propagation_theory.deep_ocean_waveguides"]
+    },
+    {
       "key": "gaussian_beam",
       "aliases": ["gaussian beam", "gaussian-beam", "高斯波束"],
       "bucket": "ray_methods",
@@ -154,11 +178,59 @@
     },
     {
       "key": "caustic",
-      "aliases": ["caustic", "caustics", "focusing factor", "焦散"],
+      "aliases": ["caustic", "caustics", "focusing factor", "shadow zone", "shadow zones", "ray anomaly", "ray anomalies", "kmah", "焦散", "声影区"],
       "bucket": "ray_methods",
       "primary_notes": ["chapters/ch03-ray-methods.md"],
       "secondary_notes": ["solvers/solver-bellhop.md"],
       "fallback_windows": ["ray_methods.anomalies_and_gaussian_beams", "ray_methods.brekhovskikh_lysanov_caustics"]
+    },
+    {
+      "key": "eikonal_equation",
+      "aliases": ["eikonal", "ray tube", "ray tubes", "ray-tube", "程函"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "fallback_windows": ["ray_methods.derivation"]
+    },
+    {
+      "key": "ray_transmission_loss",
+      "aliases": ["incoherent ray", "coherent ray", "semicoherent", "semi-coherent", "dynamic ray tracing", "dynamic ray equation", "dynamic ray equations", "geometric beam", "geometric beams", "hat-shaped beam"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["solvers/solver-bellhop.md"],
+      "fallback_windows": ["ray_methods.derivation"]
+    },
+    {
+      "key": "snells_law",
+      "aliases": ["snell's law", "snell law", "fermat's principle", "fermat principle", "斯涅尔定律", "费马原理"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["chapters/ch01-fundamentals.md"],
+      "fallback_windows": ["ray_methods.additional_properties", "ray_methods.ray_bending"]
+    },
+    {
+      "key": "numerical_ray_tracing",
+      "aliases": ["numerical ray tracing", "cell method", "cell methods", "false caustic", "false caustics"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["runbooks/bellhop-runbook.md"],
+      "fallback_windows": ["ray_methods.numerical_solution_and_eigenrays"]
+    },
+    {
+      "key": "three_d_rays",
+      "aliases": ["3-d ray tracing", "3d ray tracing", "three-dimensional ray tracing", "3-d rays", "3d rays", "三维射线"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["ray_methods.extensions_and_related_techniques"]
+    },
+    {
+      "key": "ray_invariant",
+      "aliases": ["ray invariant", "射线不变量"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "fallback_windows": ["ray_methods.extensions_and_related_techniques"]
     },
     {
       "key": "horizontal_wavenumber",
@@ -362,7 +434,7 @@
     },
     {
       "key": "virtual_source",
-      "aliases": ["virtual source", "虚拟源"],
+      "aliases": ["virtual source", "boundary element", "boundary-element", "boundary-integral", "边界元", "虚拟源"],
       "bucket": "numerical_methods",
       "primary_notes": ["chapters/ch07-fd-fe-methods.md"],
       "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
