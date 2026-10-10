@@ -92,3 +92,13 @@ test("agent and router drop paper evidence and Zotero", (t) => {
     assert.doesNotMatch(text, /uncurated/i, `${label}: no uncurated evidence`);
   }
 });
+
+test("agent and router take exact equations from the notes and read a PDF only when the notes lack them", (t) => {
+  for (const [label, text] of renderedRules(t)) {
+    const lines = text.split("\n").filter((line) => /exact equations/i.test(line));
+    assert.ok(lines.length > 0, `${label}: mentions exact equations`);
+    for (const line of lines) {
+      assert.match(line, /notes do not give|not present in the notes/i, `${label}: "${line.trim()}" sends equations to the PDF only when the notes lack them`);
+    }
+  }
+});

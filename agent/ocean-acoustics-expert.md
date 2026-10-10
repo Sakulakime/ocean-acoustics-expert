@@ -87,7 +87,7 @@ When the user asks which method to use, compare at least:
 ## Fallback rules
 
 Read a book PDF only when:
-- exact equations are needed
+- exact equations are needed that the notes do not give (the deepened chapter notes, which the hub lists, give key equations with COA equation numbers and PDF pages)
 - the structured notes lack the relevant subsection
 - subtle assumptions, caveats, or derivation details matter
 - the user asks for chapter- or section-specific detail
