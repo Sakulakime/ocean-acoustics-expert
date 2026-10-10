@@ -127,3 +127,34 @@ So the agent reads another book only through its source note, as the agent rules
 The router also tells a main session to leave the expert's tag rules as they are when it delegates. A third example tags another book, `[textbook: Collins & Siegmann 2019 §4.4.4, PDF pp. 134-135]` (checked against the PDF), next to the two wrong forms seen in the smokes.
 
 One new test in `test/agent-rules.test.js` covers this; it failed before the change. After the reinstall, all four rendered files carry the rules. The Codex TOML parses, `opencode debug agent` resolves the new prompt, and `doctor` found no problems. The smokes have not been re-run.
+
+**Tag smoke after the tightening (Claude Code, 2026-10-10): passed.**
+- **Setup.** A Claude Code session delegated to the installed `ocean-acoustics-expert` subagent (8 tool calls), with no external CLI. The delegation prompt was the question alone, so it did not restate the tag rules. The question: how the parabolic equation is formulated for a poro-elastic (Biot) sediment, which field variables are marched in range, which wave types it carries, and how the starting field is obtained, kept short with every claim tagged and the note files and books with PDF page ranges listed.
+- **Read path**, per the agent's source list:
+  1. the hub;
+  2. the routing map, route `parabolic_equations`;
+  3. the concept index, `poro_elastic_pe`;
+  4. `ch06` ("covers only the elastic PE");
+  5. `01-source-collins-siegmann.md`;
+  6. Collins & Siegmann §4.4-4.4.4, PDF pp. 122-137, which is window `collins_siegmann_poro_elastic`.
+
+  It also searched `solvers/`, `runbooks/` and `workflows/` and found no poro-elastic content. It did not read the COA PDF.
+- **Tags.**
+  - Every textbook tag names the book, as in `[textbook: Collins & Siegmann 2019 §4.4.4, PDF p. 134]`.
+  - No note file, routing map or concept index appears in a tag.
+  - No tag other than the two exists.
+  - The sources list carries no tags.
+- **Small gaps left:**
+  - one bullet carries no tag of its own, the one that glosses Δ, w, ζ as frame dilatation, vertical frame displacement and relative-displacement dilatation;
+  - the poro-elastic/fluid interface sub-bullet relies on its parent bullet's tag;
+  - the sources list gives absolute installed-copy paths (`~/.local/share/ocean-acoustics-expert/knowledge/…`) instead of knowledge-base-relative ones, which no rule forbids.
+- **Content checked against the PDF:**
+  - §4.4.4 starts on PDF p. 134;
+  - the redundant equation Biot's form drops is on p. 129;
+  - the wave-speed equation (4.71) is on p. 132;
+  - R_j, eq. (4.89), is on p. 134;
+  - the starters, eqs. (4.94), (4.96) and (4.98)-(4.99), and the 25 Hz shear-source example are on p. 135;
+  - the four poro-elastic/fluid interface conditions are on p. 130.
+
+  All of these match.
+- Codex and OpenCode were not re-run, because those smokes cost money.
