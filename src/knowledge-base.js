@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { readDataFile, readTextFiles, textLines } from "./data-file.js";
+import { splitFrontmatter } from "./template.js";
 import { parseYaml } from "./yaml.js";
 
 /** The knowledge base shipped with this package (the authoring copy when run from a checkout). */
@@ -67,6 +68,19 @@ export function loadKnowledgeBase(root) {
  */
 export function noteExists(kb, relativePath) {
   return existsSync(join(kb.root, relativePath));
+}
+
+/**
+ * @param {KnowledgeBase} kb
+ * @param {string} relativePath A note's path relative to the root.
+ * @returns {unknown} The note's parsed YAML frontmatter; null when the note
+ *   is not among the knowledge base's texts or has no frontmatter.
+ * @throws {import("./yaml.js").YamlError} When the frontmatter is outside the YAML subset.
+ */
+export function noteFrontmatter(kb, relativePath) {
+  const text = kb.texts.get(relativePath);
+  const frontmatter = text === undefined ? undefined : splitFrontmatter(text)?.frontmatter;
+  return frontmatter === undefined ? null : parseYaml(frontmatter);
 }
 
 /**

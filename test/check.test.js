@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { runCli } from "./helpers/cli.js";
-import { conceptIndexWith, writeDirectory, writeKnowledgeBase } from "./helpers/knowledge-base.js";
+import { conceptIndexWith, routingMapWithWindows, writeDirectory, writeKnowledgeBase } from "./helpers/knowledge-base.js";
 
 const BUNDLED_CASE_COUNT = JSON.parse(
   readFileSync(new URL("../checks/route-selection-cases.json", import.meta.url), "utf8"),
@@ -217,14 +217,6 @@ test("check reports fallback-window references that collide with built-in proper
   assert.match(result.stderr, /fallback window constructor\.name is not defined in the routing map/);
 });
 
-/**
- * A routing map whose fundamentals route has the given fallback_windows lines.
- * @param {string[]} windowLines Lines under `fallback_windows:`, indented six spaces.
- */
-function routingMapWithWindows(windowLines) {
-  return ["routes:", "  fundamentals:", "    notes:", "      - chapters/ch01.md", "    fallback_windows:", ...windowLines, ""].join("\n");
-}
-
 /** A source note for another book, and its PDF. */
 const ETTER_SOURCE_NOTE = {
   "01-source-etter.md": "---\ntitle: Source Note - Etter\ntype: source-note\nsource_pdf: sources/etter-2018.pdf\n---\n# Etter\n",
@@ -257,6 +249,10 @@ test("check fails when a fallback window into another book does not go through i
       ["      environment:", "        source: chapters/ch01.md", "        pages: 60-69"],
       "fallback window fundamentals.environment: chapters/ch01.md is not a source note (its frontmatter lacks type: source-note)",
     ],
+    "a note whose frontmatter check cannot parse": [
+      ["      environment:", "        source: 01-source-broken.md", "        pages: 60-69"],
+      "fallback window fundamentals.environment: 01-source-broken.md has frontmatter check cannot parse: line 1: flow mappings are not supported",
+    ],
     "a book page range that is not a PDF page range": [
       ["      environment:", "        source: 01-source-etter.md", "        pages: 29-xx"],
       'fallback window fundamentals.environment: "29-xx" is not a PDF page range such as 20-39',
@@ -272,7 +268,11 @@ test("check fails when a fallback window into another book does not go through i
   };
   for (const [name, [windowLines, message]] of Object.entries(cases)) {
     await t.test(name, (st) => {
-      const kb = writeKnowledgeBase(st, { ...ETTER_SOURCE_NOTE, "routing-map.yaml": routingMapWithWindows(windowLines) });
+      const kb = writeKnowledgeBase(st, {
+        ...ETTER_SOURCE_NOTE,
+        "01-source-broken.md": "---\ntype: {source-note}\n---\n",
+        "routing-map.yaml": routingMapWithWindows(windowLines),
+      });
 
       const result = runCli(["check", "--kb", kb]);
 

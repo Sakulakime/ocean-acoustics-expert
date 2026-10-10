@@ -5,16 +5,7 @@ import { dirname, join } from "node:path";
 /** A minimal, valid knowledge base: one route, one concept, one chapter note. */
 export const MINIMAL_KNOWLEDGE_BASE = {
   "00-hub.md": "# Hub\n\n- Fundamentals: `chapters/ch01.md`\n",
-  "routing-map.yaml": [
-    "routes:",
-    "  fundamentals:",
-    "    trigger_keywords: [sound speed profile, SSP]",
-    "    notes:",
-    "      - chapters/ch01.md",
-    "    fallback_windows:",
-    "      environment: 20-39",
-    "",
-  ].join("\n"),
+  "routing-map.yaml": routingMapWithWindows(["      environment: 20-39"]),
   "concept-index.yaml": JSON.stringify({
     concepts: [
       {
@@ -55,6 +46,24 @@ export function writeDirectory(t, files) {
     writeFileSync(target, content);
   }
   return root;
+}
+
+/**
+ * A routing map with the minimal knowledge base's one route and the given fallback windows.
+ * @param {string[]} windowLines Lines under `fallback_windows:`, indented six spaces.
+ * @returns {string}
+ */
+export function routingMapWithWindows(windowLines) {
+  return [
+    "routes:",
+    "  fundamentals:",
+    "    trigger_keywords: [sound speed profile, SSP]",
+    "    notes:",
+    "      - chapters/ch01.md",
+    "    fallback_windows:",
+    ...windowLines,
+    "",
+  ].join("\n");
 }
 
 /**

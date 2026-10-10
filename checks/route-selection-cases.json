@@ -214,6 +214,23 @@
       }
     },
     {
+      "name": "concept - bottom loss of a poroelastic sediment stays with COA",
+      "prompt": "How do poroelastic sediments change bottom loss?",
+      "expected": {
+        "concept_key": "bottom_loss",
+        "bucket": "fundamentals",
+        "primary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch04-wavenumber-integration.md"
+        ],
+        "fallback_windows": [
+          "fundamentals.attenuation_and_bottom_loss"
+        ]
+      }
+    },
+    {
       "name": "book window - Collins & Siegmann rational approximations",
       "prompt": "How do rotated rational approximations keep the split-step Padé solution stable?",
       "expected": {

@@ -7,7 +7,7 @@ isbn: 978-0-387-95467-7
 year: 2003
 edition: third
 pdf_pages: 289
-pdf_page_offset: 12
+pdf_page_offset: 12 for book pages 1-273, 11 for the index
 status: active
 ---
 

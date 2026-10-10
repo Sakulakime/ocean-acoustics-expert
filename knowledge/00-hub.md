@@ -54,7 +54,7 @@ Notes contain no absolute paths:
 
 ## Core topic map
 
-| Topic | First notes to read | PDF range |
+| Topic | First notes to read | COA PDF range |
 |---|---|---|
 | Fundamentals / environment | `chapters/ch01-fundamentals.md` | 20-83 |
 | Wave propagation theory | `chapters/ch02-wave-propagation-theory.md` | 84-172 |
@@ -66,7 +66,7 @@ Notes contain no absolute paths:
 | Broadband propagation | `chapters/ch08-broadband-modeling.md` | 626-675 |
 | Ambient noise | `chapters/ch09-ambient-noise.md` | 676-719 |
 | Sonar / signal processing | `chapters/ch10-signals-in-noise.md` | 720-787 |
-| Ocean fluctuations / internal waves | `01-source-colosi.md` (no COA chapter) | Colosi windows in `routing-map.yaml` |
+| Ocean fluctuations / internal waves | `01-source-colosi.md` | none; the route's windows are Colosi's |
 
 ## Research-oriented reading patterns
 

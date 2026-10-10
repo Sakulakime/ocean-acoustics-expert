@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "title": "Reverse Concept Index",
-  "description": "Deterministic concept-to-route map for COA concepts and the topics of the other books with source notes, linking prompt-level technical terms to primary notes, secondary notes, and targeted fallback windows (COA windows first).",
+  "description": "Deterministic concept-to-route map for COA concepts and the topics of the other books with source notes, linking prompt-level technical terms to primary notes, secondary notes, and targeted fallback windows (COA's first, when COA covers the concept).",
   "match_policy": {
     "normalize_to_lowercase": true,
     "prefer_longest_alias": true,
@@ -58,7 +58,7 @@
     },
     {
       "key": "sound_absorption",
-      "aliases": ["sound absorption", "seawater absorption", "absorption coefficient", "francois-garrison", "thorp", "声吸收", "海水吸收"],
+      "aliases": ["sound absorption", "seawater absorption", "absorption coefficient", "声吸收", "海水吸收"],
       "bucket": "fundamentals",
       "primary_notes": ["chapters/ch01-fundamentals.md"],
       "secondary_notes": [],
@@ -210,7 +210,7 @@
     },
     {
       "key": "wkb_modes",
-      "aliases": ["wkb", "phase integral", "wkb近似"],
+      "aliases": ["wkb mode", "wkb modes", "wkb normal modes", "phase integral", "wkb简正模"],
       "bucket": "normal_modes",
       "primary_notes": ["chapters/ch05-normal-modes.md"],
       "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
@@ -250,15 +250,15 @@
     },
     {
       "key": "elastic_pe",
-      "aliases": ["elastic parabolic equation", "elastic pe", "seismo-acoustic", "弹性抛物方程"],
+      "aliases": ["elastic parabolic equation", "elastic pe", "弹性抛物方程"],
       "bucket": "parabolic_equations",
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
-      "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
-      "fallback_windows": ["parabolic_equations.collins_siegmann_elastic_pe"]
+      "secondary_notes": ["solvers/solver-ram.md"],
+      "fallback_windows": ["parabolic_equations.derivation_and_limits", "parabolic_equations.collins_siegmann_elastic_pe"]
     },
     {
       "key": "poro_elastic_pe",
-      "aliases": ["poro-elastic parabolic equation", "poroelastic parabolic equation", "poro-elastic", "poroelastic", "biot medium", "biot theory", "多孔弹性"],
+      "aliases": ["poro-elastic parabolic equation", "poroelastic parabolic equation", "poro-elastic pe", "poroelastic pe", "多孔弹性抛物方程"],
       "bucket": "parabolic_equations",
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
       "secondary_notes": [],
@@ -346,7 +346,7 @@
     },
     {
       "key": "reverberation",
-      "aliases": ["reverberation", "volume reverberation", "boundary reverberation", "bottom reverberation", "surface reverberation", "混响"],
+      "aliases": ["volume reverberation", "reverberation model", "reverberation modeling", "reverberation modelling", "混响模型"],
       "bucket": "sonar_signal_processing",
       "primary_notes": ["chapters/ch10-signals-in-noise.md"],
       "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],

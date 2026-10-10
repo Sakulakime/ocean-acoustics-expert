@@ -120,7 +120,7 @@ routes:
         source: 01-source-etter.md
         pages: 159-167
   parabolic_equations:
-    trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, self-starter, Padé, rational approximation, elastic PE, seismo-acoustic, poro-elastic, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM]
+    trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, self-starter, Padé, rational approximation, elastic PE, poro-elastic PE, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM]
     notes:
       - chapters/ch06-parabolic-equations.md
       - solvers/solver-ram.md

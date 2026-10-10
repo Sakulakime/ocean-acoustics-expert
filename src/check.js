@@ -8,6 +8,7 @@ import {
   hasFallbackWindow,
   loadKnowledgeBase,
   noteExists,
+  noteFrontmatter,
   parseWindowRef,
   sourcePdfReferences,
 } from "./knowledge-base.js";
@@ -17,8 +18,7 @@ import {
   evaluateCase,
   loadRouteSelectionCases,
 } from "./route-selection.js";
-import { splitFrontmatter } from "./template.js";
-import { parseYaml, YamlError } from "./yaml.js";
+import { YamlError } from "./yaml.js";
 
 /**
  * A check rule inspects a loaded knowledge base and returns problem messages.
@@ -90,20 +90,32 @@ function fallbackWindowsWellFormed(kb) {
  */
 function windowProblems(kb, window) {
   if (typeof window === "string") return pageRangeProblems(window);
-  const isBookWindow =
+  const isOtherBookWindow =
     window !== null &&
     typeof window === "object" &&
     !Array.isArray(window) &&
     Object.keys(window).sort().join() === "pages,source" &&
     typeof window.source === "string" &&
     typeof window.pages === "string";
-  if (!isBookWindow) return ["expected a PDF page range, or a mapping of source and pages for another book"];
-  const problems = [];
-  if (!noteExists(kb, window.source)) problems.push(`source note ${window.source} does not exist`);
-  else if (!isSourceNote(kb.texts.get(window.source))) {
-    problems.push(`${window.source} is not a source note (its frontmatter lacks type: source-note)`);
+  if (!isOtherBookWindow) return ["expected a PDF page range, or a mapping of source and pages for another book"];
+  return [...sourceNoteProblems(kb, window.source), ...pageRangeProblems(window.pages)];
+}
+
+/**
+ * @param {import("./knowledge-base.js").KnowledgeBase} kb
+ * @param {string} path
+ * @returns {string[]} Why the note at this path is not a source note; empty when it is one.
+ */
+function sourceNoteProblems(kb, path) {
+  if (!noteExists(kb, path)) return [`source note ${path} does not exist`];
+  let frontmatter;
+  try {
+    frontmatter = noteFrontmatter(kb, path);
+  } catch (error) {
+    if (!(error instanceof YamlError)) throw error;
+    return [`${path} has frontmatter check cannot parse: ${error.message}`];
   }
-  return [...problems, ...pageRangeProblems(window.pages)];
+  return frontmatter?.type === "source-note" ? [] : [`${path} is not a source note (its frontmatter lacks type: source-note)`];
 }
 
 /** A PDF page range: first and last page, inclusive. */
@@ -117,21 +129,6 @@ function pageRangeProblems(pages) {
   const match = pages.match(PAGE_RANGE);
   const valid = match !== null && Number(match[1]) >= 1 && Number(match[1]) <= Number(match[2]);
   return valid ? [] : [`${JSON.stringify(pages)} is not a PDF page range such as 20-39`];
-}
-
-/**
- * @param {string|undefined} text A note's text.
- * @returns {boolean} Whether its frontmatter says `type: source-note`.
- */
-function isSourceNote(text) {
-  const frontmatter = text === undefined ? undefined : splitFrontmatter(text)?.frontmatter;
-  if (frontmatter === undefined) return false;
-  try {
-    return parseYaml(frontmatter)?.type === "source-note";
-  } catch (error) {
-    if (!(error instanceof YamlError)) throw error;
-    return false;
-  }
 }
 
 /**
