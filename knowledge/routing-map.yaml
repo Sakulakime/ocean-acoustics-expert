@@ -58,9 +58,11 @@ routes:
       - chapters/ch01-fundamentals.md
     chapter_span: 84-172
     fallback_windows:
-      wave_equation_and_helmholtz: 84-103
-      greens_functions_and_halfspace: 104-133
-      layered_media_and_waveguides: 134-172
+      wave_equation_and_helmholtz: 84-91
+      greens_functions_and_halfspace: 92-121
+      layered_media_and_waveguides: 121-158
+      deep_ocean_waveguides: 158-166
+      reciprocity_appendix: 166-167
       # COA §5.14, in Ch. 5: the waveguide invariant in realistic, range-dependent
       # environments. It sits here because the waveguide_invariant concept is on this route.
       waveguide_invariant_realistic: 455-462
@@ -76,9 +78,12 @@ routes:
       - workflows/model-selection.md
     chapter_span: 173-250
     fallback_windows:
-      derivation: 176-194
-      anomalies_and_gaussian_beams: 195-212
-      numerical_solution_and_eigenrays: 213-230
+      ray_bending: 173-176
+      derivation: 176-193
+      anomalies_and_gaussian_beams: 193-203
+      additional_properties: 203-218
+      numerical_solution_and_eigenrays: 218-234
+      extensions_and_related_techniques: 234-244
       brekhovskikh_lysanov_caustics:
         source: 01-source-brekhovskikh-lysanov.md
         pages: 55-59
