@@ -86,3 +86,25 @@ export function conceptIndexWith(fields) {
     ],
   });
 }
+
+/**
+ * A chapter note of chapter 5 with the given major subsections.
+ * @param {Record<string, string>} subsections Heading to body.
+ * @param {{frontmatter?: string[]}} [options] Frontmatter lines (default: a deepened chapter 5 note).
+ * @returns {string}
+ */
+export function chapterNote(subsections, { frontmatter = ["type: chapter-note", "chapter: 5", "status: deepened"] } = {}) {
+  return [
+    "---",
+    ...frontmatter,
+    "---",
+    "# Chapter 5",
+    "",
+    "## Major subsections",
+    "",
+    ...Object.entries(subsections).flatMap(([heading, body]) => [`### ${heading}`, body, ""]),
+    "## Key sections from the TOC",
+    "- 5.11 Normal Modes for Range-Dependent Environments (PDF p. 419)",
+    "",
+  ].join("\n");
+}

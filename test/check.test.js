@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { runCli } from "./helpers/cli.js";
-import { conceptIndexWith, routingMapWithWindows, writeDirectory, writeKnowledgeBase } from "./helpers/knowledge-base.js";
+import { chapterNote, conceptIndexWith, routingMapWithWindows, writeDirectory, writeKnowledgeBase } from "./helpers/knowledge-base.js";
 
 const BUNDLED_CASE_COUNT = JSON.parse(
   readFileSync(new URL("../checks/route-selection-cases.json", import.meta.url), "utf8"),
@@ -251,7 +251,7 @@ test("check fails when a fallback window into another book does not go through i
     ],
     "a note whose frontmatter check cannot parse": [
       ["      environment:", "        source: 01-source-broken.md", "        pages: 60-69"],
-      "fallback window fundamentals.environment: 01-source-broken.md has frontmatter check cannot parse: line 1: flow mappings are not supported",
+      "01-source-broken.md has frontmatter check cannot parse: line 1: flow mappings are not supported",
     ],
     "a book page range that is not a PDF page range": [
       ["      environment:", "        source: 01-source-etter.md", "        pages: 29-xx"],
@@ -557,4 +557,78 @@ test("check fails when the hub references a note that does not exist", (t) => {
   assert.match(result.stderr, /hub: reference solvers\/ does not exist/);
   assert.match(result.stderr, /hub: reference \.\.\/hooks\/tests\/regression\.js does not exist/);
   assert.doesNotMatch(result.stderr, /chapters\/ch01\.md/);
+});
+
+test("check fails when a major subsection of a deepened chapter note cites no equation of its chapter", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "chapters/ch05.md": chapterNote({
+      "Modal expansion": "**Key equations**\n- Modal sum, eq. (5.18), §5.3, PDF p. 360: $p(r,z)$",
+      "Mode coupling": "**Key equations**\n- Coupled modes, §5.11, PDF p. 420, reuse eq. (6.2)",
+    }),
+    "chapters/ch04.md": chapterNote(
+      { "Not yet deepened": "- Topics only" },
+      { frontmatter: ["type: chapter-note", "chapter: 4", "status: expanded"] },
+    ),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 1);
+  assert.ok(
+    result.stderr.includes('FAIL chapters/ch05.md: major subsection "Mode coupling" cites no equation of chapter 5, such as (5.1)'),
+    result.stderr,
+  );
+  assert.doesNotMatch(result.stderr, /Modal expansion|ch04/);
+});
+
+test("check fails when a deepened chapter note has no major subsections", (t) => {
+  const kb = writeKnowledgeBase(t, { "chapters/ch05.md": chapterNote({}) });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 1);
+  assert.ok(
+    result.stderr.includes("FAIL chapters/ch05.md: a deepened chapter note needs major subsections, as ### headings under ## Major subsections"),
+    result.stderr,
+  );
+});
+
+test("check reports a note whose frontmatter it cannot parse once, instead of crashing", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "chapters/ch05.md": chapterNote({}, { frontmatter: ["type: {chapter-note}"] }),
+    "01-source-broken.md": "---\ntype: {source-note}\n---\n",
+    "routing-map.yaml": routingMapWithWindows(["      environment:", "        source: 01-source-broken.md", "        pages: 60-69"]),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 1);
+  assert.ok(
+    result.stderr.includes("FAIL chapters/ch05.md has frontmatter check cannot parse: line 1: flow mappings are not supported"),
+    result.stderr,
+  );
+  assert.equal(result.stderr.match(/01-source-broken\.md has frontmatter check cannot parse/g)?.length, 1, result.stderr);
+  assert.doesNotMatch(result.stderr, /\n\s+at /);
+});
+
+test("check fails when a deepened chapter note has no chapter number", async (t) => {
+  for (const chapterLine of [[], ["chapter: five"], ["chapter: 5.*"]]) {
+    await t.test(chapterLine.join() || "no chapter field", (st) => {
+      const kb = writeKnowledgeBase(st, {
+        "chapters/ch05.md": chapterNote(
+          { "Modal expansion": "- Modal sum, eq. (5.18)" },
+          { frontmatter: ["type: chapter-note", ...chapterLine, "status: deepened"] },
+        ),
+      });
+
+      const result = runCli(["check", "--kb", kb]);
+
+      assert.equal(result.status, 1);
+      assert.ok(
+        result.stderr.includes("FAIL chapters/ch05.md: a deepened chapter note needs its chapter number in the frontmatter, such as chapter: 5"),
+        result.stderr,
+      );
+      assert.doesNotMatch(result.stderr, /major subsection/);
+    });
+  }
 });

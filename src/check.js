@@ -108,13 +108,9 @@ function windowProblems(kb, window) {
  */
 function sourceNoteProblems(kb, path) {
   if (!noteExists(kb, path)) return [`source note ${path} does not exist`];
-  let frontmatter;
-  try {
-    frontmatter = noteFrontmatter(kb, path);
-  } catch (error) {
-    if (!(error instanceof YamlError)) throw error;
-    return [`${path} has frontmatter check cannot parse: ${error.message}`];
-  }
+  const { frontmatter, error } = parseNoteFrontmatter(kb, path);
+  // Unparseable frontmatter is reported once, for every note, by noteFrontmattersParse.
+  if (error) return [];
   return frontmatter?.type === "source-note" ? [] : [`${path} is not a source note (its frontmatter lacks type: source-note)`];
 }
 
@@ -158,6 +154,81 @@ function sourcePdfsExist(kb) {
     .map(({ file, lineNumber, path }) => `${file}:${lineNumber}: source PDF ${path} does not exist`);
 }
 
+/**
+ * @param {import("./knowledge-base.js").KnowledgeBase} kb
+ * @param {string} path
+ * @returns {{frontmatter?: unknown, error?: YamlError}} The note's parsed frontmatter,
+ *   or the error that stopped check parsing it.
+ */
+function parseNoteFrontmatter(kb, path) {
+  try {
+    return { frontmatter: noteFrontmatter(kb, path) };
+  } catch (error) {
+    if (!(error instanceof YamlError)) throw error;
+    return { error };
+  }
+}
+
+/**
+ * @param {import("./knowledge-base.js").KnowledgeBase} kb
+ * @returns {{path: string, frontmatter?: unknown, error?: YamlError}[]} Every Markdown note's parse result.
+ */
+function parsedNoteFrontmatters(kb) {
+  return [...kb.texts.keys()]
+    .filter((path) => path.endsWith(".md"))
+    .map((path) => ({ path, ...parseNoteFrontmatter(kb, path) }));
+}
+
+/** @type {Rule} */
+function noteFrontmattersParse(kb) {
+  return parsedNoteFrontmatters(kb)
+    .filter(({ error }) => error)
+    .map(({ path, error }) => `${path} has frontmatter check cannot parse: ${error.message}`);
+}
+
+/**
+ * A chapter note deepened with key equations (`status: deepened`) cites, in
+ * every major subsection, at least one equation of its chapter by number.
+ * @type {Rule}
+ */
+function deepenedChapterNotesCiteEquations(kb) {
+  const problems = [];
+  for (const { path, frontmatter } of parsedNoteFrontmatters(kb)) {
+    if (frontmatter?.type !== "chapter-note" || frontmatter.status !== "deepened") continue;
+    const { chapter } = frontmatter;
+    if (!/^\d+$/.test(String(chapter))) {
+      problems.push(`${path}: a deepened chapter note needs its chapter number in the frontmatter, such as chapter: 5`);
+      continue;
+    }
+    const equationNumber = new RegExp(`\\(${chapter}\\.\\d+\\)`);
+    const subsections = majorSubsections(kb.texts.get(path));
+    if (subsections.length === 0) {
+      problems.push(`${path}: a deepened chapter note needs major subsections, as ### headings under ## Major subsections`);
+    }
+    for (const { heading, body } of subsections) {
+      if (!equationNumber.test(body)) {
+        problems.push(`${path}: major subsection "${heading}" cites no equation of chapter ${chapter}, such as (${chapter}.1)`);
+      }
+    }
+  }
+  return problems;
+}
+
+/**
+ * @param {string} text A chapter note.
+ * @returns {{heading: string, body: string}[]} The `###` subsections under `## Major subsections`.
+ */
+function majorSubsections(text) {
+  const subsections = [];
+  let inMajorSubsections = false;
+  for (const line of text.split("\n")) {
+    if (line.startsWith("## ")) inMajorSubsections = line.trim() === "## Major subsections";
+    else if (inMajorSubsections && line.startsWith("### ")) subsections.push({ heading: line.slice(4).trim(), body: "" });
+    else if (inMajorSubsections && subsections.length > 0) subsections.at(-1).body += `${line}\n`;
+  }
+  return subsections;
+}
+
 const RULES = [
   routeNotesExist,
   conceptRoutesExist,
@@ -167,6 +238,8 @@ const RULES = [
   hubReferencesExist,
   noMachinePaths,
   sourcePdfsExist,
+  noteFrontmattersParse,
+  deepenedChapterNotesCiteEquations,
 ];
 
 /** The MATLAB solver helpers shipped with this package. */
