@@ -78,6 +78,7 @@ A major strength of WI is that different layer physics can be expressed in the s
 - `chapters/ch05-normal-modes.md`
 - `chapters/ch07-fd-fe-methods.md`
 - `solvers/solver-oases.md`
+- `benchmark-cases.md`: the elastic-bottom waveguide and the Bucker waveguide of §4.10
 
 ### Boundary conditions and attenuation in layered media
 The next block imposes interface physics and introduces lossy media in spectral form.
@@ -159,6 +160,7 @@ Once the depth solution exists, the spectral integral still has to be evaluated 
 - `chapters/ch08-broadband-modeling.md`
 - `workflows/model-selection.md`
 - `solvers/solver-scooter.md`
+- `benchmark-cases.md`: the Pekeris waveguide COA uses for its FFP aliasing and contour examples (§4.5)
 
 ### Range dependence, 3D WI, and stratified-ocean scattering
 The later material extends the method beyond the simplest layered forward problem.

@@ -14,7 +14,7 @@ This library is the default local knowledge base for underwater acoustics questi
 
 1. Read this hub, then `routing-map.yaml`.
 2. Check `concept-index.yaml` for the concepts, subsection ideas or technical terms the question names.
-3. Read the smallest relevant note set: chapter notes, solver notes, runbooks and `visualization.md`, plus the benchmark-cases note once this hub lists it. A route or concept may also point at a book's source note.
+3. Read the smallest relevant note set: chapter notes, solver notes, runbooks, `visualization.md` and `benchmark-cases.md`. A route or concept may also point at a book's source note.
 4. Only when the notes are insufficient, read a fallback window: a targeted page range of a book PDF in `sources/`, cited with its range. A window written as a page range (`473-488`) is COA's. A window with a `source` is another book's: read that source note for the book's PDF and section map, then read the window's pages.
 5. Prefer targeted page reads over whole-chapter reads.
 
@@ -31,6 +31,7 @@ This library is the default local knowledge base for underwater acoustics questi
 - Model comparison: `workflows/model-selection.md`
 - Glossary: `glossary.md`
 - Chapter notes: `chapters/`. The deepened ones (`status: deepened`: Ch. 5 and Ch. 6) give, per subsection, key equations with symbols, COA equation numbers and PDF pages, and validity conditions with COA's numbers; take equations and validity limits from them before reading the PDF.
+- Benchmark cases: `benchmark-cases.md`. COA's canonical test environments (Pekeris waveguide, Munk profile, ASA wedge, Dickins seamount, 3-D wedge and others), each with exact parameters, COA figures and pages, the solver families it validates and COA's reference solution. Read it for "which benchmark validates X" and "give me the parameters of case Y".
 - Solver notes: `solvers/`
 - Run recipes (Linux + MATLAB run recipe, input-file format, validators, gotchas):
   - BELLHOP (ray, `.env`): `runbooks/bellhop-runbook.md` (+ `runbooks/bellhop-env-template.md`, `runbooks/bellhop-checklist.md`)
@@ -67,6 +68,7 @@ Notes contain no absolute paths:
 | Ambient noise | `chapters/ch09-ambient-noise.md` | 676-719 |
 | Sonar / signal processing | `chapters/ch10-signals-in-noise.md` | 720-787 |
 | Ocean fluctuations / internal waves | `01-source-colosi.md` | none; the route's windows are Colosi's |
+| Benchmark cases | `benchmark-cases.md` | none; the cases span Ch. 1-8, and the route's windows are the pages where COA sets them up |
 
 ## Research-oriented reading patterns
 
@@ -96,6 +98,7 @@ Notes contain no absolute paths:
 - `01-source-collins-siegmann.md`, `01-source-colosi.md`, `01-source-etter.md`, `01-source-brekhovskikh-lysanov.md`
 - `routing-map.yaml`
 - `glossary.md`
+- `benchmark-cases.md`
 - `workflows/model-selection.md`
 - `solvers/00-solvers-hub.md`
 - `runbooks/bellhop-runbook.md`, `runbooks/kraken-runbook.md`, `runbooks/ram-runbook.md`

@@ -103,6 +103,7 @@ Simple waveguides expose how boundary conditions, sound-speed structure, and bot
 - `chapters/ch01-fundamentals.md`
 - `chapters/ch02-wave-propagation-theory.md`
 - `chapters/ch03-ray-methods.md`
+- `benchmark-cases.md`: the Pekeris waveguide and the Munk profile as benchmark cases, with every COA variant of their parameters
 
 ### Numerical mode computation and mode counting
 This is the implementation core of the chapter: how to compute modes reliably in realistic environments (§5.7), and how Prüfer phase arguments count modes so that none are skipped (§5.8).
@@ -312,6 +313,7 @@ The later parts generalize modal thinking to 3-D environments (§5.13): N×2-D a
 **Cross-links**
 - `chapters/ch06-parabolic-equations.md`
 - `chapters/ch10-signals-in-noise.md`
+- `benchmark-cases.md`: the conical seamounts in a Munk ocean (§5.13.3)
 
 ### Waveguide invariant and dispersion in realistic environments
 The chapter closes with the waveguide invariant and modal dispersion in realistic, range-dependent environments (§5.14), building on the ideal and Pekeris treatments of §2.4.6 and the ray results of §3.8.3.

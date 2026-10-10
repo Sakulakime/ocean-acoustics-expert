@@ -116,6 +116,7 @@ The final examples show how synthesis choices and propagation physics show up in
 **Cross-links**
 - `workflows/model-selection.md`
 - `chapters/ch10-signals-in-noise.md`
+- `benchmark-cases.md`: the head-wave problem, the Pekeris waveguide used for mode dispersion, and the 3-D wedge (§8.5)
 
 ## Key sections from the TOC
 - 8.2 Fourier Synthesis of Frequency-Domain Solutions

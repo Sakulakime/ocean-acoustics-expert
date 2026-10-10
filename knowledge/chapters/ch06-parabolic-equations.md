@@ -123,6 +123,7 @@ COA quantifies each approximation's aperture by propagating one normal mode of a
 **Cross-links**
 - `workflows/model-selection.md`
 - `chapters/ch05-normal-modes.md`
+- `benchmark-cases.md`: the NORDA PE Workshop Pekeris test (Fig. 6.2)
 
 ### Elastic PE and boundary complexity
 COA briefly outlines Collins's elastic PE: Greene's reformulation of the elastic equations in dilatation and vertical displacement makes the operator factorable, and a Padé expansion with stability constraints makes it marchable.
@@ -157,6 +158,7 @@ COA briefly outlines Collins's elastic PE: Greene's reformulation of the elastic
 **Cross-links**
 - `chapters/ch04-wavenumber-integration.md`
 - `chapters/ch07-fd-fe-methods.md`
+- `benchmark-cases.md`: the sloping elastic bottom benchmark (§6.9.4)
 
 ### Starting fields and source representation
 A range-marching PE needs the complex field over depth at the starting range. COA treats numerical starters (normal modes, the PE self-starter) and analytical starters (Gaussian, Greene, Thomson, generalized Gaussian), and shows that a starter must be matched to the propagator's aperture.
@@ -196,6 +198,7 @@ A range-marching PE needs the complex field over depth at the starting range. CO
 **Cross-links**
 - `chapters/ch08-broadband-modeling.md`
 - `chapters/ch10-signals-in-noise.md`
+- `benchmark-cases.md`: the PE Workshop test 3B starter variant and the Lloyd-mirror image solution (§6.4)
 
 ### Split-step Fourier solutions
 The split-step Fourier algorithm marches the standard PE (and the Thomson–Chapman PE) by alternating a diffraction step in vertical-wavenumber space with a refraction step in depth.
@@ -326,6 +329,7 @@ COA's caution: a one-way PE run on a stair-step approximation of a sloping botto
 **Cross-links**
 - `chapters/ch10-signals-in-noise.md`
 - `workflows/model-selection.md`
+- `benchmark-cases.md`: the ASA wedge, with its full environment and reference solution
 
 ### Three-dimensional PE
 The 3-D PE keeps the azimuthal derivative in the one-way operator so that horizontal refraction is modeled; practical codes approximate depth and azimuth operators separately.
@@ -361,6 +365,7 @@ The 3-D PE keeps the azimuthal derivative in the one-way operator so that horizo
 **Cross-links**
 - `chapters/ch05-normal-modes.md`
 - `chapters/ch10-signals-in-noise.md`
+- `benchmark-cases.md`: the 3-D (truncated) wedge
 
 ## Key sections from the TOC
 - 6.1 Introduction (PDF p. 473)
@@ -392,3 +397,4 @@ The 3-D PE keeps the azimuthal derivative in the one-way operator so that horizo
 - `chapters/ch10-signals-in-noise.md`
 - `solvers/solver-ram.md`
 - `workflows/model-selection.md`
+- `benchmark-cases.md`: the §6.9 examples (2-D wedge, Dickins seamount, sloping elastic bottom, 3-D wedge) as benchmark cases

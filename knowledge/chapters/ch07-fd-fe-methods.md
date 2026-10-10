@@ -182,6 +182,7 @@ The chapter closes with scattering examples that show where direct discretizatio
 - `chapters/ch04-wavenumber-integration.md`
 - `chapters/ch09-ambient-noise.md`
 - `chapters/ch10-signals-in-noise.md`
+- `benchmark-cases.md`: the spherical shell near the seabed (§7.6.2), and the sloping elastic bottom whose FE solution is COA's reference for the elastic PE
 
 ## Key sections from the TOC
 - 7.2 Differential Equations
