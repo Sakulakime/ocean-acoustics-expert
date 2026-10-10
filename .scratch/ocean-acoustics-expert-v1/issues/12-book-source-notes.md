@@ -79,3 +79,41 @@ So the agent reads another book only through its source note, as the agent rules
 - Codex and OpenCode were not smoked.
 
 **Not live yet.** In link mode the knowledge base changes reach every harness at once. The agent and router descriptions, and the template's routing-map line, reach the harnesses only after a reinstall, which waits for the user's approval.
+
+**Reinstall and Codex/OpenCode smokes done (2026-10-10).**
+- **Reinstall.** The user approved it. `install` rewrote the four rendered files (Claude agent, Codex agent, OpenCode agent, shared router) and the manifest; `doctor` found no problems.
+- **Question.** Both harnesses got the Claude Code smoke question, plus "answer only from the local knowledge base; do not search the web". They ran in parallel from `/tmp/oae-smoke/<harness>`.
+- **Codex 0.162.0** (`codex exec --sandbox read-only --json`, model `gpt-6.1-sol`): passed.
+  - Per its own session log, the expert (role `ocean-acoustics-expert`, sandbox `read-only`):
+    1. read `00-hub.md`;
+    2. searched `routing-map.yaml` and `concept-index.yaml` with `rg`;
+    3. read `chapters/ch06-parabolic-equations.md` and `01-source-collins-siegmann.md`;
+    4. ran `pdftotext -f 128 -l 137 … -` and `-f 123 -l 125 … -` on the Collins & Siegmann PDF, inside window `collins_siegmann_poro_elastic`.
+  - It did not read the COA PDF. Neither the expert nor the main session searched the web or wrote a file.
+  - The answer matches the PDF:
+    - marched variables (Δ, w, ζ), from §4.4.2;
+    - fast and slow compressional waves plus shear;
+    - the §4.4.4 self-starter, with eqs. (4.96) and (4.98), and §3.4 for sources in fluid or solid layers.
+  - Tag drift:
+    - after the first claim, the tags drop the book name (`[textbook: §4.4.2, PDF pp. 128–129]`);
+    - the sources list carries an invented `[retrieval record]` tag.
+- **OpenCode 1.16.2** (`opencode run --format json`, model `deepseek/deepseek-v4-pro`): the expert passed; the main session did not finish.
+  - The expert read:
+    - the hub;
+    - the routing map;
+    - the concept index (`poro_elastic_pe`);
+    - `ch06`;
+    - the Collins & Siegmann source note;
+    - `solvers/solver-ram.md`.
+
+    It opened no PDF.
+  - Following its harness note, it said a book fallback is needed. It named Collins & Siegmann §4.4.1–4.4.4 with their PDF page ranges, and window pp. 122-137, and gave "Books and PDF page ranges read: none". This is the first observation of the OpenCode harness note in action, which ticket 05 left open.
+  - Tag drift:
+    - note files appear inside textbook tags (`[textbook: 01-source-collins-siegmann.md, §4.4.3 section map]`, `[textbook: routing-map.yaml, …]`);
+    - an inference from a section title is tagged as textbook.
+
+    The main session's delegation prompt had rewritten the tag rule as "note file name, or book title + PDF page range".
+  - **Observed: main-session permission.** After the expert returned, the main session tried to `read` the source note itself. That triggered an `external_directory` permission request for the knowledge base, which `opencode run` auto-rejects, and the run ended with no final main-session message.
+    - The expert's own reads raised no prompt.
+    - In an interactive session the user would be asked instead.
+    - Allowing the knowledge base for every OpenCode agent would mean editing the user's global OpenCode config, which this installer does not touch.
