@@ -201,7 +201,7 @@ function deepenedChapterNotesCiteEquations(kb) {
       continue;
     }
     const equationNumber = new RegExp(`\\(${chapter}\\.\\d+\\)`);
-    const subsections = majorSubsections(kb.texts.get(path));
+    const subsections = subsectionsUnder(kb.texts.get(path), "## Major subsections");
     if (subsections.length === 0) {
       problems.push(`${path}: a deepened chapter note needs major subsections, as ### headings under ## Major subsections`);
     }
@@ -238,14 +238,6 @@ function benchmarkCasesHaveFourBlocks(kb) {
     }
   }
   return problems;
-}
-
-/**
- * @param {string} text A note.
- * @returns {{heading: string, body: string}[]} The `###` subsections under `## Major subsections`.
- */
-function majorSubsections(text) {
-  return subsectionsUnder(text, "## Major subsections");
 }
 
 /**
