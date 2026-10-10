@@ -101,5 +101,6 @@ The notes also fix errors in the old ones:
 - The hub says which chapter notes are deepened and to take equations and validity limits from them first.
 - The agent's fallback rule now sends exact equations to a PDF only when the notes do not give them. The router already said this. A new test in `test/agent-rules.test.js` covers it.
 - This reaches the harnesses only after a reinstall, which waits for the user's approval. The per-harness smokes would then need re-running.
+- **Reinstalled (2026-10-10)** with the user's approval, after a dry run. `install` rewrote the three agent files (Claude, Codex, OpenCode) and the manifest; the router was unchanged. `doctor` found no problems, and each rendered agent carries the new rule. The smokes have not been re-run.
 
 **Gap for `/domain-modeling`:** "deepened" (a chapter note with key equations and validity conditions) is not in `GLOSSARY.md`.
