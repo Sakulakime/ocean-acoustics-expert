@@ -546,7 +546,7 @@
     },
     {
       "key": "bucker_waveguide",
-      "aliases": ["bucker waveguide", "bucker"],
+      "aliases": ["bucker waveguide"],
       "bucket": "benchmark_cases",
       "primary_notes": ["benchmark-cases.md"],
       "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
