@@ -214,17 +214,52 @@ function deepenedChapterNotesCiteEquations(kb) {
   return problems;
 }
 
+/** The blocks every case of a benchmark-cases note has, each opened by a bold label line. */
+const BENCHMARK_CASE_BLOCKS = ["Environment", "COA references", "Validates", "Reference solutions"];
+
 /**
- * @param {string} text A chapter note.
+ * A benchmark-cases note (`type: benchmark-cases`) has cases, and every case
+ * has the four blocks of the spec's schema.
+ * @type {Rule}
+ */
+function benchmarkCasesHaveFourBlocks(kb) {
+  const problems = [];
+  for (const { path, frontmatter } of parsedNoteFrontmatters(kb)) {
+    if (frontmatter?.type !== "benchmark-cases") continue;
+    const cases = subsectionsUnder(kb.texts.get(path), "## Cases");
+    if (cases.length === 0) {
+      problems.push(`${path}: a benchmark-cases note needs cases, as ### headings under ## Cases`);
+    }
+    for (const { heading, body } of cases) {
+      const labels = new Set(body.split("\n").map((line) => line.trim()));
+      for (const block of BENCHMARK_CASE_BLOCKS) {
+        if (!labels.has(`**${block}**`)) problems.push(`${path}: benchmark case "${heading}" has no **${block}** block`);
+      }
+    }
+  }
+  return problems;
+}
+
+/**
+ * @param {string} text A note.
  * @returns {{heading: string, body: string}[]} The `###` subsections under `## Major subsections`.
  */
 function majorSubsections(text) {
+  return subsectionsUnder(text, "## Major subsections");
+}
+
+/**
+ * @param {string} text A note.
+ * @param {string} sectionHeading A `##` heading line, such as "## Cases".
+ * @returns {{heading: string, body: string}[]} The `###` subsections under that heading.
+ */
+function subsectionsUnder(text, sectionHeading) {
   const subsections = [];
-  let inMajorSubsections = false;
+  let inSection = false;
   for (const line of text.split("\n")) {
-    if (line.startsWith("## ")) inMajorSubsections = line.trim() === "## Major subsections";
-    else if (inMajorSubsections && line.startsWith("### ")) subsections.push({ heading: line.slice(4).trim(), body: "" });
-    else if (inMajorSubsections && subsections.length > 0) subsections.at(-1).body += `${line}\n`;
+    if (line.startsWith("## ")) inSection = line.trim() === sectionHeading;
+    else if (inSection && line.startsWith("### ")) subsections.push({ heading: line.slice(4).trim(), body: "" });
+    else if (inSection && subsections.length > 0) subsections.at(-1).body += `${line}\n`;
   }
   return subsections;
 }
@@ -240,6 +275,7 @@ const RULES = [
   sourcePdfsExist,
   noteFrontmattersParse,
   deepenedChapterNotesCiteEquations,
+  benchmarkCasesHaveFourBlocks,
 ];
 
 /** The MATLAB solver helpers shipped with this package. */

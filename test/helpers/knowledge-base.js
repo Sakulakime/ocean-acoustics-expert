@@ -108,3 +108,38 @@ export function chapterNote(subsections, { frontmatter = ["type: chapter-note", 
     "",
   ].join("\n");
 }
+
+/** The four blocks every case of a benchmark-cases note has, with sample content. */
+export const BENCHMARK_CASE_BLOCKS = {
+  Environment: "- Water 1500 m/s over a 1700 m/s bottom",
+  "COA references": "- Fig. 6.8, §6.7, PDF pp. 522-523",
+  Validates: "- PE",
+  "Reference solutions": "- Two-way coupled modes",
+};
+
+/**
+ * A benchmark-cases note with the given cases.
+ * @param {Record<string, string[]>} cases Case heading to the names of the
+ *   blocks it has, drawn from BENCHMARK_CASE_BLOCKS.
+ * @returns {string}
+ */
+export function benchmarkCasesNote(cases) {
+  return [
+    "---",
+    "type: benchmark-cases",
+    "---",
+    "# Benchmark cases",
+    "",
+    "## Cases",
+    "",
+    ...Object.entries(cases).flatMap(([heading, blocks]) => [
+      `### ${heading}`,
+      ...blocks.flatMap((block) => [`**${block}**`, BENCHMARK_CASE_BLOCKS[block]]),
+      "",
+    ]),
+    "## Other COA examples",
+    "**Validates**",
+    "- Not a case: blocks outside ## Cases do not count",
+    "",
+  ].join("\n");
+}

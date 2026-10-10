@@ -4,7 +4,14 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { runCli } from "./helpers/cli.js";
-import { chapterNote, conceptIndexWith, routingMapWithWindows, writeDirectory, writeKnowledgeBase } from "./helpers/knowledge-base.js";
+import {
+  benchmarkCasesNote,
+  chapterNote,
+  conceptIndexWith,
+  routingMapWithWindows,
+  writeDirectory,
+  writeKnowledgeBase,
+} from "./helpers/knowledge-base.js";
 
 const BUNDLED_CASE_COUNT = JSON.parse(
   readFileSync(new URL("../checks/route-selection-cases.json", import.meta.url), "utf8"),
@@ -631,4 +638,51 @@ test("check fails when a deepened chapter note has no chapter number", async (t)
       assert.doesNotMatch(result.stderr, /major subsection/);
     });
   }
+});
+
+const BENCHMARK_BLOCKS = ["Environment", "COA references", "Validates", "Reference solutions"];
+
+test("check fails when a benchmark case lacks one of its four blocks", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "benchmark-cases.md": benchmarkCasesNote({
+      "ASA wedge": BENCHMARK_BLOCKS,
+      "Dickins seamount": ["COA references", "Environment"],
+    }),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 1);
+  for (const block of ["Validates", "Reference solutions"]) {
+    assert.ok(
+      result.stderr.includes(`FAIL benchmark-cases.md: benchmark case "Dickins seamount" has no **${block}** block`),
+      result.stderr,
+    );
+  }
+  assert.doesNotMatch(result.stderr, /ASA wedge|\*\*Environment\*\*|\*\*COA references\*\*/);
+});
+
+test("check fails when a benchmark-cases note has no cases", (t) => {
+  const kb = writeKnowledgeBase(t, { "benchmark-cases.md": benchmarkCasesNote({}) });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 1);
+  assert.ok(
+    result.stderr.includes("FAIL benchmark-cases.md: a benchmark-cases note needs cases, as ### headings under ## Cases"),
+    result.stderr,
+  );
+});
+
+test("check accepts a benchmark-cases note whose every case has the four blocks", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    "benchmark-cases.md": benchmarkCasesNote({
+      "ASA wedge": BENCHMARK_BLOCKS,
+      "Pekeris waveguide": [...BENCHMARK_BLOCKS].reverse(),
+    }),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 0, result.stderr);
 });
