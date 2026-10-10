@@ -701,6 +701,143 @@
       }
     },
     {
+      "name": "concept - transmission-loss normalization",
+      "prompt": "What is the standard transmission-loss normalization?",
+      "expected": {
+        "concept_key": "tl_normalization",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.greens_functions_and_halfspace"
+        ]
+      }
+    },
+    {
+      "name": "concept - ideal waveguide with image method",
+      "prompt": "Apply the method of images to an ideal fluid waveguide",
+      "expected": {
+        "concept_key": "ideal_waveguide",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.layered_media_and_waveguides"
+        ]
+      }
+    },
+    {
+      "name": "concept - deep-ocean waveguide structure",
+      "prompt": "Describe the deep-ocean waveguide and its ray cycles",
+      "expected": {
+        "concept_key": "deep_ocean_waveguide",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "fallback_windows": [
+          "wave_propagation_theory.deep_ocean_waveguides"
+        ]
+      }
+    },
+    {
+      "name": "concept - eikonal equation and ray tubes",
+      "prompt": "Derive the eikonal equation from the ray series",
+      "expected": {
+        "concept_key": "eikonal_equation",
+        "bucket": "ray_methods",
+        "primary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "fallback_windows": [
+          "ray_methods.derivation"
+        ]
+      }
+    },
+    {
+      "name": "concept - dynamic ray tracing for TL",
+      "prompt": "Use dynamic ray tracing to compute coherent transmission loss",
+      "expected": {
+        "concept_key": "ray_transmission_loss",
+        "bucket": "ray_methods",
+        "primary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-bellhop.md"
+        ],
+        "fallback_windows": [
+          "ray_methods.derivation"
+        ]
+      }
+    },
+    {
+      "name": "concept - Snell's law and Fermat principle",
+      "prompt": "Derive Snell's law from Fermat's principle",
+      "expected": {
+        "concept_key": "snells_law",
+        "bucket": "ray_methods",
+        "primary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "ray_methods.additional_properties",
+          "ray_methods.ray_bending"
+        ]
+      }
+    },
+    {
+      "name": "concept - numerical ray tracing with cell method",
+      "prompt": "Explain the cell method for numerical ray tracing",
+      "expected": {
+        "concept_key": "numerical_ray_tracing",
+        "bucket": "ray_methods",
+        "primary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "secondary_notes": [
+          "runbooks/bellhop-runbook.md"
+        ],
+        "fallback_windows": [
+          "ray_methods.numerical_solution_and_eigenrays"
+        ]
+      }
+    },
+    {
+      "name": "concept - ray invariant in extensions",
+      "prompt": "Explain the ray invariant",
+      "expected": {
+        "concept_key": "ray_invariant",
+        "bucket": "ray_methods",
+        "primary_notes": [
+          "chapters/ch03-ray-methods.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "fallback_windows": [
+          "ray_methods.extensions_and_related_techniques"
+        ]
+      }
+    },
+    {
       "name": "concept - no match",
       "prompt": "Explain salinity-front instability in physical oceanography.",
       "expected": {
