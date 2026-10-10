@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "title": "COA Reverse Concept Index",
-  "description": "Deterministic concept-to-route map for COA concepts, linking prompt-level technical terms to primary notes, secondary notes, and targeted fallback windows.",
+  "title": "Reverse Concept Index",
+  "description": "Deterministic concept-to-route map for COA concepts and the topics of the other books with source notes, linking prompt-level technical terms to primary notes, secondary notes, and targeted fallback windows (COA windows first).",
   "match_policy": {
     "normalize_to_lowercase": true,
     "prefer_longest_alias": true,
-    "when_to_use": "Use when a prompt names a specific COA concept, subsection idea, or technical term rather than only a broad method family."
+    "when_to_use": "Use when a prompt names a specific concept, subsection idea, or technical term rather than only a broad method family."
   },
   "concepts": [
     {
@@ -47,6 +47,38 @@
       "primary_notes": ["chapters/ch01-fundamentals.md"],
       "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
       "fallback_windows": ["fundamentals.attenuation_and_bottom_loss"]
+    },
+    {
+      "key": "sound_speed_equation",
+      "aliases": ["sound speed equation", "sound-speed equation", "sound speed formula", "mackenzie", "del grosso", "chen-millero", "chen and millero", "声速公式", "声速经验公式"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": [],
+      "fallback_windows": ["fundamentals.environment_and_ssp", "fundamentals.etter_sound_speed"]
+    },
+    {
+      "key": "sound_absorption",
+      "aliases": ["sound absorption", "seawater absorption", "absorption coefficient", "francois-garrison", "thorp", "声吸收", "海水吸收"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": [],
+      "fallback_windows": ["fundamentals.attenuation_and_bottom_loss", "fundamentals.etter_attenuation_and_absorption"]
+    },
+    {
+      "key": "reflection_coefficient",
+      "aliases": ["reflection coefficient", "plane-wave reflection", "反射系数"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["fundamentals.attenuation_and_bottom_loss", "fundamentals.brekhovskikh_lysanov_reflection"]
+    },
+    {
+      "key": "rough_surface_scattering",
+      "aliases": ["rough surface scattering", "rough-surface scattering", "rayleigh parameter", "small perturbation method", "kirchhoff approximation", "tangent plane", "small-slope approximation", "粗糙海面散射", "粗糙界面散射"],
+      "bucket": "fundamentals",
+      "primary_notes": ["chapters/ch01-fundamentals.md"],
+      "secondary_notes": [],
+      "fallback_windows": ["fundamentals.brekhovskikh_lysanov_rough_surface_scattering", "fundamentals.brekhovskikh_lysanov_tangent_plane"]
     },
     {
       "key": "wave_equation",
@@ -97,6 +129,14 @@
       "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides"]
     },
     {
+      "key": "lateral_wave",
+      "aliases": ["lateral wave", "head wave", "侧面波", "首波"],
+      "bucket": "wave_propagation_theory",
+      "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "secondary_notes": [],
+      "fallback_windows": ["wave_propagation_theory.greens_functions_and_halfspace", "wave_propagation_theory.brekhovskikh_lysanov_lateral_wave"]
+    },
+    {
       "key": "gaussian_beam",
       "aliases": ["gaussian beam", "gaussian-beam", "高斯波束"],
       "bucket": "ray_methods",
@@ -111,6 +151,14 @@
       "primary_notes": ["chapters/ch03-ray-methods.md"],
       "secondary_notes": ["solvers/solver-bellhop.md"],
       "fallback_windows": ["ray_methods.numerical_solution_and_eigenrays"]
+    },
+    {
+      "key": "caustic",
+      "aliases": ["caustic", "caustics", "focusing factor", "焦散"],
+      "bucket": "ray_methods",
+      "primary_notes": ["chapters/ch03-ray-methods.md"],
+      "secondary_notes": ["solvers/solver-bellhop.md"],
+      "fallback_windows": ["ray_methods.anomalies_and_gaussian_beams", "ray_methods.brekhovskikh_lysanov_caustics"]
     },
     {
       "key": "horizontal_wavenumber",
@@ -150,7 +198,7 @@
       "bucket": "normal_modes",
       "primary_notes": ["chapters/ch05-normal-modes.md"],
       "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
-      "fallback_windows": ["normal_modes.range_dependence_and_mode_coupling"]
+      "fallback_windows": ["normal_modes.range_dependence_and_mode_coupling", "normal_modes.brekhovskikh_lysanov_adiabatic_and_coupled_modes"]
     },
     {
       "key": "group_velocity",
@@ -159,6 +207,14 @@
       "primary_notes": ["chapters/ch05-normal-modes.md"],
       "secondary_notes": ["chapters/ch08-broadband-modeling.md"],
       "fallback_windows": ["normal_modes.perturbation_and_group_velocity"]
+    },
+    {
+      "key": "wkb_modes",
+      "aliases": ["wkb", "phase integral", "wkb近似"],
+      "bucket": "normal_modes",
+      "primary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+      "fallback_windows": ["normal_modes.brekhovskikh_lysanov_wkb_modes"]
     },
     {
       "key": "starter_field",
@@ -185,6 +241,30 @@
       "fallback_windows": ["parabolic_equations.starters_and_split_step"]
     },
     {
+      "key": "rational_approximation",
+      "aliases": ["rational approximation", "padé approximation", "pade approximation", "split-step padé", "split-step pade", "有理近似", "帕德近似"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["solvers/solver-ram.md"],
+      "fallback_windows": ["parabolic_equations.starters_and_split_step", "parabolic_equations.collins_siegmann_rational_approximations", "parabolic_equations.collins_siegmann_split_step_pade"]
+    },
+    {
+      "key": "elastic_pe",
+      "aliases": ["elastic parabolic equation", "elastic pe", "seismo-acoustic", "弹性抛物方程"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["parabolic_equations.collins_siegmann_elastic_pe"]
+    },
+    {
+      "key": "poro_elastic_pe",
+      "aliases": ["poro-elastic parabolic equation", "poroelastic parabolic equation", "poro-elastic", "poroelastic", "biot medium", "biot theory", "多孔弹性"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "secondary_notes": [],
+      "fallback_windows": ["parabolic_equations.collins_siegmann_poro_elastic"]
+    },
+    {
       "key": "pml",
       "aliases": ["pml", "perfectly matched layer", "完全匹配层"],
       "bucket": "numerical_methods",
@@ -206,7 +286,7 @@
       "bucket": "ambient_noise",
       "primary_notes": ["chapters/ch09-ambient-noise.md"],
       "secondary_notes": ["chapters/ch10-signals-in-noise.md"],
-      "fallback_windows": ["ambient_noise.stratified_noise_models"]
+      "fallback_windows": ["ambient_noise.stratified_noise_models", "ambient_noise.etter_ambient_noise_models"]
     },
     {
       "key": "cross_spectral_density",
@@ -230,7 +310,7 @@
       "bucket": "sonar_signal_processing",
       "primary_notes": ["chapters/ch10-signals-in-noise.md"],
       "secondary_notes": ["chapters/ch09-ambient-noise.md"],
-      "fallback_windows": ["sonar_signal_processing.sonar_equation_and_array_gain"]
+      "fallback_windows": ["sonar_signal_processing.sonar_equation_and_array_gain", "sonar_signal_processing.etter_sonar_equations"]
     },
     {
       "key": "beamforming",
@@ -263,6 +343,54 @@
       "primary_notes": ["chapters/ch10-signals-in-noise.md"],
       "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
       "fallback_windows": ["sonar_signal_processing.vector_sensors_and_time_reversal"]
+    },
+    {
+      "key": "reverberation",
+      "aliases": ["reverberation", "volume reverberation", "boundary reverberation", "bottom reverberation", "surface reverberation", "混响"],
+      "bucket": "sonar_signal_processing",
+      "primary_notes": ["chapters/ch10-signals-in-noise.md"],
+      "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["sonar_signal_processing.etter_reverberation", "sonar_signal_processing.etter_reverberation_models"]
+    },
+    {
+      "key": "internal_waves",
+      "aliases": ["internal wave", "internal waves", "internal-wave", "garrett-munk", "garrett munk", "gm spectrum", "内波"],
+      "bucket": "ocean_fluctuations",
+      "primary_notes": ["01-source-colosi.md"],
+      "secondary_notes": ["chapters/ch01-fundamentals.md"],
+      "fallback_windows": ["ocean_fluctuations.colosi_internal_waves", "ocean_fluctuations.brekhovskikh_lysanov_internal_wave_fluctuations", "ocean_fluctuations.etter_fronts_eddies_internal_waves"]
+    },
+    {
+      "key": "acoustic_fluctuations",
+      "aliases": ["acoustic fluctuations", "acoustic fluctuation", "scintillation", "saturation regime", "unsaturated regime", "λ-φ", "lambda-phi", "声起伏", "闪烁"],
+      "bucket": "ocean_fluctuations",
+      "primary_notes": ["01-source-colosi.md"],
+      "secondary_notes": ["01-source-brekhovskikh-lysanov.md"],
+      "fallback_windows": ["ocean_fluctuations.colosi_fluctuation_regimes", "ocean_fluctuations.colosi_weak_fluctuation"]
+    },
+    {
+      "key": "ray_chaos",
+      "aliases": ["ray chaos", "射线混沌"],
+      "bucket": "ocean_fluctuations",
+      "primary_notes": ["01-source-colosi.md"],
+      "secondary_notes": ["chapters/ch03-ray-methods.md"],
+      "fallback_windows": ["ocean_fluctuations.colosi_ray_chaos"]
+    },
+    {
+      "key": "mutual_coherence",
+      "aliases": ["mutual coherence", "path integral", "互相干"],
+      "bucket": "ocean_fluctuations",
+      "primary_notes": ["01-source-colosi.md"],
+      "secondary_notes": [],
+      "fallback_windows": ["ocean_fluctuations.colosi_mutual_coherence"]
+    },
+    {
+      "key": "mode_transport",
+      "aliases": ["mode transport", "coupled-mode transport"],
+      "bucket": "ocean_fluctuations",
+      "primary_notes": ["01-source-colosi.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["ocean_fluctuations.colosi_mode_transport"]
     }
   ]
 }

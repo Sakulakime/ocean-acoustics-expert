@@ -139,7 +139,8 @@
           "chapters/ch06-parabolic-equations.md"
         ],
         "fallback_windows": [
-          "normal_modes.range_dependence_and_mode_coupling"
+          "normal_modes.range_dependence_and_mode_coupling",
+          "normal_modes.brekhovskikh_lysanov_adiabatic_and_coupled_modes"
         ]
       }
     },
@@ -209,6 +210,98 @@
         ],
         "fallback_windows": [
           "sonar_signal_processing.matched_field_processing"
+        ]
+      }
+    },
+    {
+      "name": "book window - Collins & Siegmann rational approximations",
+      "prompt": "How do rotated rational approximations keep the split-step Padé solution stable?",
+      "expected": {
+        "concept_key": "rational_approximation",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-ram.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step",
+          "parabolic_equations.collins_siegmann_rational_approximations",
+          "parabolic_equations.collins_siegmann_split_step_pade"
+        ]
+      }
+    },
+    {
+      "name": "book window - Collins & Siegmann poro-elastic PE",
+      "prompt": "Explain the poro-elastic parabolic equation for Biot sediments.",
+      "expected": {
+        "concept_key": "poro_elastic_pe",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [],
+        "fallback_windows": [
+          "parabolic_equations.collins_siegmann_poro_elastic"
+        ]
+      }
+    },
+    {
+      "name": "book window - Colosi internal waves",
+      "prompt": "How does the Garrett-Munk internal-wave spectrum shape ocean sound-speed perturbations?",
+      "expected": {
+        "concept_key": "internal_waves",
+        "bucket": "ocean_fluctuations",
+        "route_notes": [
+          "01-source-colosi.md",
+          "01-source-brekhovskikh-lysanov.md",
+          "chapters/ch01-fundamentals.md"
+        ],
+        "primary_notes": [
+          "01-source-colosi.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "ocean_fluctuations.colosi_internal_waves",
+          "ocean_fluctuations.brekhovskikh_lysanov_internal_wave_fluctuations",
+          "ocean_fluctuations.etter_fronts_eddies_internal_waves"
+        ]
+      }
+    },
+    {
+      "name": "book window - Etter reverberation",
+      "prompt": "How is volume reverberation modeled in sonar performance prediction?",
+      "expected": {
+        "concept_key": "reverberation",
+        "bucket": "sonar_signal_processing",
+        "primary_notes": [
+          "chapters/ch10-signals-in-noise.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch04-wavenumber-integration.md"
+        ],
+        "fallback_windows": [
+          "sonar_signal_processing.etter_reverberation",
+          "sonar_signal_processing.etter_reverberation_models"
+        ]
+      }
+    },
+    {
+      "name": "book window - Brekhovskikh & Lysanov lateral wave",
+      "prompt": "When does the lateral wave dominate the field reflected from a fast bottom?",
+      "expected": {
+        "concept_key": "lateral_wave",
+        "bucket": "wave_propagation_theory",
+        "primary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "secondary_notes": [],
+        "fallback_windows": [
+          "wave_propagation_theory.greens_functions_and_halfspace",
+          "wave_propagation_theory.brekhovskikh_lysanov_lateral_wave"
         ]
       }
     },

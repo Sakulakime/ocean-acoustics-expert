@@ -1,6 +1,9 @@
 # Note paths are relative to the knowledge-base root. Chapter spans and
-# fallback windows are PDF page ranges of the primary source, whose PDF is
-# primary_source_pdf (see 01-source-coa.md).
+# fallback windows written as a page range (20-39) are PDF page ranges of the
+# primary source, whose PDF is primary_source_pdf (see 01-source-coa.md).
+# A fallback window into another book is a mapping: source is that book's
+# source note, which names its PDF and maps its sections to pages, and pages
+# is a PDF page range of that PDF.
 primary_source: 01-source-coa.md
 primary_source_pdf: sources/jensen-2011-computational-ocean-acoustics.pdf
 policy:
@@ -24,7 +27,7 @@ routes:
       at2020_plotshd: "{{at_2020}}/Matlab/Plot/plotshd.m"
     note: TL/场可视化权威规范——色标范围按 AT2020 plotshd.m 自适应算(median+0.75std, 50dB窗口),多图对比共用同一 caxis,离散标签不用连续色标。涉及任何 TL/声场出图、色标、配色问题必读此 note。
   fundamentals:
-    trigger_keywords: [fundamentals, ocean-acoustic environment, acoustic preliminaries, source and receiver, sources and receivers, intensity, power, energy density, decibel, spectrum level, sound speed, SSP, sound-speed profile, thermocline, mixed layer, surface duct, deep sound channel, deep sound channel axis, bubble layer, bubble suspension, bottom loss, volume attenuation, boundary scattering, volume scattering, transmission loss, shallow water, deep water, 水声环境, 声速剖面, 热跃层, 表面波导, 深海声道, 海洋波导, 传输损失, 海底损失]
+    trigger_keywords: [fundamentals, ocean-acoustic environment, acoustic preliminaries, source and receiver, sources and receivers, intensity, power, energy density, decibel, spectrum level, sound speed, SSP, sound-speed profile, thermocline, mixed layer, surface duct, deep sound channel, deep sound channel axis, bubble layer, bubble suspension, bottom loss, reflection coefficient, volume attenuation, absorption, sound speed equation, boundary scattering, rough surface, Rayleigh parameter, volume scattering, transmission loss, shallow water, deep water, 水声环境, 声速剖面, 热跃层, 表面波导, 深海声道, 海洋波导, 传输损失, 海底损失, 反射系数, 声吸收, 粗糙海面]
     notes:
       - chapters/ch01-fundamentals.md
       - workflows/model-selection.md
@@ -33,8 +36,23 @@ routes:
       environment_and_ssp: 20-39
       attenuation_and_bottom_loss: 54-72
       ambient_noise_and_models: 73-83
+      etter_sound_speed:
+        source: 01-source-etter.md
+        pages: 60-69
+      etter_attenuation_and_absorption:
+        source: 01-source-etter.md
+        pages: 119-122
+      brekhovskikh_lysanov_reflection:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 73-84
+      brekhovskikh_lysanov_rough_surface_scattering:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 195-208
+      brekhovskikh_lysanov_tangent_plane:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 213-221
   wave_propagation_theory:
-    trigger_keywords: [wave equation, nonlinear wave equation, linear wave equation, Helmholtz equation, velocity potential, displacement potential, particle velocity, Green function, Green's function, Green theorem, reciprocity, radiation condition, fluid halfspace, layered media, waveguide, integral transform, Pekeris waveguide, deep-ocean waveguide, waveguide invariant, transmission loss normalization, 波动方程, 亥姆霍兹方程, 速度势, 位移势, 格林函数, 格林定理, 互易, 辐射条件, 分层介质, Pekeris波导, 深海波导, 波导不变量]
+    trigger_keywords: [wave equation, nonlinear wave equation, linear wave equation, Helmholtz equation, velocity potential, displacement potential, particle velocity, Green function, Green's function, Green theorem, reciprocity, radiation condition, fluid halfspace, layered media, waveguide, integral transform, Pekeris waveguide, deep-ocean waveguide, waveguide invariant, lateral wave, head wave, transmission loss normalization, 波动方程, 亥姆霍兹方程, 速度势, 位移势, 格林函数, 格林定理, 互易, 辐射条件, 分层介质, Pekeris波导, 深海波导, 波导不变量, 侧面波]
     notes:
       - chapters/ch02-wave-propagation-theory.md
       - chapters/ch01-fundamentals.md
@@ -43,8 +61,11 @@ routes:
       wave_equation_and_helmholtz: 84-103
       greens_functions_and_halfspace: 104-133
       layered_media_and_waveguides: 134-172
+      brekhovskikh_lysanov_lateral_wave:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 103-107
   ray_methods:
-    trigger_keywords: [ray, rays, eigenray, eikonal, Gaussian beam, caustic, Snell, ray tracing, convergence zone, CZ, Lloyd mirror, 射线, 本征射线, 高斯波束, 焦散, 会聚区, bellhop, BELLHOP]
+    trigger_keywords: [ray, rays, eigenray, eikonal, Gaussian beam, caustic, focusing factor, Snell, ray tracing, convergence zone, CZ, Lloyd mirror, 射线, 本征射线, 高斯波束, 焦散, 会聚区, bellhop, BELLHOP]
     notes:
       - chapters/ch03-ray-methods.md
       - solvers/solver-bellhop.md
@@ -55,6 +76,12 @@ routes:
       derivation: 176-194
       anomalies_and_gaussian_beams: 195-212
       numerical_solution_and_eigenrays: 213-230
+      brekhovskikh_lysanov_caustics:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 55-59
+      etter_ray_models:
+        source: 01-source-etter.md
+        pages: 144-158
   wavenumber_integration:
     trigger_keywords: [wavenumber integration, horizontal wavenumber, fast field, fast field program, FFP, Hankel, contour integration, aliasing, evanescent, depth-separated wave equation, direct global matrix, DGM, propagator matrix, invariant embedding, homogeneous fluid layers, homogeneous elastic layers, n2 linear, n^2 linear, pseudo-linear, stratified reverberation, stratified scattering, 波数积分, 快速场, 直接整体矩阵, 传播矩阵, 不变量嵌入, 混叠, scooter, SCOOTER, oases, OASES]
     notes:
@@ -68,8 +95,11 @@ routes:
       depth_equation_and_dgm: 270-296
       aliasing_and_ffp: 297-320
       scattering_and_reverberation: 321-336
+      etter_fast_field_models:
+        source: 01-source-etter.md
+        pages: 168-170
   normal_modes:
-    trigger_keywords: [normal mode, normal modes, modes, modal, adiabatic, mode coupling, Prufer, group velocity, dispersion, waveguide invariant, 简正模, 模耦合, 普吕弗, 群速度, 色散, 绝热近似, kraken, KRAKEN]
+    trigger_keywords: [normal mode, normal modes, modes, modal, adiabatic, mode coupling, Prufer, group velocity, dispersion, waveguide invariant, WKB, phase integral, ray invariant, 简正模, 模耦合, 普吕弗, 群速度, 色散, 绝热近似, kraken, KRAKEN]
     notes:
       - chapters/ch05-normal-modes.md
       - solvers/solver-kraken.md
@@ -80,8 +110,17 @@ routes:
       derivation_and_greens_function: 354-372
       perturbation_and_group_velocity: 402-420
       range_dependence_and_mode_coupling: 420-442
+      brekhovskikh_lysanov_wkb_modes:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 148-160
+      brekhovskikh_lysanov_adiabatic_and_coupled_modes:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 163-173
+      etter_normal_mode_models:
+        source: 01-source-etter.md
+        pages: 159-167
   parabolic_equations:
-    trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, elastic PE, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM]
+    trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, self-starter, Padé, rational approximation, elastic PE, seismo-acoustic, poro-elastic, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM]
     notes:
       - chapters/ch06-parabolic-equations.md
       - solvers/solver-ram.md
@@ -92,6 +131,24 @@ routes:
       derivation_and_limits: 473-492
       starters_and_split_step: 493-512
       energy_and_3d: 519-528
+      collins_siegmann_rational_approximations:
+        source: 01-source-collins-siegmann.md
+        pages: 34-41
+      collins_siegmann_split_step_pade:
+        source: 01-source-collins-siegmann.md
+        pages: 42-49
+      collins_siegmann_range_dependence:
+        source: 01-source-collins-siegmann.md
+        pages: 49-66
+      collins_siegmann_elastic_pe:
+        source: 01-source-collins-siegmann.md
+        pages: 82-95
+      collins_siegmann_poro_elastic:
+        source: 01-source-collins-siegmann.md
+        pages: 122-137
+      etter_pe_models:
+        source: 01-source-etter.md
+        pages: 170-178
   numerical_methods:
     trigger_keywords: [finite difference, finite differences, finite element, finite elements, boundary element, BEM, PML, perfectly matched layer, virtual source, Galerkin, weighted residual, CFL, stability, convergence, variational formulation, fluid-elastic coupling, direct discretization, wave equation solver, 有限差分, 有限元, 边界元, 完全匹配层, 虚拟源, 伽辽金, 稳定性, 收敛性]
     notes:
@@ -122,8 +179,14 @@ routes:
       stratified_noise_models: 676-692
       noise_correlation_and_greens_function: 693-701
       three_dimensional_noise: 702-719
+      etter_noise_sources_and_spectra:
+        source: 01-source-etter.md
+        pages: 322-334
+      etter_ambient_noise_models:
+        source: 01-source-etter.md
+        pages: 342-353
   sonar_signal_processing:
-    trigger_keywords: [sonar equation, beamforming, matched-field, matched field processing, MFP, vector sensor, time reversal, array gain, detection threshold, reverberation, localization, 声呐方程, 波束形成, 匹配场处理, 矢量传感器, 时间反转, 阵增益, 混响]
+    trigger_keywords: [sonar equation, beamforming, matched-field, matched field processing, MFP, vector sensor, time reversal, array gain, detection threshold, reverberation, sonar performance model, localization, 声呐方程, 波束形成, 匹配场处理, 矢量传感器, 时间反转, 阵增益, 混响]
     notes:
       - chapters/ch10-signals-in-noise.md
       - chapters/ch08-broadband-modeling.md
@@ -134,3 +197,44 @@ routes:
       beamforming: 736-749
       matched_field_processing: 750-758
       vector_sensors_and_time_reversal: 759-777
+      etter_sonar_equations:
+        source: 01-source-etter.md
+        pages: 407-413
+      etter_reverberation:
+        source: 01-source-etter.md
+        pages: 365-378
+      etter_reverberation_models:
+        source: 01-source-etter.md
+        pages: 382-398
+  ocean_fluctuations:
+    trigger_keywords: [internal wave, internal waves, internal-wave, Garrett-Munk, GM spectrum, stochastic ocean, random ocean, random medium, acoustic fluctuations, fluctuation, scintillation, saturation, Λ-Φ, Rytov, Born approximation, path integral, mutual coherence, travel-time variance, ray chaos, mode transport, 内波, 随机海洋, 声起伏, 起伏, 闪烁, 饱和, 互相干, 射线混沌]
+    notes:
+      - 01-source-colosi.md
+      - 01-source-brekhovskikh-lysanov.md
+      - chapters/ch01-fundamentals.md
+    note: COA has no chapter on ocean fluctuations, so this route reads the books' source notes. Colosi comes first, and Brekhovskikh & Lysanov Ch. 10 gives a shorter classical treatment.
+    fallback_windows:
+      colosi_internal_waves:
+        source: 01-source-colosi.md
+        pages: 142-151
+      colosi_fluctuation_regimes:
+        source: 01-source-colosi.md
+        pages: 193-208
+      colosi_ray_chaos:
+        source: 01-source-colosi.md
+        pages: 232-246
+      colosi_weak_fluctuation:
+        source: 01-source-colosi.md
+        pages: 266-284
+      colosi_mutual_coherence:
+        source: 01-source-colosi.md
+        pages: 302-327
+      colosi_mode_transport:
+        source: 01-source-colosi.md
+        pages: 357-370
+      brekhovskikh_lysanov_internal_wave_fluctuations:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 254-259
+      etter_fronts_eddies_internal_waves:
+        source: 01-source-etter.md
+        pages: 256-261

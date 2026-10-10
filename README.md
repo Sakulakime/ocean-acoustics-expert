@@ -2,9 +2,9 @@
 
 An underwater-acoustics expert agent and the knowledge base it answers from, installable into Claude Code, Codex and OpenCode.
 
-The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, the sonar equation, beamforming and matched-field processing. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
+The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
 
-It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. In every harness the agent is read-only: it cannot change files.
+It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF: COA, or one of four more books through its source note. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. In every harness the agent is read-only: it cannot change files.
 
 > **This repository must stay private.** It ships five copyrighted book PDFs; see [Bundled books](#bundled-books).
 
@@ -136,7 +136,7 @@ Run each command as `npx github:<owner>/ocean-acoustics-expert#<tag> <command>`,
 - Etter, *Underwater Acoustic Modeling and Simulation*, 5th ed. (2018)
 - Brekhovskikh & Lysanov, *Fundamentals of Ocean Acoustics*, 3rd ed. (2003)
 
-The expert reads a book only through notes that point at its pages. Today only COA has such notes; the other four books are read once their source notes exist.
+The expert reads a book only through notes that point at its pages. COA has chapter notes. Each of the other four has a source note: its page offset and a map from sections to PDF pages, which the routing map's fallback windows point into. The expert reads targeted page ranges of them when COA does not settle a question.
 
 They are copyrighted, and the package redistributes them. So:
 

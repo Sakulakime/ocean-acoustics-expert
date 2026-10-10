@@ -1,6 +1,6 @@
 ---
 name: ocean-acoustics-router
-description: This skill should be used when the user asks about underwater acoustics, ocean acoustic propagation, transmission loss, sound-speed effects, ray methods, normal modes, parabolic equations, wavenumber integration, broadband propagation, ambient noise, sonar equation, beamforming, or matched-field processing. It routes the request through the local COA structured notes first and only falls back to the local PDF when the notes are insufficient.
+description: This skill should be used when the user asks about underwater acoustics, ocean acoustic propagation, transmission loss, sound-speed effects, ray methods, normal modes, parabolic equations, wavenumber integration, broadband propagation, ambient noise, sonar equation, beamforming, matched-field processing, reverberation, or sound propagation through internal waves and other ocean fluctuations. It routes the request through the local COA structured notes first and only falls back to targeted page ranges of the book PDFs (COA, or four more books through their source notes) when the notes are insufficient.
 version: 0.2.0
 ---
 

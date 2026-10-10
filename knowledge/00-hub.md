@@ -14,13 +14,18 @@ This library is the default local knowledge base for underwater acoustics questi
 
 1. Read this hub, then `routing-map.yaml`.
 2. Check `concept-index.yaml` for the concepts, subsection ideas or technical terms the question names.
-3. Read the smallest relevant note set: chapter notes, solver notes, runbooks and `visualization.md`, plus the benchmark-cases note and book source notes once this hub lists them.
-4. Only when the notes are insufficient, read a fallback window: a targeted page range of a book PDF in `sources/`, cited with its range.
+3. Read the smallest relevant note set: chapter notes, solver notes, runbooks and `visualization.md`, plus the benchmark-cases note once this hub lists it. A route or concept may also point at a book's source note.
+4. Only when the notes are insufficient, read a fallback window: a targeted page range of a book PDF in `sources/`, cited with its range. A window written as a page range (`473-492`) is COA's. A window with a `source` is another book's: read that source note for the book's PDF and section map, then read the window's pages.
 5. Prefer targeted page reads over whole-chapter reads.
 
 ## Source of truth
 
 - Primary book: `01-source-coa.md`
+- Other books, each with a source note (bibliographic record, page offset, section map) but no chapter notes:
+  - `01-source-collins-siegmann.md`: Collins & Siegmann, *Parabolic Wave Equations with Applications* (2019): PE techniques and elastic, poro-elastic and moving-media PEs
+  - `01-source-colosi.md`: Colosi, *Sound Propagation through the Stochastic Ocean* (2016): internal waves and acoustic fluctuations
+  - `01-source-etter.md`: Etter, *Underwater Acoustic Modeling and Simulation*, 5th ed. (2018): model catalogues, noise, reverberation, sonar performance, model evaluation
+  - `01-source-brekhovskikh-lysanov.md`: Brekhovskikh & Lysanov, *Fundamentals of Ocean Acoustics*, 3rd ed. (2003): classical theory of reflection, waveguides, rough-surface scattering and the random ocean
 - Topic routing: `routing-map.yaml`
 - Reverse concept map: `concept-index.yaml`
 - Model comparison: `workflows/model-selection.md`
@@ -61,6 +66,7 @@ Notes contain no absolute paths:
 | Broadband propagation | `chapters/ch08-broadband-modeling.md` | 626-675 |
 | Ambient noise | `chapters/ch09-ambient-noise.md` | 676-719 |
 | Sonar / signal processing | `chapters/ch10-signals-in-noise.md` | 720-787 |
+| Ocean fluctuations / internal waves | `01-source-colosi.md` (no COA chapter) | Colosi windows in `routing-map.yaml` |
 
 ## Research-oriented reading patterns
 
@@ -81,12 +87,13 @@ Notes contain no absolute paths:
 - Distinguish physical assumptions from numerical approximations.
 - State when a method is valid, not only how it works.
 - For model-selection answers, compare at least: geometry, range dependence, frequency content, computational cost, and phase fidelity.
-- When the notes do not settle the question, read only the relevant COA PDF pages and cite the page interval used.
+- When the notes do not settle the question, read only the relevant PDF pages, of COA or of another book through its source note, and cite the page interval used.
 - Tag every claim in an answer `[textbook: <source> <section/pages>]` when a book states it, or `[inference]` when no book page does.
 
 ## Related files
 
 - `01-source-coa.md`
+- `01-source-collins-siegmann.md`, `01-source-colosi.md`, `01-source-etter.md`, `01-source-brekhovskikh-lysanov.md`
 - `routing-map.yaml`
 - `glossary.md`
 - `workflows/model-selection.md`
