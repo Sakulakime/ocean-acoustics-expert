@@ -136,6 +136,7 @@ The chapter includes simple but operationally important solutions for halfspace 
 - `chapters/ch01-fundamentals.md`
 - `chapters/ch03-ray-methods.md`
 - `chapters/ch06-parabolic-equations.md`
+- `benchmark-cases.md` (Lloyd-mirror image solution)
 
 ### Layered media and range-independent waveguides
 The chapter then turns toward the canonical ocean-acoustic geometry used throughout COA.
@@ -173,6 +174,7 @@ The later chapter material uses canonical waveguides to develop the language of 
 - `chapters/ch03-ray-methods.md`
 - `chapters/ch05-normal-modes.md`
 - `chapters/ch10-signals-in-noise.md`
+- `benchmark-cases.md` (Pekeris waveguide, all COA variants)
 
 ### Reciprocity as a structural principle
 The appendix-level reciprocity material is conceptually central and used repeatedly later.

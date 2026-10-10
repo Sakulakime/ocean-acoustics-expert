@@ -221,6 +221,7 @@ Practical additions for real oceans (§3.6.1–3.6.4): ray equations in scaled a
 - `chapters/ch01-fundamentals.md`
 - `chapters/ch02-wave-propagation-theory.md`
 - `chapters/ch06-parabolic-equations.md`
+- `benchmark-cases.md` (Dickins seamount and parabolic bottom profile, §3.6.3)
 
 ### Fermat's principle, stratified media, Snell's law and reciprocity
 Variational and stratified-media properties of rays (§3.6.5–3.6.8): rays make the travel time stationary, horizontal slowness is conserved in range-independent media, and the ray amplitude is reciprocal.
@@ -284,6 +285,7 @@ The implementation core (§3.7–3.7.4). Direct integration solves the ray ODEs 
 - `chapters/ch05-normal-modes.md`
 - `solvers/solver-bellhop.md`
 - `runbooks/bellhop-runbook.md`
+- `benchmark-cases.md` (Munk profile interpolation and false caustics, §3.7.4)
 
 ### Finding eigenrays
 Eigenrays connect the source to a given receiver (§3.7.5). Finding them is a root-finding problem in the take-off angle, solved by interpolation in a ray fan, iteration, bending or continuation.
