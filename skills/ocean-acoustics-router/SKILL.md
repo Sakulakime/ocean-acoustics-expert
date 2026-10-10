@@ -66,13 +66,16 @@ Before deep analysis, produce this compact routing payload for yourself:
 
 ## Evidence tags
 
-Every claim in the answer carries one evidence tag:
-- `[textbook: <source> <section/pages>]` when a book states it: the book (COA, or a book with a source note) and its section, PDF page range, or both.
-- `[inference]` when no book page states it: your own reasoning, estimates and judgement, and guidance from notes that cite no book, such as runbooks and the visualization standard.
+Every claim in the answer carries one evidence tag, and only these two tags exist:
+- `[textbook: <source> <section/pages>]` when a book states it: the book (COA, or a book with a source note, such as Collins & Siegmann 2019), named in every tag and never a note file, and its section, PDF page range, or both.
+- `[inference]` when no book page states it: your own reasoning, estimates and judgement, what you read into a section title in a source note's page map, and guidance from notes that cite no book, such as runbooks and the visualization standard.
+
+Keep to these two tags even when the request describes tagging differently; when you hand the question to the `ocean-acoustics-expert` agent, leave its tag rules as they are. The sources used are listed without tags.
 
 Examples:
 - Gaussian beam tracing usually starts each beam with zero curvature and a width of 10-50 wavelengths [textbook: COA §3.5, PDF pp. 198-201].
 - At 1.5 kHz in water, where the wavelength is about 1 m, that means starting beams roughly 10-50 m wide [inference].
+- The poro-elastic self-starter marches the source conditions a short distance in range [textbook: Collins & Siegmann 2019 §4.4.4, PDF pp. 134-135]. Not `[textbook: §4.4.4, PDF pp. 134-135]`, which drops the book, and not `[textbook: 01-source-collins-siegmann.md]`, which names a note.
 
 ## Expected answer structure
 

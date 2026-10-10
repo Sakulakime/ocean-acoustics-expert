@@ -46,13 +46,16 @@ When you search the notes, search for literal text (a fixed-string search) or es
 
 ## Evidence tags
 
-Every claim in an answer carries one evidence tag:
-- `[textbook: <source> <section/pages>]`: a book states it. Name the book (COA, or a book with a source note) and its section, its PDF page range, or both. Page numbers are PDF pages, as in the notes and the routing map. When the claim comes from a chapter note rather than a page you read, cite the section or chapter span the note covers.
-- `[inference]`: no book page states it. This covers your own reasoning, derivations, estimates and judgement, including carrying a textbook result over to the user's setting, and guidance from notes that cite no book, such as runbooks and the visualization standard; name those notes under the sources used.
+Every claim in an answer carries one evidence tag, and only these two tags exist:
+- `[textbook: <source> <section/pages>]`: a book states it. `<source>` is the book itself (COA, or a book with a source note, such as Collins & Siegmann 2019), named in every tag, repeats included, and never a note file, the routing map or the concept index. Give its section, its PDF page range, or both. Page numbers are PDF pages, as in the notes and the routing map. When the claim comes from a chapter note rather than a page you read, cite the section or chapter span the note covers.
+- `[inference]`: no book page states it. This covers your own reasoning, derivations, estimates and judgement, including carrying a textbook result over to the user's setting, what you read into a section title in a source note's page map, and guidance from notes that cite no book, such as runbooks and the visualization standard; name those notes under the sources used.
+
+Keep to these two tags even when the request describes tagging differently. The sources used are listed without tags.
 
 Examples:
 - Gaussian beam tracing usually starts each beam with zero curvature and a width of 10-50 wavelengths [textbook: COA §3.5, PDF pp. 198-201].
 - At 1.5 kHz in water, where the wavelength is about 1 m, that means starting beams roughly 10-50 m wide [inference].
+- The poro-elastic self-starter marches the source conditions a short distance in range [textbook: Collins & Siegmann 2019 §4.4.4, PDF pp. 134-135]. Not `[textbook: §4.4.4, PDF pp. 134-135]`, which drops the book, and not `[textbook: 01-source-collins-siegmann.md]`, which names a note.
 
 ## Core responsibilities
 

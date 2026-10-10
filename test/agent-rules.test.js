@@ -62,6 +62,16 @@ test("agent and router define both evidence tags, with an example of each, for e
   }
 });
 
+test("agent and router name the book in every textbook tag and allow no other tags", (t) => {
+  for (const [label, text] of renderedRules(t)) {
+    assert.match(text, /\[textbook: (?!COA )[^\]<>`]+ \d{4} §[^\]<>`]*\d+-\d+\]/, `${label}: textbook tag example for another book`);
+    assert.match(text, /never a note file/i, `${label}: a note file is not a textbook source`);
+    assert.match(text, /only these two tags/i, `${label}: no tags beyond textbook and inference`);
+    assert.match(text, /even when the request/i, `${label}: the tag rules hold however a request words them`);
+    assert.match(text, /without tags/i, `${label}: the sources-used list carries no tags`);
+  }
+});
+
 test("agent and router check the hub or routing map before assuming optional notes exist", (t) => {
   for (const [label, text] of renderedRules(t)) {
     assert.match(text, /when present/i, `${label}: benchmark cases and source notes are optional`);

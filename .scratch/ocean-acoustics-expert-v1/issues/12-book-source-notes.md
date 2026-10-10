@@ -117,3 +117,13 @@ So the agent reads another book only through its source note, as the agent rules
     - The expert's own reads raised no prompt.
     - In an interactive session the user would be asked instead.
     - Allowing the knowledge base for every OpenCode agent would mean editing the user's global OpenCode config, which this installer does not touch.
+
+**Follow-up: tag rules tightened (2026-10-10).** The user asked for a fix to the tag drift above. The agent template and the router now say:
+- only the two tags exist, and they hold even when a request words tagging differently;
+- a textbook tag names the book in every tag, never a note file, the routing map or the concept index;
+- what is read into a section title in a source note's page map is `[inference]`;
+- the sources used are listed without tags.
+
+The router also tells a main session to leave the expert's tag rules as they are when it delegates. A third example tags another book, `[textbook: Collins & Siegmann 2019 §4.4.4, PDF pp. 134-135]` (checked against the PDF), next to the two wrong forms seen in the smokes.
+
+One new test in `test/agent-rules.test.js` covers this; it failed before the change. After the reinstall, all four rendered files carry the rules. The Codex TOML parses, `opencode debug agent` resolves the new prompt, and `doctor` found no problems. The smokes have not been re-run.
