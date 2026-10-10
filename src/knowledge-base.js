@@ -11,7 +11,9 @@ export const BUNDLED_KNOWLEDGE_BASE = fileURLToPath(new URL("../knowledge/", imp
 /**
  * @typedef {object} Route
  * @property {string[]} notes Note paths relative to the knowledge-base root.
- * @property {Map<string, string>} fallbackWindows Window name to PDF page range.
+ * @property {Map<string, unknown>} fallbackWindows Window name to the routing
+ *   map's value as written: a PDF page range of the primary source, or a
+ *   mapping of `source` (another book's source note) and `pages`.
  */
 
 /**

@@ -217,6 +217,88 @@ test("check reports fallback-window references that collide with built-in proper
   assert.match(result.stderr, /fallback window constructor\.name is not defined in the routing map/);
 });
 
+/**
+ * A routing map whose fundamentals route has the given fallback_windows lines.
+ * @param {string[]} windowLines Lines under `fallback_windows:`, indented six spaces.
+ */
+function routingMapWithWindows(windowLines) {
+  return ["routes:", "  fundamentals:", "    notes:", "      - chapters/ch01.md", "    fallback_windows:", ...windowLines, ""].join("\n");
+}
+
+/** A source note for another book, and its PDF. */
+const ETTER_SOURCE_NOTE = {
+  "01-source-etter.md": "---\ntitle: Source Note - Etter\ntype: source-note\nsource_pdf: sources/etter-2018.pdf\n---\n# Etter\n",
+  "sources/etter-2018.pdf": "%PDF-1.4\n",
+};
+
+test("check fails when a fallback window is not a PDF page range", async (t) => {
+  for (const pages of ["20-", "39-20", "0-5", "pp. 20-39", "20–39"]) {
+    await t.test(pages, (st) => {
+      const kb = writeKnowledgeBase(st, { "routing-map.yaml": routingMapWithWindows([`      environment: ${pages}`]) });
+
+      const result = runCli(["check", "--kb", kb]);
+
+      assert.equal(result.status, 1);
+      assert.ok(
+        result.stderr.includes(`FAIL fallback window fundamentals.environment: "${pages}" is not a PDF page range such as 20-39`),
+        result.stderr,
+      );
+    });
+  }
+});
+
+test("check fails when a fallback window into another book does not go through its source note", async (t) => {
+  const cases = {
+    "a source note that does not exist": [
+      ["      environment:", "        source: 01-source-missing.md", "        pages: 60-69"],
+      "fallback window fundamentals.environment: source note 01-source-missing.md does not exist",
+    ],
+    "a note that is not a source note": [
+      ["      environment:", "        source: chapters/ch01.md", "        pages: 60-69"],
+      "fallback window fundamentals.environment: chapters/ch01.md is not a source note (its frontmatter lacks type: source-note)",
+    ],
+    "a book page range that is not a PDF page range": [
+      ["      environment:", "        source: 01-source-etter.md", "        pages: 29-xx"],
+      'fallback window fundamentals.environment: "29-xx" is not a PDF page range such as 20-39',
+    ],
+    "a mapping without pages": [
+      ["      environment:", "        source: 01-source-etter.md", "        page: 60-69"],
+      "fallback window fundamentals.environment: expected a PDF page range, or a mapping of source and pages for another book",
+    ],
+    "an empty window": [
+      ["      environment:"],
+      "fallback window fundamentals.environment: expected a PDF page range, or a mapping of source and pages for another book",
+    ],
+  };
+  for (const [name, [windowLines, message]] of Object.entries(cases)) {
+    await t.test(name, (st) => {
+      const kb = writeKnowledgeBase(st, { ...ETTER_SOURCE_NOTE, "routing-map.yaml": routingMapWithWindows(windowLines) });
+
+      const result = runCli(["check", "--kb", kb]);
+
+      assert.equal(result.status, 1);
+      assert.ok(result.stderr.includes(`FAIL ${message}`), result.stderr);
+    });
+  }
+});
+
+test("check accepts a fallback window into another book through its source note", (t) => {
+  const kb = writeKnowledgeBase(t, {
+    ...ETTER_SOURCE_NOTE,
+    "routing-map.yaml": routingMapWithWindows([
+      "      environment: 20-39",
+      "      etter_sound_speed:",
+      "        source: 01-source-etter.md",
+      "        pages: 60-69",
+    ]),
+    "concept-index.yaml": conceptIndexWith({ fallback_windows: ["fundamentals.environment", "fundamentals.etter_sound_speed"] }),
+  });
+
+  const result = runCli(["check", "--kb", kb]);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
 test("check fails when a note contains an absolute machine path", async (t) => {
   const notes = {
     "a POSIX path in a chapter note": [

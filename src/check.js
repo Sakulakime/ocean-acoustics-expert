@@ -17,6 +17,8 @@ import {
   evaluateCase,
   loadRouteSelectionCases,
 } from "./route-selection.js";
+import { splitFrontmatter } from "./template.js";
+import { parseYaml, YamlError } from "./yaml.js";
 
 /**
  * A check rule inspects a loaded knowledge base and returns problem messages.
@@ -67,6 +69,71 @@ function conceptFallbackWindowsResolve(kb) {
   return problems;
 }
 
+/** @type {Rule} */
+function fallbackWindowsWellFormed(kb) {
+  const problems = [];
+  for (const [route, { fallbackWindows }] of kb.routes) {
+    for (const [name, window] of fallbackWindows) {
+      problems.push(...windowProblems(kb, window).map((problem) => `fallback window ${route}.${name}: ${problem}`));
+    }
+  }
+  return problems;
+}
+
+/**
+ * A fallback window is a PDF page range of the primary source, or a mapping
+ * whose `source` is the source note of another book and whose `pages` are a
+ * PDF page range of that book's PDF.
+ * @param {import("./knowledge-base.js").KnowledgeBase} kb
+ * @param {unknown} window
+ * @returns {string[]}
+ */
+function windowProblems(kb, window) {
+  if (typeof window === "string") return pageRangeProblems(window);
+  const isBookWindow =
+    window !== null &&
+    typeof window === "object" &&
+    !Array.isArray(window) &&
+    Object.keys(window).sort().join() === "pages,source" &&
+    typeof window.source === "string" &&
+    typeof window.pages === "string";
+  if (!isBookWindow) return ["expected a PDF page range, or a mapping of source and pages for another book"];
+  const problems = [];
+  if (!noteExists(kb, window.source)) problems.push(`source note ${window.source} does not exist`);
+  else if (!isSourceNote(kb.texts.get(window.source))) {
+    problems.push(`${window.source} is not a source note (its frontmatter lacks type: source-note)`);
+  }
+  return [...problems, ...pageRangeProblems(window.pages)];
+}
+
+/** A PDF page range: first and last page, inclusive. */
+const PAGE_RANGE = /^(\d+)-(\d+)$/;
+
+/**
+ * @param {string} pages
+ * @returns {string[]}
+ */
+function pageRangeProblems(pages) {
+  const match = pages.match(PAGE_RANGE);
+  const valid = match !== null && Number(match[1]) >= 1 && Number(match[1]) <= Number(match[2]);
+  return valid ? [] : [`${JSON.stringify(pages)} is not a PDF page range such as 20-39`];
+}
+
+/**
+ * @param {string|undefined} text A note's text.
+ * @returns {boolean} Whether its frontmatter says `type: source-note`.
+ */
+function isSourceNote(text) {
+  const frontmatter = text === undefined ? undefined : splitFrontmatter(text)?.frontmatter;
+  if (frontmatter === undefined) return false;
+  try {
+    return parseYaml(frontmatter)?.type === "source-note";
+  } catch (error) {
+    if (!(error instanceof YamlError)) throw error;
+    return false;
+  }
+}
+
 /**
  * Backticked relative references in the hub: anything containing a slash
  * (`chapters/ch01.md`, `solvers/`, `../x.js`), or a bare `.md`/`.yaml` name.
@@ -99,6 +166,7 @@ const RULES = [
   conceptRoutesExist,
   conceptNotesExist,
   conceptFallbackWindowsResolve,
+  fallbackWindowsWellFormed,
   hubReferencesExist,
   noMachinePaths,
   sourcePdfsExist,
