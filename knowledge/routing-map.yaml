@@ -11,7 +11,7 @@ policy:
     - read 00-hub.md
     - read routing-map.yaml
     - check concept-index.yaml for the concepts the prompt names
-    - read the smallest relevant note set (chapter, solver, runbook and visualization notes, plus benchmark cases and book source notes when present)
+    - read the smallest relevant note set (chapter, solver, runbook and visualization notes, the benchmark-cases note, and book source notes when present)
     - read a targeted page range of a book PDF in sources/ only if the notes are insufficient
   answer_requirements:
     - separate physical assumptions from numerical assumptions
@@ -67,6 +67,27 @@ routes:
       brekhovskikh_lysanov_lateral_wave:
         source: 01-source-brekhovskikh-lysanov.md
         pages: 103-107
+  benchmark_cases:
+    trigger_keywords: [benchmark, benchmarks, benchmark case, benchmark problem, test case, test problem, test environment, reference solution, ASA wedge, ASA benchmark, Munk profile, Dickins seamount, Bucker waveguide, PE workshop, NORDA, 3-D wedge, sloping elastic bottom, head-wave problem, 基准, 基准算例, 基准问题, 测试算例, 参考解, Munk剖面, 楔形波导]
+    notes:
+      - benchmark-cases.md
+      - chapters/ch05-normal-modes.md
+      - chapters/ch06-parabolic-equations.md
+      - workflows/model-selection.md
+    note: Benchmark cases span COA Ch. 1-8, so this route has no chapter_span. Its windows are the COA pages where the cases are set up; chapter windows elsewhere in this map cover the same sections' theory.
+    fallback_windows:
+      lloyd_mirror: 36-39
+      pekeris_waveguide: 137-151
+      ray_seamount_and_parabolic_bottom: 206-212
+      ray_munk_interpolation: 229-231
+      wi_numerical_examples: 315-319
+      munk_profile: 373-377
+      seamount_3d_modes: 446-455
+      pe_workshop_tests: 482-501
+      asa_wedge: 522-523
+      pe_numerical_examples: 528-539
+      fe_object_scattering: 605-612
+      broadband_numerical_examples: 648-666
   ray_methods:
     trigger_keywords: [ray, rays, eigenray, eikonal, Gaussian beam, caustic, focusing factor, Snell, ray tracing, convergence zone, CZ, Lloyd mirror, 射线, 本征射线, 高斯波束, 焦散, 会聚区, bellhop, BELLHOP]
     notes:

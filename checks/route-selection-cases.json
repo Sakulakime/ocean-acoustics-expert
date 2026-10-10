@@ -61,7 +61,8 @@
           "chapters/ch02-wave-propagation-theory.md"
         ],
         "secondary_notes": [
-          "chapters/ch05-normal-modes.md"
+          "chapters/ch05-normal-modes.md",
+          "benchmark-cases.md"
         ],
         "fallback_windows": [
           "wave_propagation_theory.layered_media_and_waveguides"
@@ -693,10 +694,261 @@
           "chapters/ch02-wave-propagation-theory.md"
         ],
         "secondary_notes": [
-          "chapters/ch05-normal-modes.md"
+          "chapters/ch05-normal-modes.md",
+          "benchmark-cases.md"
         ],
         "fallback_windows": [
           "wave_propagation_theory.layered_media_and_waveguides"
+        ]
+      }
+    },
+    {
+      "name": "smoke - ASA wedge parameters and the solvers it validates",
+      "prompt": "Give me the ASA wedge parameters and which solvers it validates",
+      "expected": {
+        "concept_key": "asa_wedge",
+        "bucket": "benchmark_cases",
+        "route_notes": [
+          "benchmark-cases.md",
+          "chapters/ch05-normal-modes.md",
+          "chapters/ch06-parabolic-equations.md",
+          "workflows/model-selection.md"
+        ],
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.asa_wedge"
+        ]
+      }
+    },
+    {
+      "name": "concept - benchmark cases a solver family is validated on",
+      "prompt": "Which benchmark cases are normal-mode codes usually validated on?",
+      "expected": {
+        "concept_key": "benchmark_cases",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "workflows/model-selection.md"
+        ],
+        "fallback_windows": []
+      }
+    },
+    {
+      "name": "concept - benchmark cases in Chinese",
+      "prompt": "简正模程序通常用哪些基准算例验证?",
+      "expected": {
+        "concept_key": "benchmark_cases",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "workflows/model-selection.md"
+        ],
+        "fallback_windows": []
+      }
+    },
+    {
+      "name": "concept - Munk profile parameters",
+      "prompt": "What are the exact parameters of the Munk profile and where does COA plot it?",
+      "expected": {
+        "concept_key": "munk_profile",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md",
+          "chapters/ch03-ray-methods.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.munk_profile",
+          "benchmark_cases.ray_munk_interpolation"
+        ]
+      }
+    },
+    {
+      "name": "concept - Dickins seamount",
+      "prompt": "Set up the Dickins seamount case for a ray-versus-PE comparison",
+      "expected": {
+        "concept_key": "dickins_seamount",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch03-ray-methods.md",
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.ray_seamount_and_parabolic_bottom",
+          "benchmark_cases.pe_numerical_examples"
+        ]
+      }
+    },
+    {
+      "name": "concept - 3-D wedge",
+      "prompt": "How do N×2-D and fully 3-D results differ in the 3-D wedge?",
+      "expected": {
+        "concept_key": "three_d_wedge",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md",
+          "chapters/ch08-broadband-modeling.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.pe_numerical_examples",
+          "benchmark_cases.broadband_numerical_examples"
+        ]
+      }
+    },
+    {
+      "name": "concept - 2-D wedge mode cutoff",
+      "prompt": "Reproduce the wedge mode cutoff example of Jensen and Kuperman",
+      "expected": {
+        "concept_key": "wedge_mode_cutoff",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.pe_numerical_examples"
+        ]
+      }
+    },
+    {
+      "name": "concept - NORDA PE workshop test",
+      "prompt": "What is the NORDA PE workshop test problem 3B?",
+      "expected": {
+        "concept_key": "pe_workshop_test",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.pe_workshop_tests"
+        ]
+      }
+    },
+    {
+      "name": "concept - sloping elastic bottom",
+      "prompt": "Parameters of the sloping elastic bottom benchmark with moraine and chalk",
+      "expected": {
+        "concept_key": "sloping_elastic_bottom",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md",
+          "chapters/ch07-fd-fe-methods.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.pe_numerical_examples"
+        ]
+      }
+    },
+    {
+      "name": "concept - Bucker waveguide",
+      "prompt": "Why is the Bucker waveguide hard for normal-mode models?",
+      "expected": {
+        "concept_key": "bucker_waveguide",
+        "bucket": "benchmark_cases",
+        "primary_notes": [
+          "benchmark-cases.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch04-wavenumber-integration.md"
+        ],
+        "fallback_windows": [
+          "benchmark_cases.wi_numerical_examples"
+        ]
+      }
+    },
+    {
+      "name": "guard - Garrett-Munk internal waves stay with internal waves",
+      "prompt": "Internal-wave fluctuations in a Munk profile ocean",
+      "expected": {
+        "concept_key": "internal_waves",
+        "bucket": "ocean_fluctuations",
+        "primary_notes": [
+          "01-source-colosi.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "fallback_windows": [
+          "ocean_fluctuations.colosi_internal_waves",
+          "ocean_fluctuations.brekhovskikh_lysanov_internal_wave_fluctuations",
+          "ocean_fluctuations.etter_fronts_eddies_internal_waves"
+        ]
+      }
+    },
+    {
+      "name": "guard - a wedge-shaped waveguide keeps mode coupling",
+      "prompt": "Mode coupling in a wedge-shaped coastal waveguide",
+      "expected": {
+        "concept_key": "mode_coupling",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.range_dependence_and_mode_coupling",
+          "normal_modes.brekhovskikh_lysanov_adiabatic_and_coupled_modes"
+        ]
+      }
+    },
+    {
+      "name": "guard - 3-D modes around a seamount stay with 3-D normal modes",
+      "prompt": "3-D normal modes around a seamount in a Munk ocean",
+      "expected": {
+        "concept_key": "three_dimensional_modes",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.three_dimensional_modes"
+        ]
+      }
+    },
+    {
+      "name": "guard - wide-angle PE phase errors on the ASA wedge stay with PE angle limits",
+      "prompt": "Wide-angle PE phase errors on the ASA wedge",
+      "expected": {
+        "concept_key": "pe_angle_limits",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-ram.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.derivation_and_limits"
         ]
       }
     },

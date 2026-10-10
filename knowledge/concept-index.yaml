@@ -117,7 +117,7 @@
       "aliases": ["pekeris waveguide", "pekeris", "Pekeris波导"],
       "bucket": "wave_propagation_theory",
       "primary_notes": ["chapters/ch02-wave-propagation-theory.md"],
-      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md", "benchmark-cases.md"],
       "fallback_windows": ["wave_propagation_theory.layered_media_and_waveguides"]
     },
     {
@@ -479,6 +479,78 @@
       "primary_notes": ["01-source-colosi.md"],
       "secondary_notes": ["chapters/ch05-normal-modes.md"],
       "fallback_windows": ["ocean_fluctuations.colosi_mode_transport"]
+    },
+    {
+      "key": "benchmark_cases",
+      "aliases": ["benchmark case", "benchmark cases", "benchmark problem", "benchmark problems", "benchmark environment", "benchmark environments", "test environment", "test environments", "基准算例", "基准问题"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["workflows/model-selection.md"],
+      "fallback_windows": []
+    },
+    {
+      "key": "munk_profile",
+      "aliases": ["munk profile", "munk sound-speed profile", "munk sound speed profile", "munk ssp", "munk剖面", "munk声速剖面"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md", "chapters/ch03-ray-methods.md"],
+      "fallback_windows": ["benchmark_cases.munk_profile", "benchmark_cases.ray_munk_interpolation"]
+    },
+    {
+      "key": "asa_wedge",
+      "aliases": ["asa wedge", "asa benchmark", "asa benchmarks", "jensen and ferla", "asa楔形"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["benchmark_cases.asa_wedge"]
+    },
+    {
+      "key": "wedge_mode_cutoff",
+      "aliases": ["mode cutoff in a wedge", "wedge mode cutoff", "jensen and kuperman"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["benchmark_cases.pe_numerical_examples"]
+    },
+    {
+      "key": "three_d_wedge",
+      "aliases": ["3-d wedge", "3d wedge", "three-dimensional wedge", "truncated wedge"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md", "chapters/ch08-broadband-modeling.md"],
+      "fallback_windows": ["benchmark_cases.pe_numerical_examples", "benchmark_cases.broadband_numerical_examples"]
+    },
+    {
+      "key": "dickins_seamount",
+      "aliases": ["dickins seamount", "dickins", "迪金斯海山"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch03-ray-methods.md", "chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["benchmark_cases.ray_seamount_and_parabolic_bottom", "benchmark_cases.pe_numerical_examples"]
+    },
+    {
+      "key": "pe_workshop_test",
+      "aliases": ["pe workshop test", "pe workshop problem", "norda pe workshop", "norda pe", "test problem 3b"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
+      "fallback_windows": ["benchmark_cases.pe_workshop_tests"]
+    },
+    {
+      "key": "sloping_elastic_bottom",
+      "aliases": ["sloping elastic bottom", "sloping elastic bottoms", "sloping elastic seabed", "elastic wedge"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md", "chapters/ch07-fd-fe-methods.md"],
+      "fallback_windows": ["benchmark_cases.pe_numerical_examples"]
+    },
+    {
+      "key": "bucker_waveguide",
+      "aliases": ["bucker waveguide", "bucker"],
+      "bucket": "benchmark_cases",
+      "primary_notes": ["benchmark-cases.md"],
+      "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
+      "fallback_windows": ["benchmark_cases.wi_numerical_examples"]
     }
   ]
 }
