@@ -30,7 +30,7 @@ This library is the default local knowledge base for underwater acoustics questi
 - Reverse concept map: `concept-index.yaml`
 - Model comparison: `workflows/model-selection.md`
 - Glossary: `glossary.md`
-- Chapter notes: `chapters/`. The deepened ones (`status: deepened`: Ch. 5 and Ch. 6) give, per subsection, key equations with symbols, COA equation numbers and PDF pages, and validity conditions with COA's numbers; take equations and validity limits from them before reading the PDF.
+- Chapter notes: `chapters/`. The deepened ones (`status: deepened`: Ch. 2, Ch. 3, Ch. 5 and Ch. 6) give, per subsection, key equations with symbols, COA equation numbers and PDF pages, and validity conditions with COA's numbers; take equations and validity limits from them before reading the PDF.
 - Benchmark cases: `benchmark-cases.md`. COA's canonical test environments (Pekeris waveguide, Munk profile, ASA wedge, Dickins seamount, 3-D wedge and others), each with exact parameters, COA figures and pages, the solver families it validates and COA's reference solution. Read it for "which benchmark validates X" and "give me the parameters of case Y".
 - Solver notes: `solvers/`
 - Run recipes (Linux + MATLAB run recipe, input-file format, validators, gotchas):
