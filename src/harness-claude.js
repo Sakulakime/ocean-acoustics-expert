@@ -1,7 +1,13 @@
-import { dirname, join, relative } from "node:path";
+import { join } from "node:path";
 
-import { inspectMarkdown } from "./inspection.js";
-import { renderPlaceholders } from "./template.js";
+import {
+  agentPath as standardAgentPath,
+  inspectMarkdownAgent,
+  planAgentFile,
+  planLegacyCleanup,
+  planSkillLinks,
+  renderMarkdownAgent,
+} from "./harness-adapter.js";
 
 /**
  * Legacy paths of the hand-made Claude setup, relative to Claude's config
@@ -20,7 +26,7 @@ const LEGACY_PATHS = [
  * @param {string} name
  */
 function agentPath(locations, name) {
-  return join(locations.claudeDir, "agents", `${name}.md`);
+  return standardAgentPath(locations.claudeDir, name, ".md");
 }
 
 /**
@@ -33,38 +39,18 @@ export const CLAUDE_HARNESS = {
   configDir: (locations) => locations.claudeDir,
   agentPath,
   units({ locations, template, variables, skills }) {
-    const skillLinks = skills.map((skill) => {
-      const path = join(locations.claudeDir, "skills", skill.name);
-      return { kind: "link", path, target: relative(dirname(path), skill.path) };
-    });
     return [
-      ...LEGACY_PATHS.map((path) => ({ kind: "absent", path: join(locations.claudeDir, path) })),
-      ...skillLinks,
-      {
-        kind: "file",
-        path: agentPath(locations, template.name),
-        content: renderClaudeAgent(template, variables),
-      },
+      ...planLegacyCleanup(LEGACY_PATHS, locations.claudeDir),
+      ...planSkillLinks(skills, join(locations.claudeDir, "skills")),
+      planAgentFile(
+        agentPath(locations, template.name),
+        renderMarkdownAgent(template, variables, {
+          model: "inherit",
+          color: "cyan",
+          tools: "[Read, Grep, Glob]",
+        })
+      ),
     ];
   },
-  inspectAgent: (text) => inspectMarkdown(text, ["name", "description"]),
+  inspectAgent: (text) => inspectMarkdownAgent(text, ["name", "description"]),
 };
-
-/**
- * @param {import("./template.js").AgentTemplate} template
- * @param {Record<string, string|null>} variables
- * @returns {string}
- */
-function renderClaudeAgent(template, variables) {
-  return [
-    "---",
-    `name: ${template.name}`,
-    `description: ${JSON.stringify(template.description)}`,
-    "model: inherit",
-    "color: cyan",
-    "tools: [Read, Grep, Glob]",
-    "---",
-    "",
-    renderPlaceholders(template.body, variables, "agent template"),
-  ].join("\n");
-}

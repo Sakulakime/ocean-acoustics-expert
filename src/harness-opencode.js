@@ -1,5 +1,6 @@
 import { join } from "node:path";
 
+import { agentPath as standardAgentPath, planAgentFile } from "./harness-adapter.js";
 import { inspectMarkdown } from "./inspection.js";
 import { TOOLBOX_PATHS } from "./path-map.js";
 import { renderPlaceholders } from "./template.js";
@@ -18,7 +19,7 @@ const DENIED_TOOLS = ["edit", "bash", "webfetch", "websearch", "task"];
  * @param {string} name
  */
 function agentPath(locations, name) {
-  return join(locations.opencodeDir, "agents", `${name}.md`);
+  return standardAgentPath(locations.opencodeDir, name, ".md");
 }
 
 /**
@@ -32,13 +33,8 @@ export const OPENCODE_HARNESS = {
   configDir: (locations) => locations.opencodeDir,
   agentPath,
   units({ locations, template, variables, linkTargets }) {
-    return [
-      {
-        kind: "file",
-        path: agentPath(locations, template.name),
-        content: renderOpencodeAgent(template, variables, readableDirs(locations, variables, linkTargets)),
-      },
-    ];
+    const readable = readableDirs(locations, variables, linkTargets);
+    return [planAgentFile(agentPath(locations, template.name), renderOpencodeAgent(template, variables, readable))];
   },
   inspectAgent(text, locations) {
     const agent = inspectMarkdown(text, ["description"]);
@@ -101,9 +97,9 @@ OpenCode cannot read a page range of a PDF: opening one attaches the whole book,
 /**
  * The agent markdown. OpenCode names the agent after the file. Its own
  * defaults ask before any read outside the project; the rules here come
- * after them, and OpenCode applies the last matching rule, with `*`
+ * after them, and OpenCode applies the last matching rule, with \`*\`
  * matching across folders. The PDF rule adds to OpenCode's own read
- * defaults (which ask before reading `.env` files) instead of replacing them.
+ * defaults (which ask before reading \`.env\` files) instead of replacing them.
  * @param {import("./template.js").AgentTemplate} template
  * @param {Record<string, string|null>} variables
  * @param {string[]} readable Folders the agent may read.

@@ -2,7 +2,7 @@
 
 English | [简体中文](README.zh-CN.md)
 
-An underwater-acoustics expert agent and the knowledge base it answers from, installable into Claude Code, Codex and OpenCode.
+An underwater-acoustics expert agent and the knowledge base it answers from, installable into Claude Code, Codex, OpenCode and DeepSeek-TUI.
 
 The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
 
@@ -19,6 +19,7 @@ All harnesses read one installed copy of the knowledge base in the data folder, 
 | Claude Code | `~/.claude/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.claude/skills/ocean-acoustics-router`, a link to the shared folder | reads page ranges |
 | Codex | `~/.codex/agents/ocean-acoustics-expert.toml` | `sandbox_mode = "read-only"` | read from `~/.agents/skills` | prints page ranges with `pdftotext` |
 | OpenCode | `~/.config/opencode/agents/ocean-acoustics-expert.md` (a subagent) | a `permission` block that denies edit, bash, web and task, and allows reads of the data folder | read from `~/.agents/skills` | does not open PDFs; names the book and page range to read instead |
+| DeepSeek-TUI | `~/.deepseek/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.deepseek/skills/ocean-acoustics-router`, a link to the shared folder | reads page ranges |
 
 The router skill, `ocean-acoustics-router`, lives in the shared skills folder `~/.agents/skills/`. It routes an underwater-acoustics question through the notes and hands deep work to the expert.
 
@@ -52,7 +53,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
 `<owner>` is the GitHub account that hosts the repository. The package is about 95 MB, almost all of it the book PDFs.
 
 - `--dry-run` prints the local path map and every action install would take, and changes nothing.
-- Install picks every harness whose config folder exists (`~/.claude`, `~/.codex`, `~/.config/opencode`). Pick them yourself with `--harness`, once per harness: `--harness claude --harness opencode`.
+- Install picks every harness whose config folder exists (`~/.claude`, `~/.codex`, `~/.config/opencode`, `~/.deepseek`). Pick them yourself with `--harness`, once per harness: `--harness claude --harness opencode`.
 - A later install keeps the recorded harnesses. To change them, pass the full new list with `--harness`.
 - Before install overwrites or removes anything it did not write, it copies it into `backups/<timestamp>/`. Its own unchanged files it simply replaces. It also cleans up the paths of the hand-made setup this package replaced, with a backup first.
 - Install is idempotent: running it again with nothing changed does nothing.
@@ -68,6 +69,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 - **Claude Code:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
 - **Codex:** ask Codex to use the `ocean-acoustics-expert` agent.
 - **OpenCode:** mention `@ocean-acoustics-expert`, or let the main agent hand the question to it.
+- **DeepSeek-TUI:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
 
 ## Link mode and copy mode
 

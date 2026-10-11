@@ -2,7 +2,7 @@
 
 [English](README.md) | 简体中文
 
-水声学专家智能体及其知识库，可安装到 Claude Code、Codex 和 OpenCode。
+水声学专家智能体及其知识库，可安装到 Claude Code、Codex、OpenCode 和 DeepSeek-TUI。
 
 本专家涵盖声传播建模和面向声呐的信号处理：声速结构、传输损失、射线和高斯波束方法、波数积分、简正波、抛物方程、宽带传播、环境噪声、混响、声呐方程、波束形成、匹配场处理，以及声波在内波和其他海洋波动中的传播。它还知道如何通过捆绑的 MATLAB 辅助工具为 BELLHOP、KRAKEN 和 RAM 构建输入、运行和绘图。
 
@@ -19,6 +19,7 @@
 | Claude Code | `~/.claude/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.claude/skills/ocean-acoustics-router`，指向共享文件夹的链接 | 读取页面范围 |
 | Codex | `~/.codex/agents/ocean-acoustics-expert.toml` | `sandbox_mode = "read-only"` | 从 `~/.agents/skills` 读取 | 使用 `pdftotext` 打印页面范围 |
 | OpenCode | `~/.config/opencode/agents/ocean-acoustics-expert.md`（子智能体） | 一个 `permission` 块，拒绝 edit、bash、web 和 task，允许读取数据文件夹 | 从 `~/.agents/skills` 读取 | 不打开 PDFs；而是说明要读取的书籍和页面范围 |
+| DeepSeek-TUI | `~/.deepseek/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.deepseek/skills/ocean-acoustics-router`，指向共享文件夹的链接 | 读取页面范围 |
 
 路由技能 `ocean-acoustics-router` 位于共享技能文件夹 `~/.agents/skills/` 中。它通过笔记路由水声学问题，并将深度工作交给专家。
 
@@ -52,7 +53,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
 `<owner>` 是托管仓库的 GitHub 账户。该包约为 95 MB，几乎全部是书籍 PDFs。
 
 - `--dry-run` 打印本地路径映射和安装将执行的每个操作，但不更改任何内容。
-- 安装会选择所有存在配置文件夹的平台（`~/.claude`、`~/.codex`、`~/.config/opencode`）。使用 `--harness` 自己选择，每个平台一次：`--harness claude --harness opencode`。
+- 安装会选择所有存在配置文件夹的平台（`~/.claude`、`~/.codex`、`~/.config/opencode`、`~/.deepseek`）。使用 `--harness` 自己选择，每个平台一次：`--harness claude --harness opencode`。
 - 后续安装会保留已记录的平台。要更改它们，请使用 `--harness` 传递完整的新列表。
 - 在覆盖或删除任何非自己写入的内容之前，安装会将其复制到 `backups/<timestamp>/`。它自己的未更改文件会直接替换。它还会清理此包替换的手动设置的路径，并首先进行备份。
 - 安装是幂等的：在没有任何更改的情况下再次运行它不会执行任何操作。
@@ -68,6 +69,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 - **Claude Code:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
 - **Codex:** 要求 Codex 使用 `ocean-acoustics-expert` 智能体。
 - **OpenCode:** 提及 `@ocean-acoustics-expert`，或让主智能体将问题交给它。
+- **DeepSeek-TUI:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
 
 ## 链接模式和拷贝模式
 

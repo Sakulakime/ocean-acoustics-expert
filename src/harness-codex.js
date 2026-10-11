@@ -1,5 +1,4 @@
-import { join } from "node:path";
-
+import { agentPath as standardAgentPath, planAgentFile, planLegacyCleanup } from "./harness-adapter.js";
 import { missingFields } from "./inspection.js";
 import { renderPlaceholders } from "./template.js";
 import { parseToml, TomlError, tomlMultilineString, tomlString } from "./toml.js";
@@ -21,7 +20,7 @@ const REQUIRED_FIELDS = ["name", "description", "developer_instructions"];
  * @param {string} name
  */
 function agentPath(locations, name) {
-  return join(locations.codexDir, "agents", `${name}.toml`);
+  return standardAgentPath(locations.codexDir, name, ".toml");
 }
 
 /**
@@ -36,12 +35,8 @@ export const CODEX_HARNESS = {
   agentPath,
   units({ locations, template, variables }) {
     return [
-      ...LEGACY_PATHS.map((path) => ({ kind: "absent", path: join(locations.codexDir, path) })),
-      {
-        kind: "file",
-        path: agentPath(locations, template.name),
-        content: renderCodexAgent(template, variables),
-      },
+      ...planLegacyCleanup(LEGACY_PATHS, locations.codexDir),
+      planAgentFile(agentPath(locations, template.name), renderCodexAgent(template, variables)),
     ];
   },
   inspectAgent(text) {
