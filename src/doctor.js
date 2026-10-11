@@ -2,7 +2,7 @@ import { readdirSync, readlinkSync, realpathSync, statSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 
 import { DataFileError, readDataFile } from "./data-file.js";
-import { lstatOrNull, statOrNull } from "./fs-entries.js";
+import { lstatOrNull, statOrNull, sameLinkTarget } from "./fs-entries.js";
 import { opencodeSkillRoots } from "./harness-opencode.js";
 import { inspectMarkdown } from "./inspection.js";
 import { AGENT_TEMPLATE, HARNESSES } from "./install.js";
@@ -160,7 +160,7 @@ function checkLinks({ report, manifest }) {
   for (const { path, target } of links) {
     const stats = lstatOrNull(path);
     if (!stats) report.fail(`symbolic link ${path} is missing`);
-    else if (!stats.isSymbolicLink() || readlinkSync(path) !== target) {
+    else if (!stats.isSymbolicLink() || !sameLinkTarget(path, readlinkSync(path), target)) {
       report.fail(`${path} is no longer the symbolic link to ${target} that install made`);
     } else if (!statOrNull(path)) report.fail(`symbolic link ${path} -> ${target} does not resolve`);
   }

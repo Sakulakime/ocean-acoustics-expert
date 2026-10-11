@@ -1,7 +1,7 @@
 import { copyFileSync, mkdirSync, readFileSync, readlinkSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
-import { backupLocation, copyVerbatim, lstatOrNull, sha256, statOrNull } from "./fs-entries.js";
+import { backupLocation, copyVerbatim, lstatOrNull, sha256, statOrNull, sameLinkTarget } from "./fs-entries.js";
 
 /**
  * One thing the installer owns, at a root path:
@@ -10,7 +10,7 @@ import { backupLocation, copyVerbatim, lstatOrNull, sha256, statOrNull } from ".
  * - `tree`: a folder of rendered or copied files;
  * - `absent`: a legacy path that must not exist.
  * @typedef {{kind: "file", path: string, content: string}
- *   | {kind: "link", path: string, target: string}
+ *   | {kind: "link", path: string, target: string, linkType?: "dir"|"junction"}
  *   | {kind: "tree", path: string, files: TreeFile[]}
  *   | {kind: "absent", path: string}} Unit
  * @typedef {{relative: string, content?: string, source?: string}} TreeFile
@@ -21,17 +21,17 @@ import { backupLocation, copyVerbatim, lstatOrNull, sha256, statOrNull } from ".
  * What the manifest records about an installed unit, so a later run can tell
  * the installer's own, unchanged output from everything else.
  * @typedef {{kind: "file", path: string, sha256: string}
- *   | {kind: "link", path: string, target: string}
+ *   | {kind: "link", path: string, target: string, linkType?: "dir"|"junction"}
  *   | {kind: "tree", path: string, files: {relative: string, sha256: string}[]}} UnitRecord
  */
 
 /**
  * @typedef {{op: "mkdir", path: string}
- *   | {op: "backup", path: string, to: string}
+ *   | {op: "backup", path: string, to: string, linkType?: "dir"|"junction"}
  *   | {op: "remove", path: string}
  *   | {op: "write", path: string, content: string}
  *   | {op: "copy", path: string, source: string}
- *   | {op: "link", path: string, target: string}} Action
+ *   | {op: "link", path: string, target: string, linkType?: "dir"|"junction"}} Action
  */
 
 /**
@@ -39,7 +39,7 @@ import { backupLocation, copyVerbatim, lstatOrNull, sha256, statOrNull } from ".
  * @property {Action[]} actions In the order they must run.
  * @property {UnitRecord[]} units Records of the installed units.
  * @property {string[]} createdDirs Directories the installer created, now and before.
- * @property {{path: string, backup: string}[]} backups Backups taken, now and before.
+ * @property {{path: string, backup: string, linkType?: "dir"|"junction"}[]} backups Backups taken, now and before.
  */
 
 /**
@@ -90,7 +90,7 @@ class Planner {
     this.newDirs = new Set();
     /** @type {Set<string>} Paths this plan removes; they and their contents count as gone. */
     this.removed = new Set();
-    /** @type {{path: string, backup: string}[]} */
+    /** @type {{path: string, backup: string, linkType?: "dir"|"junction"}[]} */
     this.backups = [];
   }
 
@@ -131,14 +131,16 @@ class Planner {
    * @returns {UnitRecord}
    */
   planLink(unit, previous) {
-    const record = { kind: "link", path: unit.path, target: unit.target };
+    const linkType = process.platform === "win32" ? "junction" : "dir";
+    unit = { ...unit, target: linkType === "junction" ? resolve(dirname(unit.path), unit.target) : unit.target };
+    const record = { kind: "link", path: unit.path, target: unit.target, linkType };
     const stats = this.entryAt(unit.path);
     const target = stats?.isSymbolicLink() ? readlinkSync(unit.path) : null;
-    if (target === unit.target && previous) return record;
-    if (target !== null && target === previous?.target) this.remove(unit.path);
+    if (previous && sameLinkTarget(unit.path, target, unit.target) && sameLinkTarget(unit.path, target, previous.target)) return record;
+    if (sameLinkTarget(unit.path, target, previous?.target)) this.remove(unit.path);
     else if (stats) this.backupAndRemove(unit.path);
     this.ensureDir(dirname(unit.path));
-    this.actions.push({ op: "link", path: unit.path, target: unit.target });
+    this.actions.push({ op: "link", path: unit.path, target: unit.target, linkType });
     return record;
   }
 
@@ -243,8 +245,10 @@ class Planner {
   /** @param {string} path Copied into this run's backup folder. */
   backup(path) {
     const to = backupLocation(path, this.backupDir, this.home);
-    this.actions.push({ op: "backup", path, to });
-    this.backups.push({ path, backup: to });
+    const linkType = lstatOrNull(path)?.isSymbolicLink() && statOrNull(path)?.isDirectory()
+      ? (process.platform === "win32" ? "junction" : "dir") : undefined;
+    this.actions.push({ op: "backup", path, to, linkType });
+    this.backups.push({ path, backup: to, ...(linkType ? { linkType } : {}) });
   }
 
   /** @param {string} path Removed with everything under it. */
@@ -281,7 +285,7 @@ export function applyActions(actions) {
         break;
       case "backup":
         mkdirSync(dirname(action.to), { recursive: true });
-        copyVerbatim(action.path, action.to);
+        copyVerbatim(action.path, action.to, { linkType: action.linkType });
         break;
       case "remove":
         rmSync(action.path, { recursive: true, force: true });
@@ -293,7 +297,7 @@ export function applyActions(actions) {
         copyFileSync(action.source, action.path);
         break;
       case "link":
-        symlinkSync(action.target, action.path);
+        symlinkSync(action.target, action.path, action.linkType);
         break;
     }
   }

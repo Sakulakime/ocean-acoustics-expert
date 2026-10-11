@@ -51,6 +51,16 @@ npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install --dry-run
 npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install
 ```
 
+On Windows, installer-owned directory links use junctions with absolute targets;
+POSIX systems keep directory symlinks. Existing relative link records remain
+compatible with reinstall, `doctor`, and `uninstall`. Windows directory-link
+backups preserve the destination and restore as junctions, including when that
+destination no longer exists. File symlinks still require the system's symlink
+permissions. After an interrupted install, rerun the fixed installer with the
+same harnesses and mode; review any backups it reports before removing them.
+The Linux regression suite models the link permission boundary and does not
+replace validation on a Windows machine.
+
 The package is under 1 MB. After installing, copy your book PDFs into `~/.local/share/ocean-acoustics-expert/knowledge/sources/` (see [Books](#books)).
 
 - `--dry-run` prints the local path map and every action install would take, and changes nothing.

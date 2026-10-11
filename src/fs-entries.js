@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { cpSync, lstatSync, readlinkSync, statSync, symlinkSync } from "node:fs";
-import { isAbsolute, join, relative } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve, win32 } from "node:path";
 
 /** File-system errors that mean "nothing is there". */
 const MISSING_CODES = new Set(["ENOENT", "ENOTDIR"]);
@@ -31,14 +31,22 @@ function orNullWhenMissing(stat) {
 
 /**
  * Copy a file, folder or symbolic link exactly: links stay links with their
- * original targets, even when those targets do not exist, and modification
- * times of files are kept.
+ * original targets on POSIX. Windows directory links retain their resolved
+ * destinations as junctions; relative targets are resolved before relocation.
+ * Modification times of files are kept.
  * @param {string} from
  * @param {string} to Must not exist.
+ * @param {{linkType?: "dir"|"junction"}} [options] Retain a directory link type if its target disappeared before restore.
  */
-export function copyVerbatim(from, to) {
+export function copyVerbatim(from, to, { linkType } = {}) {
   if (lstatSync(from).isSymbolicLink()) {
-    symlinkSync(readlinkSync(from), to);
+    const target = readlinkSync(from);
+    const directory = linkType === "junction" || linkType === "dir" || statOrNull(from)?.isDirectory() === true;
+    if (process.platform === "win32" && (directory || /^\\\\\?\\|^\\\?\?\\/.test(target))) {
+      symlinkSync(linkDestination(from, target), to, "junction");
+    } else {
+      symlinkSync(target, to, directory ? "dir" : "file");
+    }
     return;
   }
   cpSync(from, to, { recursive: true, verbatimSymlinks: true, preserveTimestamps: true, errorOnExist: true, force: false });
@@ -74,4 +82,20 @@ export function backupLocation(path, backupDir, home) {
   const inHome = relative(home, path);
   const name = inHome && !inHome.startsWith("..") && !isAbsolute(inHome) ? inHome : join("_root", path);
   return join(backupDir, name);
+}
+
+/** Compare lexical link destinations, never realpaths (aliases may be user changes). */
+export function sameLinkTarget(path, first, second) {
+  if (typeof first !== "string" || typeof second !== "string") return false;
+  return linkDestination(path, first) === linkDestination(path, second);
+}
+
+/** Resolve a target relative to its original link, including Windows readlink prefixes. */
+function linkDestination(path, target) {
+  if (/^[A-Za-z]:|^\\/.test(path)) {
+    target = target.replace(/^\\\\\?\\|^\\\?\?\\/, "");
+    if (target.startsWith("UNC\\")) target = `\\\\${target.slice(4)}`;
+    return win32.resolve(win32.dirname(path), target).replace(/^[A-Z]:/, (drive) => drive.toLowerCase());
+  }
+  return resolve(dirname(path), target);
 }
