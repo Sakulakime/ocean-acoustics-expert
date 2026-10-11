@@ -44,7 +44,7 @@ When the question is about actually building an input file or running a model (n
 
 Notes contain no absolute paths:
 
-- **Books** ship with this knowledge base: their PDFs sit in `sources/`, and a note points at one by its path relative to the knowledge-base root (the `source_pdf` field), such as `sources/jensen-2011-computational-ocean-acoustics.pdf` for COA. A source note's `zotero_key` names the book's item in the author's Zotero library; it is a citation identifier only, and answering never needs Zotero.
+- **Books** are supplied by each user, not shipped: their PDFs go in `sources/` under the file names that `sources/README.md` lists, and a note points at one by its path relative to the knowledge-base root (the `source_pdf` field), such as `sources/jensen-2011-computational-ocean-acoustics.pdf` for COA. A source note's `zotero_key` names the book's item in the author's Zotero library; it is a citation identifier only, and answering never needs Zotero.
 - **Tools** and other machine-specific locations are named by logical name, written in double braces, such as `{{at_2023}}/RAM/ram.exe`. Resolve each name through the local path map (local-paths.yaml, written at install time; the agent definition gives its location):
   - `{{knowledge_base}}`: the installed copy of this knowledge base
   - `{{at_2023}}`: the Acoustics Toolbox 2023 tree, which holds the working Linux RAM binary (RAM/ram.exe)

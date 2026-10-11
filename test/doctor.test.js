@@ -333,7 +333,7 @@ test("doctor fails when an agent file does not point at the installed copy", asy
   });
 });
 
-test("doctor lists the book PDFs the notes point at that are missing from the installed copy", (t) => {
+test("doctor warns about each book PDF the notes point at that the user has not supplied", (t) => {
   const knowledge = {
     "01-source-book.md": "Read `{{knowledge_base}}/sources/lost.pdf`, pp. 3-5.\n",
     "chapters/ch01.md": "---\nsource_pdf: sources/book.pdf\n---\n# Chapter 1\n\nSee `sources/lost.pdf` and `sources/gone.pdf`.\n",
@@ -343,14 +343,15 @@ test("doctor lists the book PDFs the notes point at that are missing from the in
 
   const result = runDoctor(pkg, home);
 
-  assert.equal(result.status, 1);
-  const missing = result.stderrLines.filter((line) => line.startsWith("FAIL book PDF"));
+  assert.equal(result.status, 0, result.stderr);
+  const missing = result.stderrLines.filter((line) => line.startsWith("WARN book PDF"));
+  const at = (name) => join(paths.knowledge, "sources", name);
   assert.deepEqual(missing, [
-    "FAIL book PDF sources/book.pdf is missing from the installed copy; notes pointing at it: chapters/ch01.md:2",
-    "FAIL book PDF sources/gone.pdf is missing from the installed copy; notes pointing at it: chapters/ch01.md:6",
-    "FAIL book PDF sources/lost.pdf is missing from the installed copy; notes pointing at it: 01-source-book.md:1, chapters/ch01.md:6",
+    `WARN book PDF sources/book.pdf is not in the installed copy; put your copy at ${at("book.pdf")} for book fallbacks; notes pointing at it: chapters/ch01.md:2`,
+    `WARN book PDF sources/gone.pdf is not in the installed copy; put your copy at ${at("gone.pdf")} for book fallbacks; notes pointing at it: chapters/ch01.md:6`,
+    `WARN book PDF sources/lost.pdf is not in the installed copy; put your copy at ${at("lost.pdf")} for book fallbacks; notes pointing at it: 01-source-book.md:1, chapters/ch01.md:6`,
   ]);
-  assert.equal(result.stdoutLines.at(-2), "doctor found 3 problems.");
+  assert.equal(result.stdoutLines.at(-2), "doctor found no problems; 3 warnings.");
 });
 
 test("doctor fails when OpenCode sees the router in a folder install did not write", (t) => {

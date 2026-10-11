@@ -9,7 +9,7 @@ The curated set of notes the expert agent answers from; the single source of tru
 _Avoid_: library, vault, corpus
 
 **Source** (来源):
-An original document (book, paper, or manual) that the knowledge base draws on. The PDFs of the books the expert reads ship inside the knowledge base (ADR 0005); other sources are referenced, never contained.
+An original document (book, paper, or manual) that the knowledge base draws on. The PDFs of the books the expert reads go in the knowledge base's `sources/`, supplied by each user (ADR 0006); other sources are referenced, never contained.
 _Avoid_: reference, document, PDF
 
 **Source note**:

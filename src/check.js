@@ -137,8 +137,10 @@ const HUB_REFERENCE = /`((?!\/)(?:[\w.-]+\/[\w./-]*|[\w.-]+\.(?:md|ya?ml)))`/g;
 /** @type {Rule} */
 function hubReferencesExist(kb) {
   const references = new Set([...kb.hub.matchAll(HUB_REFERENCE)].map((match) => match[1]));
+  // Book PDFs are supplied by each user (ADR 0006); sourcePdfsNamedBySourceNotes covers them.
+  const bookPdfs = new Set(sourcePdfReferences(kb).map(({ path }) => path));
   return [...references]
-    .filter((reference) => !noteExists(kb, reference))
+    .filter((reference) => !bookPdfs.has(reference) && !noteExists(kb, reference))
     .map((reference) => `hub: reference ${reference} does not exist`);
 }
 
@@ -147,11 +149,21 @@ function noMachinePaths(kb) {
   return machinePathProblems(kb.texts);
 }
 
-/** @type {Rule} */
-function sourcePdfsExist(kb) {
+/**
+ * Every book PDF the notes point at is the `source_pdf` of a source note.
+ * The PDFs themselves are supplied by each user (ADR 0006), so check never
+ * looks for the files; doctor does, in the installed copy.
+ * @type {Rule}
+ */
+function sourcePdfsNamedBySourceNotes(kb) {
+  const books = new Set(
+    parsedNoteFrontmatters(kb)
+      .filter(({ frontmatter }) => frontmatter?.type === "source-note" && typeof frontmatter.source_pdf === "string")
+      .map(({ frontmatter }) => frontmatter.source_pdf),
+  );
   return sourcePdfReferences(kb)
-    .filter((reference) => !noteExists(kb, reference.path))
-    .map(({ file, lineNumber, path }) => `${file}:${lineNumber}: source PDF ${path} does not exist`);
+    .filter((reference) => !books.has(reference.path))
+    .map(({ file, lineNumber, path }) => `${file}:${lineNumber}: source PDF ${path} is not the source_pdf of any source note`);
 }
 
 /**
@@ -264,7 +276,7 @@ const RULES = [
   fallbackWindowsWellFormed,
   hubReferencesExist,
   noMachinePaths,
-  sourcePdfsExist,
+  sourcePdfsNamedBySourceNotes,
   noteFrontmattersParse,
   deepenedChapterNotesCiteEquations,
   benchmarkCasesHaveFourBlocks,
