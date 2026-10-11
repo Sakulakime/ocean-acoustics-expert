@@ -42,7 +42,7 @@ export function copyVerbatim(from, to, { linkType } = {}) {
   if (lstatSync(from).isSymbolicLink()) {
     const target = readlinkSync(from);
     const directory = linkType === "junction" || linkType === "dir" || statOrNull(from)?.isDirectory() === true;
-    if (process.platform === "win32" && (directory || /^\\\\\?\\|^\\\?\?\\/.test(target))) {
+    if (process.platform === "win32" && directory) {
       symlinkSync(linkDestination(from, target), to, "junction");
     } else {
       symlinkSync(target, to, directory ? "dir" : "file");

@@ -128,3 +128,59 @@ test('uninstall accepts legacy relative link records without a preceding reinsta
   assert.equal(result.status, 0, result.stderr);
   assert.doesNotMatch(result.stdout, /backup /);
 });
+
+test('a namespace-prefixed file link stays a file link during backup and restore', (t) => {
+  const home = writeHome(t);
+  const paths = installPaths(home);
+  const pkg = writePackage(t, { checkout: false });
+  const original = join(home, 'original-agent.md');
+  writeFileSync(original, 'original user agent');
+  mkdirSync(dirname(paths.agent), { recursive: true });
+  symlinkSync(original, paths.agent, 'file');
+  const run = (...args) => spawnSync(process.execPath, ['--require', policy,
+    join(pkg, 'bin/ocean-acoustics-expert.js'), ...args], {
+    encoding: 'utf8', env: { PATH: process.env.PATH ?? '', HOME: home,
+      USERPROFILE: home, OAE_TEST_LINK: paths.claudeSkill, OAE_TEST_FILE_LINK: paths.agent },
+  });
+  const installed = run('install', '--harness', 'claude', '--mode', 'copy', '--yes');
+  assert.equal(installed.status, 0, installed.stderr);
+  const manifest = JSON.parse(readFileSync(paths.manifest));
+  const backup = manifest.backups.find((entry) => entry.path === paths.agent);
+  assert.equal(realpathSync(backup.backup), original);
+  const restored = run('uninstall', '--restore');
+  assert.equal(restored.status, 0, restored.stderr);
+  assert.equal(realpathSync(paths.agent), original);
+  assert.equal(readFileSync(paths.agent, 'utf8'), 'original user agent');
+});
+
+test('doctor compares Windows namespace, UNC, and drive targets without accepting retargeting', (t) => {
+  const { home, paths, install } = scenario(t);
+  assert.equal(install().status, 0);
+  const pkg = writePackage(t, { checkout: false });
+  const original = JSON.parse(readFileSync(paths.manifest));
+  const driveLink = String.raw`C:\Users\fixture\.claude\skills\ocean-acoustics-router`;
+  const uncLink = String.raw`\\server\share\fixture\.claude\skills\ocean-acoustics-router`;
+  const cases = [
+    [driveLink, String.raw`..\..\.agents\skills\ocean-acoustics-router`, String.raw`\??\C:\Users\fixture\.agents\skills\ocean-acoustics-router`, 0],
+    [driveLink, String.raw`..\..\.agents\skills\ocean-acoustics-router`, String.raw`\\?\C:\Users\fixture\.agents\skills\ocean-acoustics-router`, 0],
+    [driveLink, String.raw`C:\Users\fixture\.agents\skills\ocean-acoustics-router`, String.raw`c:\Users\fixture\.agents\skills\ocean-acoustics-router`, 0],
+    [uncLink, String.raw`..\..\.agents\skills\ocean-acoustics-router`, String.raw`\\?\UNC\server\share\fixture\.agents\skills\ocean-acoustics-router`, 0],
+    [uncLink, String.raw`..\..\.agents\skills\ocean-acoustics-router`, String.raw`\??\UNC\server\share\fixture\.agents\skills\ocean-acoustics-router`, 0],
+    [driveLink, String.raw`..\..\.agents\skills\ocean-acoustics-router`, String.raw`\\?\C:\Users\fixture\different-router`, 1],
+  ];
+  for (const [virtualLink, recordedTarget, currentTarget, status] of cases) {
+    const manifest = structuredClone(original);
+    Object.assign(manifest.units.find((unit) => unit.path === paths.claudeSkill), {
+      path: virtualLink, target: recordedTarget,
+    });
+    writeFileSync(paths.manifest, JSON.stringify(manifest));
+    const result = spawnSync(process.execPath, ['--require', policy,
+      join(pkg, 'bin/ocean-acoustics-expert.js'), 'doctor'], {
+      encoding: 'utf8', env: { PATH: process.env.PATH ?? '', HOME: home, USERPROFILE: home,
+        OAE_TEST_VIRTUAL_LINK: virtualLink, OAE_TEST_REAL_LINK: paths.claudeSkill,
+        OAE_TEST_READLINK_TARGET: currentTarget },
+    });
+    assert.equal(result.status, status, `${currentTarget}: ${result.stderr}`);
+    if (status === 1) assert.match(result.stderr, /no longer the symbolic link/);
+  }
+});

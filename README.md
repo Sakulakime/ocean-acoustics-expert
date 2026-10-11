@@ -56,7 +56,9 @@ POSIX systems keep directory symlinks. Existing relative link records remain
 compatible with reinstall, `doctor`, and `uninstall`. Windows directory-link
 backups preserve the destination and restore as junctions, including when that
 destination no longer exists. File symlinks still require the system's symlink
-permissions. After an interrupted install, rerun the fixed installer with the
+permissions. A legacy dangling symlink without recorded directory type cannot
+be inferred from its target's namespace prefix; it remains an ordinary symlink.
+After an interrupted install, rerun the fixed installer with the
 same harnesses and mode; review any backups it reports before removing them.
 The Linux regression suite models the link permission boundary and does not
 replace validation on a Windows machine.
