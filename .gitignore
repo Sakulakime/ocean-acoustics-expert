@@ -2,3 +2,19 @@ node_modules/
 *.tgz
 .DS_Store
 tools/matlab/oae_local_paths.m
+
+# AI agent configuration files
+.claude/
+agent/
+AGENTS.md
+.scratch/
+docs/agents/
+skills/
+
+# AI agent configuration files
+.claude/
+agent/
+AGENTS.md
+.scratch/
+docs/agents/
+skills/
