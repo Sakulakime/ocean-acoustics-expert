@@ -1,5 +1,7 @@
 # ocean-acoustics-expert
 
+English | [简体中文](README.zh-CN.md)
+
 An underwater-acoustics expert agent and the knowledge base it answers from, installable into Claude Code, Codex and OpenCode.
 
 The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
