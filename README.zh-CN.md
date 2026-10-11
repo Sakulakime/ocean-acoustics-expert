@@ -19,7 +19,7 @@
 | Claude Code | `~/.claude/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.claude/skills/ocean-acoustics-router`，指向共享文件夹的链接 | 读取页面范围 |
 | Codex | `~/.codex/agents/ocean-acoustics-expert.toml` | `sandbox_mode = "read-only"` | 从 `~/.agents/skills` 读取 | 使用 `pdftotext` 打印页面范围 |
 | OpenCode | `~/.config/opencode/agents/ocean-acoustics-expert.md`（子智能体） | 一个 `permission` 块，拒绝 edit、bash、web 和 task，允许读取数据文件夹 | 从 `~/.agents/skills` 读取 | 不打开 PDFs；而是说明要读取的书籍和页面范围 |
-| DeepSeek-TUI | `~/.deepseek/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.deepseek/skills/ocean-acoustics-router`，指向共享文件夹的链接 | 读取页面范围 |
+| DeepSeek-TUI（`dst`） | `~/.dsh/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | 从 `~/.agents/skills` 读取 | 读取页面范围 |
 
 路由技能 `ocean-acoustics-router` 位于共享技能文件夹 `~/.agents/skills/` 中。它通过笔记路由水声学问题，并将深度工作交给专家。
 
@@ -53,8 +53,10 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
 `<owner>` 是托管仓库的 GitHub 账户。该包约为 95 MB，几乎全部是书籍 PDFs。
 
 - `--dry-run` 打印本地路径映射和安装将执行的每个操作，但不更改任何内容。
-- 安装会选择所有存在配置文件夹的平台（`~/.claude`、`~/.codex`、`~/.config/opencode`、`~/.deepseek`）。使用 `--harness` 自己选择，每个平台一次：`--harness claude --harness opencode`。
-- 后续安装会保留已记录的平台。要更改它们，请使用 `--harness` 传递完整的新列表。
+- 在终端中运行时，安装会询问要安装到哪些平台：列出全部四个平台，并标明是否找到。用方向键移动，空格勾选（`a` 全选/全不选），回车确认，esc 或 Ctrl+C 取消。存在配置文件夹的平台（`~/.claude`、`~/.codex`、`~/.config/opencode`、`~/.dsh`）默认勾选；后续安装则默认勾选已记录的平台。
+- 在做任何更改之前，安装会显示将执行的操作数量，列出将要备份的每个路径，并询问是否继续。`--dry-run` 不会询问。
+- `--harness` 直接指定平台，跳过选择列表，每个平台一次：`--harness claude --harness opencode`。`--yes`（`-y`）跳过所有询问。没有终端时（管道、CI）安装从不询问：依次使用 `--harness`、已记录的平台、存在的平台。
+- 后续安装会保留已记录的平台。要更改它们，在选择列表中重新勾选，或使用 `--harness` 传递完整的新列表。
 - 在覆盖或删除任何非自己写入的内容之前，安装会将其复制到 `backups/<timestamp>/`。它自己的未更改文件会直接替换。它还会清理此包替换的手动设置的路径，并首先进行备份。
 - 安装是幂等的：在没有任何更改的情况下再次运行它不会执行任何操作。
 
@@ -104,6 +106,7 @@ node bin/ocean-acoustics-expert.js install
 | `XDG_DATA_HOME` | `~/.local/share` | 数据文件夹，`$XDG_DATA_HOME/ocean-acoustics-expert` |
 | `CLAUDE_CONFIG_DIR` | `~/.claude` | Claude Code 的配置文件夹 |
 | `CODEX_HOME` | `~/.codex` | Codex 的配置文件夹 |
+| `DSH_HOME` | `~/.dsh` | DeepSeek-TUI（DSH）的主文件夹 |
 | `XDG_CONFIG_HOME` | `~/.config` | OpenCode 的配置文件夹，`$XDG_CONFIG_HOME/opencode` |
 
 共享技能文件夹始终是 `~/.agents/skills`。
@@ -114,7 +117,7 @@ node bin/ocean-acoustics-expert.js install
 
 | 命令 | 作用 |
 |---|---|
-| `install` | 安装或更新专家。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--at-2023 <dir>`、`--at-2020 <dir>`。 |
+| `install` | 安装或更新专家。在终端中会询问安装平台。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--yes`、`--at-2023 <dir>`、`--at-2020 <dir>`。取消时退出码为 130。 |
 | `status` | 显示已安装的版本、模式、平台、数据文件夹、本地路径映射，以及清单列出的文件、链接和备份的数量。 |
 | `doctor` | 诊断安装并且不更改任何内容。对于每个问题，它会以非零值退出并打印一行 `FAIL`。 |
 | `check` | 检查知识库并运行路由选择用例。用于编辑知识库的人。选项：`--kb <dir>`、`--cases <file>`、`--helpers <dir>`。 |

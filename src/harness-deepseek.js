@@ -1,10 +1,7 @@
-import { join } from "node:path";
-
 import {
   agentPath as standardAgentPath,
   inspectMarkdownAgent,
   planAgentFile,
-  planSkillLinks,
   renderMarkdownAgent,
 } from "./harness-adapter.js";
 
@@ -17,24 +14,25 @@ function agentPath(locations, name) {
 }
 
 /**
- * DeepSeek-TUI: a read-only agent in the user agents folder, and each skill
- * as a symbolic link to its canonical folder in the shared skills folder.
- * Similar to Claude Code structure.
+ * DeepSeek-TUI (`dst`, DSH): a read-only agent in DSH's home folder. DSH's
+ * filesystem skill provider scans `~/.agents/skills` itself (its
+ * `agentsHome` root), so the router needs no entry of its own; a link under
+ * `~/.dsh/skills` would list it twice.
  * @type {import("./install.js").Harness}
  */
 export const DEEPSEEK_HARNESS = {
   name: "deepseek",
+  label: "DeepSeek-TUI (dst)",
   configDir: (locations) => locations.deepseekDir,
   agentPath,
-  units({ locations, template, variables, skills }) {
+  units({ locations, template, variables }) {
     return [
-      ...planSkillLinks(skills, join(locations.deepseekDir, "skills")),
       planAgentFile(
         agentPath(locations, template.name),
         renderMarkdownAgent(template, variables, {
           model: "inherit",
           tools: "[Read, Grep, Glob]",
-        })
+        }),
       ),
     ];
   },

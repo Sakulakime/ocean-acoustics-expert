@@ -15,17 +15,17 @@ import { isAbsolute, join } from "node:path";
  * @property {string} claudeDir Claude Code's user config folder.
  * @property {string} codexDir Codex's config folder: `CODEX_HOME` when absolute, else `~/.codex`.
  * @property {string} opencodeDir OpenCode's user config folder: `XDG_CONFIG_HOME/opencode`, else `~/.config/opencode`.
- * @property {string} deepseekDir DeepSeek-TUI's config folder: `DEEPSEEK_HOME` when absolute, else `~/.deepseek`.
+ * @property {string} deepseekDir DeepSeek-TUI's (DSH's) home folder: `DSH_HOME` when absolute, else `~/.dsh`.
  */
 
 /**
  * Resolve the install locations from the environment: `HOME`,
  * `XDG_DATA_HOME`, `XDG_CONFIG_HOME`, `CLAUDE_CONFIG_DIR`, `CODEX_HOME`
- * and `DEEPSEEK_HOME`.
+ * and `DSH_HOME`.
  * @returns {Locations}
  */
 export function installLocations() {
-  const { XDG_DATA_HOME, XDG_CONFIG_HOME, CLAUDE_CONFIG_DIR, CODEX_HOME, DEEPSEEK_HOME } = process.env;
+  const { XDG_DATA_HOME, XDG_CONFIG_HOME, CLAUDE_CONFIG_DIR, CODEX_HOME, DSH_HOME } = process.env;
   const home = homedir();
   const dataDir = join(absoluteOr(XDG_DATA_HOME, join(home, ".local", "share")), "ocean-acoustics-expert");
   return {
@@ -40,7 +40,7 @@ export function installLocations() {
     claudeDir: absoluteOr(CLAUDE_CONFIG_DIR, join(home, ".claude")),
     codexDir: absoluteOr(CODEX_HOME, join(home, ".codex")),
     opencodeDir: join(absoluteOr(XDG_CONFIG_HOME, join(home, ".config")), "opencode"),
-    deepseekDir: absoluteOr(DEEPSEEK_HOME, join(home, ".deepseek")),
+    deepseekDir: absoluteOr(DSH_HOME, join(home, ".dsh")),
   };
 }
 

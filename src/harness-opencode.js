@@ -30,6 +30,7 @@ function agentPath(locations, name) {
  */
 export const OPENCODE_HARNESS = {
   name: "opencode",
+  label: "OpenCode",
   configDir: (locations) => locations.opencodeDir,
   agentPath,
   units({ locations, template, variables, linkTargets }) {
