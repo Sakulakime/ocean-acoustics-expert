@@ -6,7 +6,7 @@ An underwater-acoustics expert agent and the knowledge base it answers from, ins
 
 The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
 
-It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF: COA, or one of four more books through its source note. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. In every harness the agent is read-only: it cannot change files.
+It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF: COA, or one of four more books through its source note. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. The agent is read-only: in Claude Code, Codex and OpenCode the harness stops it changing files; in DeepSeek-TUI, which has no such control for a skill, its instructions do.
 
 > **This repository must stay private.** It ships five copyrighted book PDFs; see [Bundled books](#bundled-books).
 
@@ -19,7 +19,7 @@ All harnesses read one installed copy of the knowledge base in the data folder, 
 | Claude Code | `~/.claude/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.claude/skills/ocean-acoustics-router`, a link to the shared folder | reads page ranges |
 | Codex | `~/.codex/agents/ocean-acoustics-expert.toml` | `sandbox_mode = "read-only"` | read from `~/.agents/skills` | prints page ranges with `pdftotext` |
 | OpenCode | `~/.config/opencode/agents/ocean-acoustics-expert.md` (a subagent) | a `permission` block that denies edit, bash, web and task, and allows reads of the data folder | read from `~/.agents/skills` | does not open PDFs; names the book and page range to read instead |
-| DeepSeek-TUI (`dst`) | `~/.dsh/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | read from `~/.agents/skills` | reads page ranges |
+| DeepSeek-TUI (`dst`) | `~/.dsh/skills/ocean-acoustics-expert/SKILL.md` (a skill: DSH has no named agents) | its instructions only; DSH has no per-skill tool allowlist | read from `~/.agents/skills` | prints page ranges with `pdftotext` |
 
 The router skill, `ocean-acoustics-router`, lives in the shared skills folder `~/.agents/skills/`. It routes an underwater-acoustics question through the notes and hands deep work to the expert.
 
@@ -38,7 +38,7 @@ The data folder holds:
 
 - Node.js 22 or later.
 - Read access to this private GitHub repository. npm fetches it with git, so git must be able to authenticate: an SSH key or a credential helper with access.
-- For Codex's book fallbacks: `pdftotext` from poppler-utils.
+- For the book fallbacks of Codex and DeepSeek-TUI: `pdftotext` from poppler-utils.
 - Optional: MATLAB and the Acoustics Toolbox, for the solver helpers (see `tools/matlab/README.md`).
 
 ## Install
@@ -71,7 +71,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 - **Claude Code:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
 - **Codex:** ask Codex to use the `ocean-acoustics-expert` agent.
 - **OpenCode:** mention `@ocean-acoustics-expert`, or let the main agent hand the question to it.
-- **DeepSeek-TUI:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
+- **DeepSeek-TUI:** run `/ocean-acoustics-expert <question>` (it also appears in `/skills`). The expert runs inside the main agent, so it stays read-only by its instructions alone. Plain underwater-acoustics questions go through the router skill.
 
 ## Link mode and copy mode
 

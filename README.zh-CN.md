@@ -6,7 +6,7 @@
 
 本专家涵盖声传播建模和面向声呐的信号处理：声速结构、传输损失、射线和高斯波束方法、波数积分、简正波、抛物方程、宽带传播、环境噪声、混响、声呐方程、波束形成、匹配场处理，以及声波在内波和其他海洋波动中的传播。它还知道如何通过捆绑的 MATLAB 辅助工具为 BELLHOP、KRAKEN 和 RAM 构建输入、运行和绘图。
 
-它优先从笔记中回答问题。它会读取中心文档、路由映射和概念索引，然后读取能够解决问题的最小笔记集：《计算海洋声学》(COA) 的章节笔记、求解器笔记、运行手册和可视化标准。只有当笔记不足时，它才会读取书籍 PDF 的目标页面范围：COA，或通过源笔记读取其他四本书中的某一本。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。在所有平台中，该智能体都是只读的：它不能修改文件。
+它优先从笔记中回答问题。它会读取中心文档、路由映射和概念索引，然后读取能够解决问题的最小笔记集：《计算海洋声学》(COA) 的章节笔记、求解器笔记、运行手册和可视化标准。只有当笔记不足时，它才会读取书籍 PDF 的目标页面范围：COA，或通过源笔记读取其他四本书中的某一本。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。该智能体是只读的：在 Claude Code、Codex 和 OpenCode 中由平台阻止它修改文件；DeepSeek-TUI 无法对技能做这种限制，只能靠其指令约束。
 
 > **本仓库必须保持私有。** 它包含五本受版权保护的书籍 PDF；请参阅[捆绑书籍](#捆绑书籍)。
 
@@ -19,7 +19,7 @@
 | Claude Code | `~/.claude/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.claude/skills/ocean-acoustics-router`，指向共享文件夹的链接 | 读取页面范围 |
 | Codex | `~/.codex/agents/ocean-acoustics-expert.toml` | `sandbox_mode = "read-only"` | 从 `~/.agents/skills` 读取 | 使用 `pdftotext` 打印页面范围 |
 | OpenCode | `~/.config/opencode/agents/ocean-acoustics-expert.md`（子智能体） | 一个 `permission` 块，拒绝 edit、bash、web 和 task，允许读取数据文件夹 | 从 `~/.agents/skills` 读取 | 不打开 PDFs；而是说明要读取的书籍和页面范围 |
-| DeepSeek-TUI（`dst`） | `~/.dsh/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | 从 `~/.agents/skills` 读取 | 读取页面范围 |
+| DeepSeek-TUI（`dst`） | `~/.dsh/skills/ocean-acoustics-expert/SKILL.md`（技能形式：DSH 没有命名智能体） | 仅靠指令约束；DSH 没有按技能限制工具的机制 | 从 `~/.agents/skills` 读取 | 使用 `pdftotext` 打印页面范围 |
 
 路由技能 `ocean-acoustics-router` 位于共享技能文件夹 `~/.agents/skills/` 中。它通过笔记路由水声学问题，并将深度工作交给专家。
 
@@ -38,7 +38,7 @@
 
 - Node.js 22 或更高版本。
 - 对此私有 GitHub 仓库的读取权限。npm 使用 git 获取它，因此 git 必须能够进行身份验证：SSH 密钥或具有访问权限的凭据助手。
-- 对于 Codex 的书籍回退：来自 poppler-utils 的 `pdftotext`。
+- 对于 Codex 和 DeepSeek-TUI 的书籍回退：来自 poppler-utils 的 `pdftotext`。
 - 可选：MATLAB 和 Acoustics Toolbox，用于求解器辅助工具（参见 `tools/matlab/README.md`）。
 
 ## 安装
@@ -71,7 +71,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 - **Claude Code:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
 - **Codex:** 要求 Codex 使用 `ocean-acoustics-expert` 智能体。
 - **OpenCode:** 提及 `@ocean-acoustics-expert`，或让主智能体将问题交给它。
-- **DeepSeek-TUI:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
+- **DeepSeek-TUI:** 运行 `/ocean-acoustics-expert <问题>`（也会出现在 `/skills` 中）。专家在主智能体内运行，因此只读仅靠其指令约束。普通的水声学问题会经过路由技能。
 
 ## 链接模式和拷贝模式
 

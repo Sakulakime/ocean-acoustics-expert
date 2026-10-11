@@ -61,7 +61,7 @@ test("interactive install lists every harness, checks the ones present and insta
   assert.match(result.screen, /Go ahead\? \(Y\/n\) yes/);
   const manifest = JSON.parse(readFileSync(installPaths(home).manifest, "utf8"));
   assert.deepEqual(manifest.harnesses, ["deepseek"]);
-  assert.ok(existsSync(join(home, ".dsh", "agents", "ocean-acoustics-expert.md")));
+  assert.ok(existsSync(join(home, ".dsh", "skills", "ocean-acoustics-expert", "SKILL.md")));
   assert.ok(!existsSync(installPaths(home).agent));
 });
 
