@@ -69,7 +69,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 ### 使用专家
 
 - **Claude Code:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
-- **Codex:** 要求 Codex 使用 `ocean-acoustics-expert` 智能体。
+- **Codex:** Codex 没有直接调用智能体的语法，`$` 用于调用技能。用自然语言要求派一个子代理，例如 `派一个 ocean-acoustics-expert 子代理回答：……`。Codex 只在明确要求时才派子代理，所以直接提问不会调用专家。子代理在 Codex 的只读沙箱中运行。若只想在主会话中使用路由技能，调用 `$ocean-acoustics-router`。
 - **OpenCode:** 提及 `@ocean-acoustics-expert`，或让主智能体将问题交给它。
 - **DeepSeek-TUI:** 运行 `/ocean-acoustics-expert <问题>`（也会出现在 `/skills` 中）。专家在主智能体内运行，因此只读仅靠其指令约束。普通的水声学问题会经过路由技能。
 

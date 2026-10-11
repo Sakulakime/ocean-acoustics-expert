@@ -69,7 +69,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 ### Using the expert
 
 - **Claude Code:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
-- **Codex:** ask Codex to use the `ocean-acoustics-expert` agent.
+- **Codex:** Codex has no syntax for calling an agent directly; `$` calls skills. Ask for the expert as a sub-agent in plain words, for example `Spawn an ocean-acoustics-expert sub-agent to answer: ...`. Codex spawns sub-agents only when asked explicitly, so a plain question does not reach the expert. The sub-agent runs in Codex's read-only sandbox. To use only the router in the main session, call `$ocean-acoustics-router`.
 - **OpenCode:** mention `@ocean-acoustics-expert`, or let the main agent hand the question to it.
 - **DeepSeek-TUI:** run `/ocean-acoustics-expert <question>` (it also appears in `/skills`). The expert runs inside the main agent, so it stays read-only by its instructions alone. Plain underwater-acoustics questions go through the router skill.
 
