@@ -47,8 +47,8 @@ The data folder holds:
 Install a pinned tag. npx caches packages, so pinning a tag gets you a known version rather than a stale cached copy:
 
 ```sh
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install --dry-run
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.1 install --dry-run
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.1 install
 ```
 
 On Windows, installer-owned directory links use junctions with absolute targets;
@@ -76,7 +76,7 @@ The package is under 1 MB. After installing, copy your book PDFs into `~/.local/
 Afterwards, check the result:
 
 ```sh
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 doctor
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.1 doctor
 ```
 
 ### Using the expert
