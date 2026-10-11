@@ -6,7 +6,7 @@
 
 本专家涵盖声传播建模和面向声呐的信号处理：声速结构、传输损失、射线和高斯波束方法、波数积分、简正波、抛物方程、宽带传播、环境噪声、混响、声呐方程、波束形成、匹配场处理，以及声波在内波和其他海洋波动中的传播。它还知道如何通过捆绑的 MATLAB 辅助工具为 BELLHOP、KRAKEN 和 RAM 构建输入、运行和绘图。
 
-它优先从笔记中回答问题。它会读取中心文档、路由映射和概念索引，然后读取能够解决问题的最小笔记集：《计算海洋声学》(COA) 的章节笔记、求解器笔记、运行手册和可视化标准。只有当笔记不足时，它才会读取书籍 PDF 的目标页面范围：COA，或通过源笔记读取其他四本书中的某一本。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。在所有平台中，该智能体都是只读的：它不能修改文件。
+它优先从笔记中回答问题。它会读取中心文档、路由映射和概念索引，然后读取能够解决问题的最小笔记集：《计算海洋声学》(COA) 的章节笔记、求解器笔记、运行手册和可视化标准。只有当笔记不足时，它才会读取书籍 PDF 的目标页面范围：COA，或通过源笔记读取其他四本书中的某一本。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。该智能体是只读的：在 Claude Code、Codex 和 OpenCode 中由平台阻止它修改文件；DeepSeek-TUI 无法对技能做这种限制，只能靠其指令约束。
 
 > **本仓库必须保持私有。** 它包含五本受版权保护的书籍 PDF；请参阅[捆绑书籍](#捆绑书籍)。
 
@@ -19,7 +19,7 @@
 | Claude Code | `~/.claude/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.claude/skills/ocean-acoustics-router`，指向共享文件夹的链接 | 读取页面范围 |
 | Codex | `~/.codex/agents/ocean-acoustics-expert.toml` | `sandbox_mode = "read-only"` | 从 `~/.agents/skills` 读取 | 使用 `pdftotext` 打印页面范围 |
 | OpenCode | `~/.config/opencode/agents/ocean-acoustics-expert.md`（子智能体） | 一个 `permission` 块，拒绝 edit、bash、web 和 task，允许读取数据文件夹 | 从 `~/.agents/skills` 读取 | 不打开 PDFs；而是说明要读取的书籍和页面范围 |
-| DeepSeek-TUI | `~/.deepseek/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.deepseek/skills/ocean-acoustics-router`，指向共享文件夹的链接 | 读取页面范围 |
+| DeepSeek-TUI（`dst`） | `~/.dsh/skills/ocean-acoustics-expert/SKILL.md`（技能形式：DSH 没有命名智能体） | 仅靠指令约束；DSH 没有按技能限制工具的机制 | 从 `~/.agents/skills` 读取 | 使用 `pdftotext` 打印页面范围 |
 
 路由技能 `ocean-acoustics-router` 位于共享技能文件夹 `~/.agents/skills/` 中。它通过笔记路由水声学问题，并将深度工作交给专家。
 
@@ -38,7 +38,7 @@
 
 - Node.js 22 或更高版本。
 - 对此私有 GitHub 仓库的读取权限。npm 使用 git 获取它，因此 git 必须能够进行身份验证：SSH 密钥或具有访问权限的凭据助手。
-- 对于 Codex 的书籍回退：来自 poppler-utils 的 `pdftotext`。
+- 对于 Codex 和 DeepSeek-TUI 的书籍回退：来自 poppler-utils 的 `pdftotext`。
 - 可选：MATLAB 和 Acoustics Toolbox，用于求解器辅助工具（参见 `tools/matlab/README.md`）。
 
 ## 安装
@@ -53,8 +53,10 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
 `<owner>` 是托管仓库的 GitHub 账户。该包约为 95 MB，几乎全部是书籍 PDFs。
 
 - `--dry-run` 打印本地路径映射和安装将执行的每个操作，但不更改任何内容。
-- 安装会选择所有存在配置文件夹的平台（`~/.claude`、`~/.codex`、`~/.config/opencode`、`~/.deepseek`）。使用 `--harness` 自己选择，每个平台一次：`--harness claude --harness opencode`。
-- 后续安装会保留已记录的平台。要更改它们，请使用 `--harness` 传递完整的新列表。
+- 在终端中运行时，安装会询问要安装到哪些平台：列出全部四个平台，并标明是否找到。用方向键移动，空格勾选（`a` 全选/全不选），回车确认，esc 或 Ctrl+C 取消。存在配置文件夹的平台（`~/.claude`、`~/.codex`、`~/.config/opencode`、`~/.dsh`）默认勾选；后续安装则默认勾选已记录的平台。
+- 在做任何更改之前，安装会显示将执行的操作数量，列出将要备份的每个路径，并询问是否继续。`--dry-run` 不会询问。
+- `--harness` 直接指定平台，跳过选择列表，每个平台一次：`--harness claude --harness opencode`。`--yes`（`-y`）跳过所有询问。没有终端时（管道、CI）安装从不询问：依次使用 `--harness`、已记录的平台、存在的平台。
+- 后续安装会保留已记录的平台。要更改它们，在选择列表中重新勾选，或使用 `--harness` 传递完整的新列表。
 - 在覆盖或删除任何非自己写入的内容之前，安装会将其复制到 `backups/<timestamp>/`。它自己的未更改文件会直接替换。它还会清理此包替换的手动设置的路径，并首先进行备份。
 - 安装是幂等的：在没有任何更改的情况下再次运行它不会执行任何操作。
 
@@ -67,9 +69,9 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 ### 使用专家
 
 - **Claude Code:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
-- **Codex:** 要求 Codex 使用 `ocean-acoustics-expert` 智能体。
+- **Codex:** Codex 没有直接调用智能体的语法，`$` 用于调用技能。用自然语言要求派一个子代理，例如 `派一个 ocean-acoustics-expert 子代理回答：……`。Codex 只在明确要求时才派子代理，所以直接提问不会调用专家。子代理在 Codex 的只读沙箱中运行。若只想在主会话中使用路由技能，调用 `$ocean-acoustics-router`。
 - **OpenCode:** 提及 `@ocean-acoustics-expert`，或让主智能体将问题交给它。
-- **DeepSeek-TUI:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
+- **DeepSeek-TUI:** 运行 `/ocean-acoustics-expert <问题>`（也会出现在 `/skills` 中）。专家在主智能体内运行，因此只读仅靠其指令约束。普通的水声学问题会经过路由技能。
 
 ## 链接模式和拷贝模式
 
@@ -104,6 +106,7 @@ node bin/ocean-acoustics-expert.js install
 | `XDG_DATA_HOME` | `~/.local/share` | 数据文件夹，`$XDG_DATA_HOME/ocean-acoustics-expert` |
 | `CLAUDE_CONFIG_DIR` | `~/.claude` | Claude Code 的配置文件夹 |
 | `CODEX_HOME` | `~/.codex` | Codex 的配置文件夹 |
+| `DSH_HOME` | `~/.dsh` | DeepSeek-TUI（DSH）的主文件夹 |
 | `XDG_CONFIG_HOME` | `~/.config` | OpenCode 的配置文件夹，`$XDG_CONFIG_HOME/opencode` |
 
 共享技能文件夹始终是 `~/.agents/skills`。
@@ -114,7 +117,7 @@ node bin/ocean-acoustics-expert.js install
 
 | 命令 | 作用 |
 |---|---|
-| `install` | 安装或更新专家。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--at-2023 <dir>`、`--at-2020 <dir>`。 |
+| `install` | 安装或更新专家。在终端中会询问安装平台。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--yes`、`--at-2023 <dir>`、`--at-2020 <dir>`。取消时退出码为 130。 |
 | `status` | 显示已安装的版本、模式、平台、数据文件夹、本地路径映射，以及清单列出的文件、链接和备份的数量。 |
 | `doctor` | 诊断安装并且不更改任何内容。对于每个问题，它会以非零值退出并打印一行 `FAIL`。 |
 | `check` | 检查知识库并运行路由选择用例。用于编辑知识库的人。选项：`--kb <dir>`、`--cases <file>`、`--helpers <dir>`。 |

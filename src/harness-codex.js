@@ -31,6 +31,7 @@ function agentPath(locations, name) {
  */
 export const CODEX_HARNESS = {
   name: "codex",
+  label: "Codex",
   configDir: (locations) => locations.codexDir,
   agentPath,
   units({ locations, template, variables }) {

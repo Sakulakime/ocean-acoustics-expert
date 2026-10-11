@@ -8,6 +8,7 @@ import { DEEPSEEK_HARNESS } from "./harness-deepseek.js";
 import { OPENCODE_HARNESS } from "./harness-opencode.js";
 import { newBackupDir } from "./fs-entries.js";
 import { applyActions, describeAction, planInstall } from "./install-plan.js";
+import { chooseHarnesses, confirmActions } from "./install-prompts.js";
 import { installLocations } from "./locations.js";
 import { loadManifest, manifestText } from "./manifest.js";
 import { isCheckout, PACKAGE_ROOT, packageVersion } from "./package-info.js";
@@ -24,7 +25,8 @@ import { readAgentTemplate, renderPlaceholders } from "./template.js";
 /**
  * A coding-agent harness the expert can be installed into.
  * @typedef {object} Harness
- * @property {string} name
+ * @property {string} name The value of --harness and the manifest's record.
+ * @property {string} label Shown in interactive prompts.
  * @property {(locations: import("./locations.js").Locations) => string} configDir
  *   Its user config folder; the harness counts as present when it exists.
  * @property {(locations: import("./locations.js").Locations, name: string) => string} agentPath
@@ -60,11 +62,15 @@ const MATLAB_HELPERS = join(PACKAGE_ROOT, "tools", "matlab");
 const MATLAB_CONFIG = "oae_local_paths.m";
 
 /**
- * Install the expert into the selected harnesses.
- * @param {string[]} args [--harness <name>]... [--mode link|copy] [--dry-run] [--at-2023 <dir>] [--at-2020 <dir>]
- * @returns {number} Exit code: 0 done, 1 failed, 2 usage error.
+ * Install the expert into the selected harnesses. On an interactive
+ * terminal without --harness or --yes, it asks which harnesses to install
+ * into and, before changing anything, asks to go ahead.
+ * @param {string[]} args [--harness <name>]... [--mode link|copy] [--dry-run] [--yes] [--at-2023 <dir>] [--at-2020 <dir>]
+ * @param {{terminal?: import("./install-prompts.js").Terminal|null}} [options]
+ *   The terminal to ask on; default: standard input and output when both are terminals.
+ * @returns {Promise<number>} Exit code: 0 done, 1 failed, 2 usage error, 130 cancelled.
  */
-export function runInstall(args) {
+export async function runInstall(args, { terminal = interactiveTerminal() } = {}) {
   let options;
   try {
     ({ values: options } = parseArgs({
@@ -73,6 +79,7 @@ export function runInstall(args) {
         harness: { type: "string", multiple: true },
         mode: { type: "string" },
         "dry-run": { type: "boolean" },
+        yes: { type: "boolean", short: "y" },
         ...Object.fromEntries(TOOLBOX_PATHS.map((entry) => [flagName(entry), { type: "string" }])),
       },
     }));
@@ -80,6 +87,7 @@ export function runInstall(args) {
     console.error(error.message);
     return 2;
   }
+  const ask = options.yes ? null : terminal;
 
   const locations = installLocations();
   const loaded = loadManifest(locations.manifest);
@@ -92,7 +100,15 @@ export function runInstall(args) {
     console.error(usageError);
     return 2;
   }
-  const harnesses = selectHarnesses(options.harness ?? previous?.harnesses, locations);
+  let names = options.harness ?? previous?.harnesses;
+  if (ask && !options.harness) {
+    names = await chooseHarnesses({ terminal: ask, harnesses: HARNESSES, locations, recorded: previous?.harnesses });
+    if (!names) {
+      console.error("Install cancelled; nothing was changed.");
+      return 130;
+    }
+  }
+  const harnesses = selectHarnesses(names, locations);
   if (typeof harnesses === "string") {
     console.error(harnesses);
     return 2;
@@ -146,6 +162,10 @@ export function runInstall(args) {
     return 0;
   }
   console.log(["Local path map:", ...describePathMap(paths)].join("\n"));
+  if (ask && !(await confirmActions({ terminal: ask, actions }))) {
+    console.error("Install cancelled; nothing was changed.");
+    return 130;
+  }
   for (const action of actions) {
     console.log(describeAction(action));
     try {
@@ -156,9 +176,17 @@ export function runInstall(args) {
       return 1;
     }
   }
-  const names = harnesses.map((harness) => harness.name).join(", ");
-  console.log(`Installed ocean-acoustics-expert ${version} in ${mode} mode for ${names}.`);
+  const installed = harnesses.map((harness) => harness.name).join(", ");
+  console.log(`Installed ocean-acoustics-expert ${version} in ${mode} mode for ${installed}.`);
   return 0;
+}
+
+/**
+ * @returns {import("./install-prompts.js").Terminal|null} Standard input and
+ *   output when both are terminals, so piped and scripted runs never wait on a prompt.
+ */
+function interactiveTerminal() {
+  return process.stdin.isTTY && process.stdout.isTTY ? { input: process.stdin, output: process.stdout } : null;
 }
 
 /**

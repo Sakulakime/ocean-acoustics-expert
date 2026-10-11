@@ -36,6 +36,7 @@ function agentPath(locations, name) {
  */
 export const CLAUDE_HARNESS = {
   name: "claude",
+  label: "Claude Code",
   configDir: (locations) => locations.claudeDir,
   agentPath,
   units({ locations, template, variables, skills }) {

@@ -6,7 +6,7 @@ An underwater-acoustics expert agent and the knowledge base it answers from, ins
 
 The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
 
-It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF: COA, or one of four more books through its source note. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. In every harness the agent is read-only: it cannot change files.
+It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF: COA, or one of four more books through its source note. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. The agent is read-only: in Claude Code, Codex and OpenCode the harness stops it changing files; in DeepSeek-TUI, which has no such control for a skill, its instructions do.
 
 > **This repository must stay private.** It ships five copyrighted book PDFs; see [Bundled books](#bundled-books).
 
@@ -19,7 +19,7 @@ All harnesses read one installed copy of the knowledge base in the data folder, 
 | Claude Code | `~/.claude/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.claude/skills/ocean-acoustics-router`, a link to the shared folder | reads page ranges |
 | Codex | `~/.codex/agents/ocean-acoustics-expert.toml` | `sandbox_mode = "read-only"` | read from `~/.agents/skills` | prints page ranges with `pdftotext` |
 | OpenCode | `~/.config/opencode/agents/ocean-acoustics-expert.md` (a subagent) | a `permission` block that denies edit, bash, web and task, and allows reads of the data folder | read from `~/.agents/skills` | does not open PDFs; names the book and page range to read instead |
-| DeepSeek-TUI | `~/.deepseek/agents/ocean-acoustics-expert.md` | `tools: [Read, Grep, Glob]` | `~/.deepseek/skills/ocean-acoustics-router`, a link to the shared folder | reads page ranges |
+| DeepSeek-TUI (`dst`) | `~/.dsh/skills/ocean-acoustics-expert/SKILL.md` (a skill: DSH has no named agents) | its instructions only; DSH has no per-skill tool allowlist | read from `~/.agents/skills` | prints page ranges with `pdftotext` |
 
 The router skill, `ocean-acoustics-router`, lives in the shared skills folder `~/.agents/skills/`. It routes an underwater-acoustics question through the notes and hands deep work to the expert.
 
@@ -38,7 +38,7 @@ The data folder holds:
 
 - Node.js 22 or later.
 - Read access to this private GitHub repository. npm fetches it with git, so git must be able to authenticate: an SSH key or a credential helper with access.
-- For Codex's book fallbacks: `pdftotext` from poppler-utils.
+- For the book fallbacks of Codex and DeepSeek-TUI: `pdftotext` from poppler-utils.
 - Optional: MATLAB and the Acoustics Toolbox, for the solver helpers (see `tools/matlab/README.md`).
 
 ## Install
@@ -53,8 +53,10 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
 `<owner>` is the GitHub account that hosts the repository. The package is about 95 MB, almost all of it the book PDFs.
 
 - `--dry-run` prints the local path map and every action install would take, and changes nothing.
-- Install picks every harness whose config folder exists (`~/.claude`, `~/.codex`, `~/.config/opencode`, `~/.deepseek`). Pick them yourself with `--harness`, once per harness: `--harness claude --harness opencode`.
-- A later install keeps the recorded harnesses. To change them, pass the full new list with `--harness`.
+- On a terminal, install asks which harnesses to install into: a checklist of all four, each marked found or not found. Move with the arrow keys, toggle with space (`a` toggles all), confirm with enter, cancel with esc or Ctrl+C. The harnesses whose config folder exists (`~/.claude`, `~/.codex`, `~/.config/opencode`, `~/.dsh`) start checked; on a later install, the recorded ones do.
+- Before it changes anything, install shows how many actions it will take, lists every path it will back up, and asks to go ahead. A dry run skips this question.
+- `--harness` picks the harnesses without the checklist, once per harness: `--harness claude --harness opencode`. `--yes` (`-y`) skips every question. Without a terminal (a pipe, CI) install never asks: it uses `--harness`, else the recorded harnesses, else the ones present.
+- A later install keeps the recorded harnesses. To change them, pick a new set in the checklist or pass the full new list with `--harness`.
 - Before install overwrites or removes anything it did not write, it copies it into `backups/<timestamp>/`. Its own unchanged files it simply replaces. It also cleans up the paths of the hand-made setup this package replaced, with a backup first.
 - Install is idempotent: running it again with nothing changed does nothing.
 
@@ -67,9 +69,9 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 ### Using the expert
 
 - **Claude Code:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
-- **Codex:** ask Codex to use the `ocean-acoustics-expert` agent.
+- **Codex:** Codex has no syntax for calling an agent directly; `$` calls skills. Ask for the expert as a sub-agent in plain words, for example `Spawn an ocean-acoustics-expert sub-agent to answer: ...`. Codex spawns sub-agents only when asked explicitly, so a plain question does not reach the expert. The sub-agent runs in Codex's read-only sandbox. To use only the router in the main session, call `$ocean-acoustics-router`.
 - **OpenCode:** mention `@ocean-acoustics-expert`, or let the main agent hand the question to it.
-- **DeepSeek-TUI:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
+- **DeepSeek-TUI:** run `/ocean-acoustics-expert <question>` (it also appears in `/skills`). The expert runs inside the main agent, so it stays read-only by its instructions alone. Plain underwater-acoustics questions go through the router skill.
 
 ## Link mode and copy mode
 
@@ -104,6 +106,7 @@ A flag overrides the search. Later installs reuse the recorded locations, so you
 | `XDG_DATA_HOME` | `~/.local/share` | the data folder, `$XDG_DATA_HOME/ocean-acoustics-expert` |
 | `CLAUDE_CONFIG_DIR` | `~/.claude` | Claude Code's config folder |
 | `CODEX_HOME` | `~/.codex` | Codex's config folder |
+| `DSH_HOME` | `~/.dsh` | DeepSeek-TUI's (DSH's) home folder |
 | `XDG_CONFIG_HOME` | `~/.config` | OpenCode's config folder, `$XDG_CONFIG_HOME/opencode` |
 
 The shared skills folder is always `~/.agents/skills`.
@@ -114,7 +117,7 @@ Run each command as `npx github:<owner>/ocean-acoustics-expert#<tag> <command>`,
 
 | Command | What it does |
 |---|---|
-| `install` | Installs or updates the expert. Options: `--harness <name>`, `--mode link\|copy`, `--dry-run`, `--at-2023 <dir>`, `--at-2020 <dir>`. |
+| `install` | Installs or updates the expert. Asks which harnesses on a terminal. Options: `--harness <name>`, `--mode link\|copy`, `--dry-run`, `--yes`, `--at-2023 <dir>`, `--at-2020 <dir>`. Exits 130 when cancelled. |
 | `status` | Shows the installed version, mode, harnesses, data folder, local path map, and how many files, links and backups the manifest lists. |
 | `doctor` | Diagnoses the installation and changes nothing. It exits non-zero and prints a `FAIL` line for each problem. |
 | `check` | Lints a knowledge base and runs the route-selection cases. It is for people editing the knowledge base. Options: `--kb <dir>`, `--cases <file>`, `--helpers <dir>`. |
