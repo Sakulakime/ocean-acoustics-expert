@@ -145,3 +145,20 @@ function isLink(path) {
     return false;
   }
 }
+
+test("book PDFs the user puts in the installed copy survive a reinstall and uninstall (ADR 0006)", (t) => {
+  const pkg = writePackage(t, { checkout: false });
+  const home = writeHome(t);
+  const paths = installPaths(home);
+  assert.equal(runInstaller(pkg, home, ["install", "--mode", "copy"]).status, 0);
+  const book = join(paths.knowledge, "sources", "jensen-2011-computational-ocean-acoustics.pdf");
+  writeFileSync(book, "%PDF-1.4 the user's copy\n");
+
+  const reinstall = runInstaller(pkg, home, ["install", "--mode", "copy"]);
+  assert.equal(reinstall.status, 0, reinstall.stderr);
+  assert.equal(readFileSync(book, "utf8"), "%PDF-1.4 the user's copy\n");
+
+  const uninstall = runInstaller(pkg, home, ["uninstall"]);
+  assert.equal(uninstall.status, 0, uninstall.stderr);
+  assert.equal(readFileSync(book, "utf8"), "%PDF-1.4 the user's copy\n");
+});

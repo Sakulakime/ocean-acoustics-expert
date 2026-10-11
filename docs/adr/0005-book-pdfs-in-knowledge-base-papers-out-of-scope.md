@@ -1,5 +1,7 @@
 # Book PDFs live in the knowledge base; papers are out of scope
 
+> **Amended by ADR 0006 (2026-10-11):** the repository is public and ships no book PDFs; each user puts their own copies in `knowledge/sources/`. Papers stay out of scope.
+
 The five books the expert reads are copied from Zotero into `knowledge/sources/`: *Computational Ocean Acoustics* (COA) and the monographs by Collins & Siegmann, Colosi, Etter (5th ed.) and Brekhovskikh & Lysanov. They are committed to git and shipped in the package. Notes point at a book's PDF by its path inside the knowledge base. The Zotero item key stays only as a bibliographic identifier, so the expert no longer needs Zotero storage at answer time.
 
 Journal and conference papers are no longer part of the knowledge base. v1 drops paper cards, topic syntheses, the ingestion skill and full-text search of Zotero caches.

@@ -102,3 +102,10 @@ test("agent and router take exact equations from the notes and read a PDF only w
     }
   }
 });
+
+test("agent and router answer from the notes and name the pages when a book PDF is missing", (t) => {
+  for (const [label, text] of renderedRules(t)) {
+    assert.match(text, /each user supplies the books/i, `${label}: says the books are user-supplied`);
+    assert.match(text, /is not in `[^`]+\/sources\/`[^.]*, answer from the notes, say plainly that a book fallback is needed, and name the book and the PDF page range/, `${label}: missing-book rule`);
+  }
+});

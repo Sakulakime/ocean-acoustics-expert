@@ -246,6 +246,8 @@ function pointingProblems(instructions, { dataDir, knowledgeBase }) {
 
 /**
  * Every book PDF a note or data file points at is in the installed copy.
+ * The package ships no books (ADR 0006): each user puts their own copies in
+ * `sources/`. A missing one only warns, since the notes still answer without it.
  * @param {DoctorContext} context
  */
 function checkSourcePdfs({ report, locations }) {
@@ -266,7 +268,9 @@ function checkSourcePdfs({ report, locations }) {
   for (const [path, places] of missing) {
     const listed = places.slice(0, LISTED_NOTES).join(", ");
     const rest = places.length > LISTED_NOTES ? ` and ${places.length - LISTED_NOTES} more` : "";
-    report.fail(`book PDF ${path} is missing from the installed copy; notes pointing at it: ${listed}${rest}`);
+    report.warn(
+      `book PDF ${path} is not in the installed copy; put your copy at ${join(locations.knowledgeBase, path)} for book fallbacks; notes pointing at it: ${listed}${rest}`,
+    );
   }
   if (missing.length === 0) report.ok(`book PDFs the notes point at: ${pdfs.size}, all in the installed copy`);
 }

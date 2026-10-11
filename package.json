@@ -2,7 +2,6 @@
   "name": "ocean-acoustics-expert",
   "version": "0.1.0",
   "description": "Underwater-acoustics expert agent and knowledge base, installable into Claude Code, Codex and OpenCode",
-  "private": true,
   "type": "module",
   "bin": {
     "ocean-acoustics-expert": "bin/ocean-acoustics-expert.js"
@@ -16,7 +15,6 @@
     "tools/",
     "checks/",
     "!**/*.pdf",
-    "knowledge/sources/*.pdf",
     "!**/.zotero-*",
     "!tools/matlab/oae_local_paths.m"
   ],
@@ -27,5 +25,9 @@
   "engines": {
     "node": ">=22"
   },
-  "license": "UNLICENSED"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sakulakime/ocean-acoustics-expert.git"
+  },
+  "license": "MIT"
 }

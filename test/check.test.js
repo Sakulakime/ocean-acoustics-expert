@@ -224,10 +224,9 @@ test("check reports fallback-window references that collide with built-in proper
   assert.match(result.stderr, /fallback window constructor\.name is not defined in the routing map/);
 });
 
-/** A source note for another book, and its PDF. */
+/** A source note for another book; the PDF itself is supplied by each user. */
 const ETTER_SOURCE_NOTE = {
   "01-source-etter.md": "---\ntitle: Source Note - Etter\ntype: source-note\nsource_pdf: sources/etter-2018.pdf\n---\n# Etter\n",
-  "sources/etter-2018.pdf": "%PDF-1.4\n",
 };
 
 test("check fails when a fallback window is not a PDF page range", async (t) => {
@@ -423,27 +422,27 @@ test("check does not mistake URLs, units, relative paths or placeholders for mac
   assert.equal(result.status, 0, result.stderr);
 });
 
-test("check fails when a note points at a source PDF that does not exist", async (t) => {
+test("check fails when a note points at a book PDF no source note names", async (t) => {
   const notes = {
     "a mention in prose": [
       "chapters/ch01.md",
       "See also sources/colosi-2016-stochastic-ocean.pdf, pp. 1-20.\n",
-      /chapters\/ch01\.md:1: source PDF sources\/colosi-2016-stochastic-ocean\.pdf does not exist/,
+      /chapters\/ch01\.md:1: source PDF sources\/colosi-2016-stochastic-ocean\.pdf is not the source_pdf of any source note/,
     ],
     "a mention right after CJK text": [
       "chapters/ch01.md",
       "参见sources/colosi-2016-stochastic-ocean.pdf第5页。\n",
-      /chapters\/ch01\.md:1: source PDF sources\/colosi-2016-stochastic-ocean\.pdf does not exist/,
+      /chapters\/ch01\.md:1: source PDF sources\/colosi-2016-stochastic-ocean\.pdf is not the source_pdf of any source note/,
     ],
     "an upper-case extension": [
       "chapters/ch01.md",
       "PDF: `sources/COLOSI.PDF`\n",
-      /chapters\/ch01\.md:1: source PDF sources\/COLOSI\.PDF does not exist/,
+      /chapters\/ch01\.md:1: source PDF sources\/COLOSI\.PDF is not the source_pdf of any source note/,
     ],
     "a subfolder of sources": [
       "chapters/ch01.md",
       "PDF: `sources/books/etter.pdf`\n",
-      /chapters\/ch01\.md:1: source PDF sources\/books\/etter\.pdf does not exist/,
+      /chapters\/ch01\.md:1: source PDF sources\/books\/etter\.pdf is not the source_pdf of any source note/,
     ],
     "a path behind the knowledge-base logical name": [
       "routing-map.yaml",
@@ -458,17 +457,17 @@ test("check fails when a note points at a source PDF that does not exist", async
         "      environment: 20-39",
         "",
       ].join("\n"),
-      /routing-map\.yaml:6: source PDF sources\/etter-2018-modeling\.pdf does not exist/,
+      /routing-map\.yaml:6: source PDF sources\/etter-2018-modeling\.pdf is not the source_pdf of any source note/,
     ],
     "a source_pdf field whose file name has spaces": [
       "chapters/ch01.md",
       "---\nsource_pdf: \"sources/Jensen 2011.pdf\"\n---\n",
-      /chapters\/ch01\.md:2: source PDF sources\/Jensen 2011\.pdf does not exist/,
+      /chapters\/ch01\.md:2: source PDF sources\/Jensen 2011\.pdf is not the source_pdf of any source note/,
     ],
     "a primary_source_pdf field outside sources": [
       "00-hub.md",
       "---\nprimary_source_pdf: books/jensen.pdf\n---\n# Hub\n\n- Fundamentals: `chapters/ch01.md`\n",
-      /00-hub\.md:2: source PDF books\/jensen\.pdf does not exist/,
+      /00-hub\.md:2: source PDF books\/jensen\.pdf is not the source_pdf of any source note/,
     ],
   };
 
@@ -484,17 +483,17 @@ test("check fails when a note points at a source PDF that does not exist", async
   }
 });
 
-test("check reports a missing source PDF once per line", (t) => {
+test("check reports an unnamed book PDF once per line", (t) => {
   const kb = writeKnowledgeBase(t, { "chapters/ch01.md": "---\nsource_pdf: sources/missing.pdf\n---\n" });
 
   const result = runCli(["check", "--kb", kb]);
 
-  assert.equal(result.stderr.match(/source PDF sources\/missing\.pdf does not exist/g)?.length, 1, result.stderr);
+  assert.equal(result.stderr.match(/source PDF sources\/missing\.pdf is not the source_pdf of any source note/g)?.length, 1, result.stderr);
 });
 
-test("check accepts notes that point at source PDFs present in the knowledge base", (t) => {
+test("check accepts notes that point at a book PDF a source note names, without the PDF itself", (t) => {
   const kb = writeKnowledgeBase(t, {
-    "sources/jensen-2011-coa.pdf": "%PDF-1.4\n",
+    "01-source-coa.md": "---\ntype: source-note\nsource_pdf: sources/jensen-2011-coa.pdf\n---\n# COA\n",
     "chapters/ch01.md": [
       "---",
       "source_pdf: sources/jensen-2011-coa.pdf",

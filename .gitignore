@@ -3,18 +3,12 @@ node_modules/
 .DS_Store
 tools/matlab/oae_local_paths.m
 
-# AI agent configuration files
-.claude/
-agent/
-AGENTS.md
-.scratch/
-docs/agents/
-skills/
+# Book PDFs are supplied by each user (ADR 0006)
+knowledge/sources/*.pdf
+knowledge/sources/*.PDF
 
-# AI agent configuration files
+# Local agent working files
 .claude/
-agent/
 AGENTS.md
 .scratch/
 docs/agents/
-skills/
