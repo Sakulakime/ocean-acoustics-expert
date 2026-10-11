@@ -2,7 +2,7 @@ import { mkdirSync, readdirSync, readlinkSync, rmdirSync, rmSync } from "node:fs
 import { dirname, join, sep } from "node:path";
 import { parseArgs } from "node:util";
 
-import { backupLocation, copyVerbatim, lstatOrNull, newBackupDir } from "./fs-entries.js";
+import { backupLocation, copyVerbatim, lstatOrNull, newBackupDir, sameLinkTarget } from "./fs-entries.js";
 import { isUnchangedFile } from "./install-plan.js";
 import { installLocations } from "./locations.js";
 import { loadManifest } from "./manifest.js";
@@ -83,25 +83,25 @@ function removeUnit(unit, backupDir, home) {
  * @returns {boolean} Whether the path is a symbolic link to the target.
  */
 function isLinkTo(path, target) {
-  return lstatOrNull(path)?.isSymbolicLink() === true && readlinkSync(path) === target;
+  return lstatOrNull(path)?.isSymbolicLink() === true && sameLinkTarget(path, readlinkSync(path), target);
 }
 
 /**
  * Put back the earliest backup of each path, which holds its state before the
  * first install. Later backups (of files edited after an install) are kept.
- * @param {{path: string, backup: string}[]} backups In the order they were taken.
+ * @param {{path: string, backup: string, linkType?: "dir"|"junction"}[]} backups In the order they were taken.
  * @param {string} backupsRoot Folder holding the backup folders; emptied folders in it are removed.
  */
 function restoreBackups(backups, backupsRoot) {
   const earliest = new Map();
-  for (const { path, backup } of backups) if (!earliest.has(path)) earliest.set(path, backup);
-  for (const [path, backup] of [...earliest].reverse()) {
+  for (const entry of backups) if (!earliest.has(entry.path)) earliest.set(entry.path, entry);
+  for (const [path, { backup, linkType }] of [...earliest].reverse()) {
     if (lstatOrNull(path)) {
       console.log(`left    ${path}: something else is there now; its backup stays at ${backup}`);
       continue;
     }
     mkdirSync(dirname(path), { recursive: true });
-    copyVerbatim(backup, path);
+    copyVerbatim(backup, path, { linkType });
     rmSync(backup, { recursive: true, force: true });
     removeEmptyAncestors(dirname(backup), backupsRoot);
     console.log(`restore ${path} <- ${backup}`);

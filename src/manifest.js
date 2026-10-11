@@ -13,7 +13,7 @@ import { DataFileError, readDataFile } from "./data-file.js";
  * @property {Record<string, string|null>} paths The local path map.
  * @property {import("./install-plan.js").UnitRecord[]} units
  * @property {string[]} createdDirs Directories the installer created.
- * @property {{path: string, backup: string}[]} backups Original path and its backup.
+ * @property {{path: string, backup: string, linkType?: "dir"|"junction"}[]} backups Original path and its backup.
  */
 
 /**
