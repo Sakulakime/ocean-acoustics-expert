@@ -8,7 +8,7 @@ The expert covers acoustic propagation modeling and sonar-oriented signal proces
 
 It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF: COA, or one of four more books through its source note. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. The agent is read-only: in Claude Code, Codex and OpenCode the harness stops it changing files; in DeepSeek-TUI, which has no such control for a skill, its instructions do.
 
-> **This repository must stay private.** It ships five copyrighted book PDFs; see [Bundled books](#bundled-books).
+The book PDFs are not part of this repository: put your own copies in the knowledge base to enable the book fallback (see [Books](#books)). Without them the expert still answers from the notes.
 
 ## Supported harnesses
 
@@ -27,7 +27,7 @@ The data folder holds:
 
 ```
 ~/.local/share/ocean-acoustics-expert/
-├── knowledge/        installed copy of the knowledge base, book PDFs included
+├── knowledge/        installed copy of the knowledge base; your book PDFs go in knowledge/sources/
 ├── matlab/           MATLAB solver helpers
 ├── local-paths.yaml  local path map: where this machine keeps the Acoustics Toolbox
 ├── manifest.json     every file and link install wrote
@@ -37,7 +37,8 @@ The data folder holds:
 ## Requirements
 
 - Node.js 22 or later.
-- Read access to this private GitHub repository. npm fetches it with git, so git must be able to authenticate: an SSH key or a credential helper with access.
+- git, which npx uses to fetch the package from GitHub.
+- Optional: your own PDFs of the five books, for the book fallback (see [Books](#books)).
 - For the book fallbacks of Codex and DeepSeek-TUI: `pdftotext` from poppler-utils.
 - Optional: MATLAB and the Acoustics Toolbox, for the solver helpers (see `tools/matlab/README.md`).
 
@@ -46,11 +47,11 @@ The data folder holds:
 Install a pinned tag. npx caches packages, so pinning a tag gets you a known version rather than a stale cached copy:
 
 ```sh
-npx github:<owner>/ocean-acoustics-expert#v0.1.0 install --dry-run
-npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install --dry-run
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install
 ```
 
-`<owner>` is the GitHub account that hosts the repository. The package is about 95 MB, almost all of it the book PDFs.
+The package is under 1 MB. After installing, copy your book PDFs into `~/.local/share/ocean-acoustics-expert/knowledge/sources/` (see [Books](#books)).
 
 - `--dry-run` prints the local path map and every action install would take, and changes nothing.
 - On a terminal, install asks which harnesses to install into: a checklist of all four, each marked found or not found. Move with the arrow keys, toggle with space (`a` toggles all), confirm with enter, cancel with esc or Ctrl+C. The harnesses whose config folder exists (`~/.claude`, `~/.codex`, `~/.config/opencode`, `~/.dsh`) start checked; on a later install, the recorded ones do.
@@ -63,7 +64,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
 Afterwards, check the result:
 
 ```sh
-npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 doctor
 ```
 
 ### Using the expert
@@ -80,7 +81,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 **Link mode** is the default in a git checkout, and is for working on the knowledge base. The data folder's `knowledge/` and `matlab/` are links to the checkout's `knowledge/` (the authoring copy) and `tools/matlab/`, so an edit to the authoring copy reaches every harness at once. The MATLAB configuration `oae_local_paths.m` is written into the checkout's `tools/matlab/`, where git ignores it.
 
 ```sh
-git clone git@github.com:<owner>/ocean-acoustics-expert.git
+git clone https://github.com/Sakulakime/ocean-acoustics-expert.git
 cd ocean-acoustics-expert
 node bin/ocean-acoustics-expert.js install --dry-run
 node bin/ocean-acoustics-expert.js install
@@ -113,13 +114,13 @@ The shared skills folder is always `~/.agents/skills`.
 
 ## Commands
 
-Run each command as `npx github:<owner>/ocean-acoustics-expert#<tag> <command>`, or as `node bin/ocean-acoustics-expert.js <command>` in a checkout.
+Run each command as `npx github:Sakulakime/ocean-acoustics-expert#<tag> <command>`, or as `node bin/ocean-acoustics-expert.js <command>` in a checkout.
 
 | Command | What it does |
 |---|---|
 | `install` | Installs or updates the expert. Asks which harnesses on a terminal. Options: `--harness <name>`, `--mode link\|copy`, `--dry-run`, `--yes`, `--at-2023 <dir>`, `--at-2020 <dir>`. Exits 130 when cancelled. |
 | `status` | Shows the installed version, mode, harnesses, data folder, local path map, and how many files, links and backups the manifest lists. |
-| `doctor` | Diagnoses the installation and changes nothing. It exits non-zero and prints a `FAIL` line for each problem. |
+| `doctor` | Diagnoses the installation and changes nothing. It prints a `FAIL` line for each problem and exits non-zero when there is one; a `WARN` line does not fail it. |
 | `check` | Lints a knowledge base and runs the route-selection cases. It is for people editing the knowledge base. Options: `--kb <dir>`, `--cases <file>`, `--helpers <dir>`. |
 | `uninstall` | Removes exactly what the manifest lists. Add `--restore` to put back what install backed up. |
 
@@ -128,14 +129,14 @@ Run each command as `npx github:<owner>/ocean-acoustics-expert#<tag> <command>`,
 1. Every entry of the local path map exists. An unset toolbox only gets a `WARN`.
 2. Every symbolic link install made is still that link and resolves.
 3. Each harness's agent file and the shared router skill parse, name the installed hub, and name no path outside the data folder. For OpenCode, the agent must also be allowed to read the data folder without asking.
-4. Every book PDF a note points at is in the installed copy. It lists each missing PDF and the notes that point at it.
+4. Every book PDF a note points at is in the installed copy. A missing book only gets a `WARN`, naming where to put it and the notes that point at it.
 5. When OpenCode is installed, OpenCode does not see the router in two different folders. Seeing it twice through Claude's link to the same folder is harmless; OpenCode logs a duplicate-name warning for it.
 
 `uninstall` backs up any file you changed after install before removing it. With `--restore`, it puts back the earliest backup of each path, which returns the machine to its state before the first install. Backups stay in `backups/` in the data folder.
 
-## Bundled books
+## Books
 
-`knowledge/sources/` holds the PDFs of five books (ADR 0005):
+The expert's page-range fallback reads five books (ADR 0006):
 
 - Jensen, Kuperman, Porter & Schmidt, *Computational Ocean Acoustics*, 2nd ed. (2011), the default book
 - Collins & Siegmann, *Parabolic Wave Equations with Applications* (2019)
@@ -143,13 +144,9 @@ Run each command as `npx github:<owner>/ocean-acoustics-expert#<tag> <command>`,
 - Etter, *Underwater Acoustic Modeling and Simulation*, 5th ed. (2018)
 - Brekhovskikh & Lysanov, *Fundamentals of Ocean Acoustics*, 3rd ed. (2003)
 
-The expert reads a book only through notes that point at its pages. COA has chapter notes. Each of the other four has a source note: its page offset and a map from sections to PDF pages, which the routing map's fallback windows point into. The expert reads targeted page ranges of them when COA does not settle a question.
+The repository does not include them. Put your copies in `knowledge/sources/` of the installed copy (`~/.local/share/ocean-acoustics-expert/knowledge/sources/`; in link mode, the checkout's `knowledge/sources/`), under the file names listed in [`knowledge/sources/README.md`](knowledge/sources/README.md). Page numbers in the notes are PDF pages of these editions. Install never touches files it did not write, so your books survive reinstalls and uninstall. Run `doctor` to see which ones are missing.
 
-They are copyrighted, and the package redistributes them. So:
-
-- The repository must stay private. Do not make it public, and give access only to people you may share the books with.
-- `"private": true` in `package.json` stops npm from publishing the package. Install from git, as above.
-- Removing a book once it is committed means rewriting git history.
+The expert reads a book only through notes that point at its pages. COA has chapter notes. Each of the other four has a source note: its page offset and a map from sections to PDF pages, which the routing map's fallback windows point into. When a book is missing, the expert answers from the notes and names the book and page range it would have read.
 
 ## Development
 
@@ -159,3 +156,7 @@ npm run check   # lint the authoring copy of the knowledge base
 ```
 
 Domain terms are defined in `GLOSSARY.md`, and design decisions are recorded in `docs/adr/`.
+
+## License
+
+[MIT](LICENSE).

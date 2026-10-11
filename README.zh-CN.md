@@ -8,7 +8,7 @@
 
 它优先从笔记中回答问题。它会读取中心文档、路由映射和概念索引，然后读取能够解决问题的最小笔记集：《计算海洋声学》(COA) 的章节笔记、求解器笔记、运行手册和可视化标准。只有当笔记不足时，它才会读取书籍 PDF 的目标页面范围：COA，或通过源笔记读取其他四本书中的某一本。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。该智能体是只读的：在 Claude Code、Codex 和 OpenCode 中由平台阻止它修改文件；DeepSeek-TUI 无法对技能做这种限制，只能靠其指令约束。
 
-> **本仓库必须保持私有。** 它包含五本受版权保护的书籍 PDF；请参阅[捆绑书籍](#捆绑书籍)。
+本仓库不包含书籍 PDF：把你自己的副本放进知识库，即可启用书籍回退（参见[书籍](#书籍)）。没有它们，专家仍然根据笔记回答。
 
 ## 支持的平台
 
@@ -27,7 +27,7 @@
 
 ```
 ~/.local/share/ocean-acoustics-expert/
-├── knowledge/        知识库的已安装副本，包括书籍 PDFs
+├── knowledge/        知识库的已安装副本；你的书籍 PDF 放在 knowledge/sources/
 ├── matlab/           MATLAB 求解器辅助工具
 ├── local-paths.yaml  本地路径映射：本机 Acoustics Toolbox 的位置
 ├── manifest.json     安装写入的所有文件和链接
@@ -37,7 +37,8 @@
 ## 系统要求
 
 - Node.js 22 或更高版本。
-- 对此私有 GitHub 仓库的读取权限。npm 使用 git 获取它，因此 git 必须能够进行身份验证：SSH 密钥或具有访问权限的凭据助手。
+- git，npx 用它从 GitHub 获取包。
+- 可选：你自己的五本书的 PDF，用于书籍回退（参见[书籍](#书籍)）。
 - 对于 Codex 和 DeepSeek-TUI 的书籍回退：来自 poppler-utils 的 `pdftotext`。
 - 可选：MATLAB 和 Acoustics Toolbox，用于求解器辅助工具（参见 `tools/matlab/README.md`）。
 
@@ -46,11 +47,11 @@
 安装固定标签。npx 会缓存包，因此固定标签可以获得已知版本，而不是过时的缓存副本：
 
 ```sh
-npx github:<owner>/ocean-acoustics-expert#v0.1.0 install --dry-run
-npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install --dry-run
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install
 ```
 
-`<owner>` 是托管仓库的 GitHub 账户。该包约为 95 MB，几乎全部是书籍 PDFs。
+包小于 1 MB。安装后，把你的书籍 PDF 复制到 `~/.local/share/ocean-acoustics-expert/knowledge/sources/`（参见[书籍](#书籍)）。
 
 - `--dry-run` 打印本地路径映射和安装将执行的每个操作，但不更改任何内容。
 - 在终端中运行时，安装会询问要安装到哪些平台：列出全部四个平台，并标明是否找到。用方向键移动，空格勾选（`a` 全选/全不选），回车确认，esc 或 Ctrl+C 取消。存在配置文件夹的平台（`~/.claude`、`~/.codex`、`~/.config/opencode`、`~/.dsh`）默认勾选；后续安装则默认勾选已记录的平台。
@@ -63,7 +64,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 install
 之后，检查结果：
 
 ```sh
-npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
+npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 doctor
 ```
 
 ### 使用专家
@@ -80,7 +81,7 @@ npx github:<owner>/ocean-acoustics-expert#v0.1.0 doctor
 **链接模式**是 git 检出时的默认模式，用于处理知识库。数据文件夹的 `knowledge/` 和 `matlab/` 是指向检出的 `knowledge/`（编写副本）和 `tools/matlab/` 的链接，因此对编写副本的编辑会立即到达所有平台。MATLAB 配置 `oae_local_paths.m` 被写入检出的 `tools/matlab/`，git 会忽略它。
 
 ```sh
-git clone git@github.com:<owner>/ocean-acoustics-expert.git
+git clone https://github.com/Sakulakime/ocean-acoustics-expert.git
 cd ocean-acoustics-expert
 node bin/ocean-acoustics-expert.js install --dry-run
 node bin/ocean-acoustics-expert.js install
@@ -113,13 +114,13 @@ node bin/ocean-acoustics-expert.js install
 
 ## 命令
 
-将每个命令作为 `npx github:<owner>/ocean-acoustics-expert#<tag> <command>` 运行，或在检出中作为 `node bin/ocean-acoustics-expert.js <command>` 运行。
+将每个命令作为 `npx github:Sakulakime/ocean-acoustics-expert#<tag> <command>` 运行，或在检出中作为 `node bin/ocean-acoustics-expert.js <command>` 运行。
 
 | 命令 | 作用 |
 |---|---|
 | `install` | 安装或更新专家。在终端中会询问安装平台。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--yes`、`--at-2023 <dir>`、`--at-2020 <dir>`。取消时退出码为 130。 |
 | `status` | 显示已安装的版本、模式、平台、数据文件夹、本地路径映射，以及清单列出的文件、链接和备份的数量。 |
-| `doctor` | 诊断安装并且不更改任何内容。对于每个问题，它会以非零值退出并打印一行 `FAIL`。 |
+| `doctor` | 诊断安装并且不更改任何内容。每个问题打印一行 `FAIL`，有问题时以非零值退出；`WARN` 行不会导致失败。 |
 | `check` | 检查知识库并运行路由选择用例。用于编辑知识库的人。选项：`--kb <dir>`、`--cases <file>`、`--helpers <dir>`。 |
 | `uninstall` | 精确删除清单列出的内容。添加 `--restore` 以恢复安装备份的内容。 |
 
@@ -128,14 +129,14 @@ node bin/ocean-acoustics-expert.js install
 1. 本地路径映射的每个条目都存在。未设置的工具箱只会得到 `WARN`。
 2. 安装创建的每个符号链接仍然是该链接并且可以解析。
 3. 每个平台的智能体文件和共享路由技能都可以解析，命名已安装的中心，并且不命名数据文件夹外的路径。对于 OpenCode，智能体还必须被允许在不询问的情况下读取数据文件夹。
-4. 笔记指向的每个书籍 PDF 都在已安装的副本中。它会列出每个缺失的 PDF 以及指向它的笔记。
+4. 笔记指向的每个书籍 PDF 都在已安装的副本中。缺失的书籍只会得到 `WARN`，并说明应放置的位置以及指向它的笔记。
 5. 当安装 OpenCode 时，OpenCode 不会在两个不同的文件夹中看到路由器。通过 Claude 到同一文件夹的链接看到它两次是无害的；OpenCode 会为此记录一个重复名称警告。
 
 `uninstall` 会在删除你在安装后更改的任何文件之前对其进行备份。使用 `--restore`，它会恢复每个路径的最早备份，这会将机器恢复到第一次安装之前的状态。备份保留在数据文件夹的 `backups/` 中。
 
-## 捆绑书籍
+## 书籍
 
-`knowledge/sources/` 包含五本书的 PDFs（ADR 0005）：
+专家的页面范围回退会读取五本书（ADR 0006）：
 
 - Jensen, Kuperman, Porter & Schmidt, *Computational Ocean Acoustics*, 2nd ed. (2011)，默认书籍
 - Collins & Siegmann, *Parabolic Wave Equations with Applications* (2019)
@@ -143,13 +144,9 @@ node bin/ocean-acoustics-expert.js install
 - Etter, *Underwater Acoustic Modeling and Simulation*, 5th ed. (2018)
 - Brekhovskikh & Lysanov, *Fundamentals of Ocean Acoustics*, 3rd ed. (2003)
 
-专家仅通过指向其页面的笔记来阅读书籍。COA 有章节笔记。其他四本书中的每一本都有一个源笔记：其页面偏移量和从章节到 PDF 页面的映射，路由映射的回退窗口指向其中。当 COA 不能解决问题时，专家会读取它们的目标页面范围。
+本仓库不包含这些书。把你的副本放进已安装副本的 `knowledge/sources/`（`~/.local/share/ocean-acoustics-expert/knowledge/sources/`；链接模式下为检出的 `knowledge/sources/`），文件名使用 [`knowledge/sources/README.md`](knowledge/sources/README.md) 中列出的名称。笔记中的页码是这些版本的 PDF 页码。安装从不触碰它没有写入的文件，因此你的书籍在重新安装和卸载后都会保留。运行 `doctor` 可查看缺少哪些书。
 
-它们受版权保护，并且该包重新分发它们。因此：
-
-- 仓库必须保持私有。不要将其公开，并且仅向你可以与之共享书籍的人提供访问权限。
-- `package.json` 中的 `"private": true` 阻止 npm 发布该包。从 git 安装，如上所述。
-- 一旦提交，删除书籍意味着重写 git 历史。
+专家仅通过指向其页面的笔记来阅读书籍。COA 有章节笔记。其他四本书各有一个源笔记：其页面偏移量和从章节到 PDF 页面的映射，路由映射的回退窗口指向其中。缺少某本书时，专家根据笔记回答，并说明本应读取的书籍和页面范围。
 
 ## 开发
 
@@ -159,3 +156,7 @@ npm run check   # 检查知识库的编写副本
 ```
 
 领域术语在 `GLOSSARY.md` 中定义，设计决策记录在 `docs/adr/` 中。
+
+## 许可证
+
+[MIT](LICENSE)。
