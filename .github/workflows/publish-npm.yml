@@ -1,0 +1,148 @@
+name: Publish npm package
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published GitHub release tag to synchronize
+        required: true
+        type: string
+      dry_run:
+        description: Validate without publishing (release events always publish)
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish-${{ github.repository }}
+  queue: max
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      REQUESTED_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - name: Check out the workflow's release tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: automation
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Use the validated npm CLI
+        run: npm install --global npm@11.21.0 --registry=https://registry.npmjs.org
+
+      - name: Test publication tools
+        working-directory: automation
+        run: node --test test/npm-release.test.js
+
+      - name: Resolve the published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { appendFileSync } from 'node:fs';
+          const tag = process.env.REQUESTED_TAG;
+          if (!tag || tag.trim() !== tag || !/^v[0-9A-Za-z.+-]+$/.test(tag)) {
+            throw new Error('Expected a version tag such as v0.2.0');
+          }
+          const path = `repos/${process.env.GITHUB_REPOSITORY}/releases/tags/${encodeURIComponent(tag)}`;
+          const release = JSON.parse(execFileSync('gh', ['api', path], { encoding: 'utf8' }));
+          if (release.draft || release.tag_name !== tag || typeof release.prerelease !== 'boolean') {
+            throw new Error('Only an existing, published release can be synchronized');
+          }
+          appendFileSync(process.env.GITHUB_ENV,
+            `RELEASE_TAG=${tag}\nRELEASE_PRERELEASE=${release.prerelease}\n`);
+          NODE
+
+      - name: Check out the exact release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          path: package
+          persist-credentials: false
+
+      - name: Validate package and tag
+        working-directory: package
+        run: |
+          node ../automation/scripts/npm-release.mjs plan \
+            --tag "$RELEASE_TAG" --prerelease "$RELEASE_PRERELEASE"
+
+      - name: Test the release source
+        working-directory: package
+        run: |
+          npm test
+          npm run check
+
+      - name: Inspect the publish artifact
+        working-directory: package
+        run: |
+          mkdir -p "$RUNNER_TEMP/npm-artifact"
+          npm pack --json --pack-destination "$RUNNER_TEMP/npm-artifact" > "$RUNNER_TEMP/npm-pack.json"
+          node ../automation/scripts/npm-release.mjs check-pack "$RUNNER_TEMP/npm-pack.json"
+          node --input-type=module <<'NODE'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          const [pack] = JSON.parse(readFileSync(join(process.env.RUNNER_TEMP, 'npm-pack.json'), 'utf8'));
+          appendFileSync(process.env.GITHUB_ENV,
+            `NPM_ARTIFACT=${join(process.env.RUNNER_TEMP, 'npm-artifact', pack.filename)}\n`);
+          NODE
+
+      - name: Check whether this artifact is already published
+        id: registry
+        working-directory: package
+        run: |
+          node ../automation/scripts/npm-release.mjs registry-state \
+            --tag "$RELEASE_TAG" --prerelease "$RELEASE_PRERELEASE" \
+            --pack-manifest "$RUNNER_TEMP/npm-pack.json" > "$RUNNER_TEMP/npm-state.json"
+          node --input-type=module <<'NODE'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          const state = JSON.parse(readFileSync(join(process.env.RUNNER_TEMP, 'npm-state.json'), 'utf8'));
+          appendFileSync(process.env.GITHUB_OUTPUT, `published=${state.published}\n`);
+          appendFileSync(process.env.GITHUB_ENV, `NPM_DIST_TAG=${state.publishTag}\n`);
+          NODE
+
+      - name: Publish with npm trusted publishing
+        if: steps.registry.outputs.published != 'true' && inputs.dry_run != true
+        working-directory: package
+        run: npm publish "$NPM_ARTIFACT" --access public --tag "$NPM_DIST_TAG" --registry=https://registry.npmjs.org
+
+      - name: Verify registry version, artifact and distribution tag
+        if: inputs.dry_run != true
+        working-directory: package
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if node ../automation/scripts/npm-release.mjs verify \
+              --tag "$RELEASE_TAG" --prerelease "$RELEASE_PRERELEASE" \
+              --pack-manifest "$RUNNER_TEMP/npm-pack.json"; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then sleep 3; fi
+          done
+          exit 1
+
+      - name: Report dry-run result
+        if: inputs.dry_run == true
+        run: |
+          cat "$RUNNER_TEMP/npm-state.json"
+          echo "Validation completed; npm publication and post-publish verification were skipped."

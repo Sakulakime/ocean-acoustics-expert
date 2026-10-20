@@ -51,7 +51,7 @@ npx --yes ocean-acoustics-expert@latest install --dry-run
 npx --yes ocean-acoustics-expert@latest install
 ```
 
-每次更新时重新运行上述安装命令。`@latest` 使用 npm 的 `latest` dist-tag；它与 GitHub 的 Latest release 独立维护。`npx --yes` 只跳过 npm 下载确认，安装器仍会询问平台和确认安装。
+每次更新时重新运行上述安装命令。包维护者完成一次性 Trusted Publisher 授权后，已发布的 GitHub Release 会通过[发布流程](docs/releasing.md)自动同步对应版本到 npm；稳定版更新 `latest`，预发布版使用 `next`。工作流和 npm registry 验收通过后才算发布完成。`npx --yes` 只跳过 npm 下载确认，安装器仍会询问平台和确认安装。
 
 如需固定版本：
 

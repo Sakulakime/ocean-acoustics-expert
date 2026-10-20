@@ -29,5 +29,9 @@
     "type": "git",
     "url": "git+https://github.com/Sakulakime/ocean-acoustics-expert.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
 }

@@ -51,7 +51,7 @@ npx --yes ocean-acoustics-expert@latest install --dry-run
 npx --yes ocean-acoustics-expert@latest install
 ```
 
-Rerun the install command to update. `@latest` uses the npm `latest` dist-tag, which is maintained separately from the GitHub Latest release. `npx --yes` only skips the npm download prompt; the installer still asks for harness selection and installation confirmation.
+Rerun the install command to update. After the package maintainer completes the one-time Trusted Publisher authorization, published GitHub Releases automatically synchronize their matching versions to npm through the [release workflow](docs/releasing.md); stable releases update `latest`, while prereleases use `next`. A release is complete only after the workflow and npm registry checks pass. `npx --yes` only skips the npm download prompt; the installer still asks for harness selection and installation confirmation.
 
 To pin a version:
 
