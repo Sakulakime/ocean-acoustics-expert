@@ -37,18 +37,26 @@ The data folder holds:
 ## Requirements
 
 - Node.js 22 or later.
-- git, which npx uses to fetch the package from GitHub.
+- Optional: git, for installing from GitHub or working in a checkout.
 - Optional: your own PDFs of the five books, for the book fallback (see [Books](#books)).
 - For the book fallbacks of Codex and DeepSeek-TUI: `pdftotext` from poppler-utils.
 - Optional: MATLAB and the Acoustics Toolbox, for the solver helpers (see `tools/matlab/README.md`).
 
 ## Install
 
-Install a pinned tag. npx caches packages, so pinning a tag gets you a known version rather than a stale cached copy:
+Install the latest stable version from npm without entering a version:
 
 ```sh
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.1 install --dry-run
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.1 install
+npx --yes ocean-acoustics-expert@latest install --dry-run
+npx --yes ocean-acoustics-expert@latest install
+```
+
+Rerun the install command to update. `@latest` uses the npm `latest` dist-tag, which is maintained separately from the GitHub Latest release. `npx --yes` only skips the npm download prompt; the installer still asks for harness selection and installation confirmation.
+
+To pin a version:
+
+```sh
+npx --yes ocean-acoustics-expert@0.1.1 install
 ```
 
 On Windows, installer-owned directory links use junctions with absolute targets;
@@ -76,7 +84,7 @@ The package is under 1 MB. After installing, copy your book PDFs into `~/.local/
 Afterwards, check the result:
 
 ```sh
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.1 doctor
+npx --yes ocean-acoustics-expert@latest doctor
 ```
 
 ### Using the expert
@@ -88,7 +96,7 @@ npx github:Sakulakime/ocean-acoustics-expert#v0.1.1 doctor
 
 ## Link mode and copy mode
 
-**Copy mode** is the default when the package is not a git checkout, which is the case with npx. Install copies the knowledge base and the MATLAB helpers into the data folder. To update, install a newer tag.
+**Copy mode** is the default when the package is not a git checkout, which is the case with npx. Install copies the knowledge base and the MATLAB helpers into the data folder. To update, rerun the npm installation commands above.
 
 **Link mode** is the default in a git checkout, and is for working on the knowledge base. The data folder's `knowledge/` and `matlab/` are links to the checkout's `knowledge/` (the authoring copy) and `tools/matlab/`, so an edit to the authoring copy reaches every harness at once. The MATLAB configuration `oae_local_paths.m` is written into the checkout's `tools/matlab/`, where git ignores it.
 
@@ -126,7 +134,7 @@ The shared skills folder is always `~/.agents/skills`.
 
 ## Commands
 
-Run each command as `npx github:Sakulakime/ocean-acoustics-expert#<tag> <command>`, or as `node bin/ocean-acoustics-expert.js <command>` in a checkout.
+Run each command as `npx --yes ocean-acoustics-expert@latest <command>`, or as `node bin/ocean-acoustics-expert.js <command>` in a checkout.
 
 | Command | What it does |
 |---|---|

@@ -37,19 +37,29 @@
 ## 系统要求
 
 - Node.js 22 或更高版本。
-- git，npx 用它从 GitHub 获取包。
+- 可选：git，用于从 GitHub 安装或使用仓库检出。
 - 可选：你自己的五本书的 PDF，用于书籍回退（参见[书籍](#书籍)）。
 - 对于 Codex 和 DeepSeek-TUI 的书籍回退：来自 poppler-utils 的 `pdftotext`。
 - 可选：MATLAB 和 Acoustics Toolbox，用于求解器辅助工具（参见 `tools/matlab/README.md`）。
 
 ## 安装
 
-安装固定标签。npx 会缓存包，因此固定标签可以获得已知版本，而不是过时的缓存副本：
+安装 npm 上的最新稳定版本，无需手动填写版本：
 
 ```sh
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install --dry-run
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install
+npx --yes ocean-acoustics-expert@latest install --dry-run
+npx --yes ocean-acoustics-expert@latest install
 ```
+
+每次更新时重新运行上述安装命令。`@latest` 使用 npm 的 `latest` dist-tag；它与 GitHub 的 Latest release 独立维护。`npx --yes` 只跳过 npm 下载确认，安装器仍会询问平台和确认安装。
+
+如需固定版本：
+
+```sh
+npx --yes ocean-acoustics-expert@0.1.1 install
+```
+
+Windows 上安装器创建的目录链接使用绝对目标的 junction；POSIX 系统使用目录 symlink。重新安装、`doctor` 和 `uninstall` 兼容已有的相对链接记录。目录链接备份会保留目标并恢复为 junction，即使目标已不存在；文件 symlink 仍需要系统权限。无法仅凭目标路径的命名空间前缀判断缺少目录类型记录的旧失效链接。安装中断后，使用相同平台和模式重新运行修复后的安装器，并检查报告的备份。Linux 回归测试不替代 Windows 实机验证。
 
 包小于 1 MB。安装后，把你的书籍 PDF 复制到 `~/.local/share/ocean-acoustics-expert/knowledge/sources/`（参见[书籍](#书籍)）。
 
@@ -64,7 +74,7 @@ npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 install
 之后，检查结果：
 
 ```sh
-npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 doctor
+npx --yes ocean-acoustics-expert@latest doctor
 ```
 
 ### 使用专家
@@ -76,7 +86,7 @@ npx github:Sakulakime/ocean-acoustics-expert#v0.1.0 doctor
 
 ## 链接模式和拷贝模式
 
-**拷贝模式**是包不是 git 检出时的默认模式，这是 npx 的情况。安装会将知识库和 MATLAB 辅助工具复制到数据文件夹中。要更新，请安装较新的标签。
+**拷贝模式**是包不是 git 检出时的默认模式，这是 npx 的情况。安装会将知识库和 MATLAB 辅助工具复制到数据文件夹中。要更新，请重新运行上面的 npm 安装命令。
 
 **链接模式**是 git 检出时的默认模式，用于处理知识库。数据文件夹的 `knowledge/` 和 `matlab/` 是指向检出的 `knowledge/`（编写副本）和 `tools/matlab/` 的链接，因此对编写副本的编辑会立即到达所有平台。MATLAB 配置 `oae_local_paths.m` 被写入检出的 `tools/matlab/`，git 会忽略它。
 
@@ -114,7 +124,7 @@ node bin/ocean-acoustics-expert.js install
 
 ## 命令
 
-将每个命令作为 `npx github:Sakulakime/ocean-acoustics-expert#<tag> <command>` 运行，或在检出中作为 `node bin/ocean-acoustics-expert.js <command>` 运行。
+将每个命令作为 `npx --yes ocean-acoustics-expert@latest <command>` 运行，或在检出中作为 `node bin/ocean-acoustics-expert.js <command>` 运行。
 
 | 命令 | 作用 |
 |---|---|
