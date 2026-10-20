@@ -15,6 +15,8 @@ Publication is serialized with GitHub's `concurrency.queue: max` so separate rel
 
 The tarball must contain the book-selection policy and four topic notes and must exclude PDFs, credentials, machine-specific paths and local working files. Book PDFs remain user-supplied (ADR 0006).
 
+Post-publish verification revalidates registry metadata and retries with a bounded backoff of about three minutes to allow a newly published version to become visible. Publication success alone does not bypass the version, integrity or distribution-tag checks.
+
 ## One-time trusted publisher setup
 
 The npm package maintainer authorizes exactly this GitHub publisher:

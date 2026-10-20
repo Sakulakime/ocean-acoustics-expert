@@ -237,3 +237,67 @@ test("release reruns preserve newer dist-tags and verification refuses missing o
     });
   }
 });
+
+function registryVerificationScript() {
+  const workflow = readFileSync(new URL("../.github/workflows/publish-npm.yml", import.meta.url), "utf8");
+  const step = workflow.match(/^ {6}- name: Verify registry version, artifact and distribution tag\r?\n((?: {8}[^\n]*(?:\r?\n|$)|\r?\n)*)/m);
+  assert.ok(step, "workflow has no named registry verification step");
+  const body = step[1].match(/^ {8}run: \|\r?\n((?: {10}[^\n]*(?:\r?\n|$)|\r?\n)*)/m);
+  assert.ok(body, "registry verification step has no indented shell body");
+  return body[1].split(/\r?\n/).map((line) => line.slice(10)).join("\n");
+}
+
+function runRegistryVerification(t, succeedAt) {
+  const root = fixture(t);
+  const calls = join(root, "verification-calls.jsonl");
+  const sleeps = join(root, "verification-sleeps.jsonl");
+  writeFileSync(calls, "");
+  writeFileSync(sleeps, "");
+  writeFileSync(join(root, "node"), `#!${process.execPath}\n` + [
+    'const fs = require("node:fs");',
+    'const log = process.env.FAKE_VERIFICATION_CALLS;',
+    'fs.appendFileSync(log, JSON.stringify(process.argv.slice(2)) + "\\n");',
+    'const count = fs.readFileSync(log, "utf8").trim().split("\\n").length;',
+    'if (+process.env.FAKE_SUCCEED_AT > 0 && count >= +process.env.FAKE_SUCCEED_AT) {',
+    '  console.log(JSON.stringify({ verified: true })); process.exit(0);',
+    '}',
+    'console.error("npm release: Release version is not published"); process.exit(1);',
+  ].join("\n"));
+  writeFileSync(join(root, "sleep"), `#!${process.execPath}\n` +
+    'require("node:fs").appendFileSync(process.env.FAKE_VERIFICATION_SLEEPS, process.argv[2] + "\\n");\n');
+  chmodSync(join(root, "node"), 0o755);
+  chmodSync(join(root, "sleep"), 0o755);
+  const result = spawnSync("/bin/bash", ["--noprofile", "--norc", "-e", "-o", "pipefail", "-c", registryVerificationScript()], {
+    cwd: root,
+    encoding: "utf8",
+    timeout: 15000,
+    env: {
+      ...process.env,
+      PATH: root,
+      RELEASE_TAG: "v0.2.0",
+      RELEASE_PRERELEASE: "false",
+      RUNNER_TEMP: root,
+      FAKE_VERIFICATION_CALLS: calls,
+      FAKE_VERIFICATION_SLEEPS: sleeps,
+      FAKE_SUCCEED_AT: String(succeedAt),
+    },
+  });
+  const lines = (path) => readFileSync(path, "utf8").trim().split("\n").filter(Boolean);
+  return { result, calls: lines(calls).map(JSON.parse), sleeps: lines(sleeps).map(Number) };
+}
+
+test("workflow verification tolerates registry visibility after five initial misses", REGISTRY_FIXTURE, (t) => {
+  const { result, calls, sleeps } = runRegistryVerification(t, 6);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(calls.length, 6);
+  assert.ok(calls.every((args) => args.includes("verify") && args.includes("v0.2.0")));
+  assert.ok(sleeps.length >= 5);
+  assert.ok(sleeps.every((delay) => Number.isFinite(delay) && delay > 0));
+});
+
+test("workflow verification fails when the registry never exposes the version", REGISTRY_FIXTURE, (t) => {
+  const { result, calls } = runRegistryVerification(t, 0);
+  assert.equal(result.status, 1, result.stderr);
+  assert.ok(calls.length > 0);
+  assert.match(result.stderr, /Release version is not published/);
+});

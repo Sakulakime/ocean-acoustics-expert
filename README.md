@@ -56,7 +56,7 @@ Rerun the install command to update. After the package maintainer completes the 
 To pin a version:
 
 ```sh
-npx --yes github:Sakulakime/ocean-acoustics-expert#v0.2.0 install
+npx --yes ocean-acoustics-expert@0.2.0 install
 ```
 
 On Windows, installer-owned directory links use junctions with absolute targets;
