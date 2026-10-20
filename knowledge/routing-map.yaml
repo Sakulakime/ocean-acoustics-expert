@@ -1,6 +1,8 @@
 # Note paths are relative to the knowledge-base root. Chapter spans and
 # fallback windows written as a page range (20-39) are PDF page ranges of the
-# primary source, whose PDF is primary_source_pdf (see 01-source-coa.md).
+# legacy unqualified-range source, whose PDF is primary_source_pdf.
+# These fields resolve existing page ranges; book-selection.md chooses the
+# primary book for a question independently of this legacy encoding.
 # A fallback window into another book is a mapping: source is that book's
 # source note, which names its PDF and maps its sections to pages, and pages
 # is a PDF page range of that PDF.
@@ -10,9 +12,10 @@ policy:
   default_order:
     - read 00-hub.md
     - read routing-map.yaml
+    - select primary and cross-check books using book-selection.md
     - check concept-index.yaml for the concepts the prompt names
-    - read the smallest relevant note set (chapter, solver, runbook and visualization notes, the benchmark-cases note, and book source notes when present)
-    - read a targeted page range of a book PDF in sources/ only if the notes are insufficient
+    - read substantive chapter and topic notes for the answer and selected cross-book checks, plus relevant solver, runbook and visualization notes
+    - read a targeted PDF window when an answer claim or required cross-book check lacks substantive note evidence
   answer_requirements:
     - separate physical assumptions from numerical assumptions
     - say when the method is appropriate and when it is not
@@ -30,6 +33,7 @@ routes:
     trigger_keywords: [fundamentals, ocean-acoustic environment, acoustic preliminaries, source and receiver, sources and receivers, intensity, power, energy density, decibel, spectrum level, sound speed, SSP, sound-speed profile, thermocline, mixed layer, surface duct, deep sound channel, deep sound channel axis, bubble layer, bubble suspension, bottom loss, reflection coefficient, volume attenuation, absorption, sound speed equation, boundary scattering, rough surface, Rayleigh parameter, volume scattering, transmission loss, shallow water, deep water, 水声环境, 声速剖面, 热跃层, 表面波导, 深海声道, 海洋波导, 传输损失, 海底损失, 反射系数, 声吸收, 粗糙海面]
     notes:
       - chapters/ch01-fundamentals.md
+      - topics/brekhovskikh-waveguide-approximations.md
       - workflows/model-selection.md
     chapter_span: 20-83
     fallback_windows:
@@ -51,6 +55,9 @@ routes:
       brekhovskikh_lysanov_tangent_plane:
         source: 01-source-brekhovskikh-lysanov.md
         pages: 213-221
+      brekhovskikh_lysanov_small_slope:
+        source: 01-source-brekhovskikh-lysanov.md
+        pages: 233-238
   wave_propagation_theory:
     trigger_keywords: [wave equation, nonlinear wave equation, linear wave equation, Helmholtz equation, velocity potential, displacement potential, particle velocity, Green function, Green's function, Green theorem, reciprocity, radiation condition, fluid halfspace, layered media, waveguide, integral transform, Pekeris waveguide, deep-ocean waveguide, waveguide invariant, lateral wave, head wave, transmission loss normalization, 波动方程, 亥姆霍兹方程, 速度势, 位移势, 格林函数, 格林定理, 互易, 辐射条件, 分层介质, Pekeris波导, 深海波导, 波导不变量, 侧面波]
     notes:
@@ -131,6 +138,7 @@ routes:
     trigger_keywords: [normal mode, normal modes, modes, modal, adiabatic, mode coupling, Prufer, group velocity, dispersion, waveguide invariant, WKB, phase integral, ray invariant, 简正模, 模耦合, 普吕弗, 群速度, 色散, 绝热近似, kraken, KRAKEN]
     notes:
       - chapters/ch05-normal-modes.md
+      - topics/brekhovskikh-waveguide-approximations.md
       - solvers/solver-kraken.md
       - runbooks/kraken-runbook.md
       - workflows/model-selection.md
@@ -155,6 +163,7 @@ routes:
   parabolic_equations:
     trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, self-starter, Padé, rational approximation, elastic PE, poro-elastic PE, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM]
     notes:
+      - topics/collins-pe-extensions.md
       - chapters/ch06-parabolic-equations.md
       - solvers/solver-ram.md
       - runbooks/ram-runbook.md
@@ -174,6 +183,9 @@ routes:
       collins_siegmann_range_dependence:
         source: 01-source-collins-siegmann.md
         pages: 49-66
+      collins_siegmann_three_dimensional:
+        source: 01-source-collins-siegmann.md
+        pages: 67-77
       collins_siegmann_elastic_pe:
         source: 01-source-collins-siegmann.md
         pages: 82-95
@@ -197,6 +209,7 @@ routes:
     trigger_keywords: [broadband, pulse propagation, Fourier synthesis, Doppler, time domain, waveform synthesis, impulse response, 宽带, 脉冲传播, 多普勒, 时域, 傅里叶合成]
     notes:
       - chapters/ch08-broadband-modeling.md
+      - topics/colosi-stochastic-propagation.md
       - chapters/ch10-signals-in-noise.md
     chapter_span: 626-787
     fallback_windows:
@@ -240,13 +253,33 @@ routes:
       etter_reverberation_models:
         source: 01-source-etter.md
         pages: 382-398
+  model_evaluation:
+    trigger_keywords: [model evaluation, quantitative accuracy, verification versus validation, prediction uncertainty, model assessment, 模型评估, 模型评价, 预测不确定性, 定量精度]
+    notes:
+      - topics/etter-model-evaluation.md
+      - workflows/model-selection.md
+      - benchmark-cases.md
+    fallback_windows:
+      etter_benchmarks:
+        source: 01-source-etter.md
+        pages: 455-457
+      etter_quantitative_accuracy:
+        source: 01-source-etter.md
+        pages: 458-461
+      etter_evaluation_guidelines:
+        source: 01-source-etter.md
+        pages: 465-467
+      etter_prediction_uncertainty:
+        source: 01-source-etter.md
+        pages: 274-275
   ocean_fluctuations:
     trigger_keywords: [internal wave, internal waves, internal-wave, Garrett-Munk, GM spectrum, stochastic ocean, random ocean, random medium, acoustic fluctuations, fluctuation, scintillation, saturation, Λ-Φ, Rytov, Born approximation, path integral, mutual coherence, travel-time variance, ray chaos, mode transport, 内波, 随机海洋, 声起伏, 起伏, 闪烁, 饱和, 互相干, 射线混沌]
     notes:
+      - topics/colosi-stochastic-propagation.md
       - 01-source-colosi.md
       - 01-source-brekhovskikh-lysanov.md
       - chapters/ch01-fundamentals.md
-    note: COA has no chapter on ocean fluctuations, so this route reads the books' source notes. Colosi comes first, and Brekhovskikh & Lysanov Ch. 10 gives a shorter classical treatment.
+    note: Colosi supplies substantive fluctuation and coherence evidence; Brekhovskikh & Lysanov Ch. 10 offers a classical cross-check via its source map. COA Ch. 8 distinguishes deterministic broadband synthesis from random-medium frequency coherence.
     fallback_windows:
       colosi_internal_waves:
         source: 01-source-colosi.md
@@ -263,9 +296,24 @@ routes:
       colosi_mutual_coherence:
         source: 01-source-colosi.md
         pages: 302-327
+      colosi_frequency_coherence:
+        source: 01-source-colosi.md
+        pages: 327-336
       colosi_mode_transport:
         source: 01-source-colosi.md
         pages: 357-370
+      colosi_mode_mean_intensity:
+        source: 01-source-colosi.md
+        pages: 370-389
+      colosi_mode_space_time_coherence:
+        source: 01-source-colosi.md
+        pages: 389-406
+      colosi_mode_frequency_coherence:
+        source: 01-source-colosi.md
+        pages: 406-411
+      colosi_mode_intensity_variance:
+        source: 01-source-colosi.md
+        pages: 411-423
       brekhovskikh_lysanov_internal_wave_fluctuations:
         source: 01-source-brekhovskikh-lysanov.md
         pages: 254-259

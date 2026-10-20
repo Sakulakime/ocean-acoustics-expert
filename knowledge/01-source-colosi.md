@@ -130,8 +130,10 @@ Built from the PDF's outline. Ranges are inclusive. A section ends on the page w
 
 ## Retrieval guidance
 
-- COA has no chapter on ocean fluctuations. For questions on internal waves, acoustic fluctuations, coherence, saturation or ray chaos, this book is the first one to read, through the `ocean_fluctuations` route in `routing-map.yaml`. Brekhovskikh & Lysanov Ch. 10 (`01-source-brekhovskikh-lysanov.md`) gives a shorter classical treatment.
-- For the deterministic propagation physics underneath (rays, modes), read COA's notes first.
+- For questions on internal waves, acoustic fluctuations, coherence, saturation, stochastic pulse statistics or ray chaos, choose this book as a primary source through the `ocean_fluctuations` route in `routing-map.yaml`. Start with `topics/colosi-stochastic-propagation.md` for source-grounded regime selection and spatial, temporal and frequency coherence. COA need not be read before this source.
+- For a named acoustic statistic, use Table 1.5 (§1.5, PDF pp. 61-63) and the topic note's theory-selection table. Retain its single-path scope and ray-chaos caveats; log-amplitude predictions and single-frequency mode statistics do not inherit the validity of every other table entry.
+- On complex questions, actively compare this stochastic treatment with the relevant deterministic ray, mode, PE or broadband notes even when those notes already provide an answer. For example, pair frequency coherence and pulse wander/spread with `chapters/ch08-broadband-modeling.md`, and mode statistics with `chapters/ch05-normal-modes.md`. Separate environmental ensembles from deterministic multipath dispersion, and state each model's assumptions.
+- Brekhovskikh & Lysanov Ch. 10 (`01-source-brekhovskikh-lysanov.md`) offers a shorter classical treatment to compare for random-medium questions. Read the relevant source window before attributing a specific agreement or difference to that book.
 - Read page ranges only, never the whole book. Cite the section and the PDF pages read, for example `[textbook: Colosi 2016 §3.3, PDF pp. 142-151]`.
 
 ## File anchors

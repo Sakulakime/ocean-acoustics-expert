@@ -6,7 +6,7 @@ An underwater-acoustics expert agent and the knowledge base it answers from, ins
 
 The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
 
-It answers notes first. It reads the hub, the routing map and the concept index, then the smallest set of notes that settles the question: chapter notes on *Computational Ocean Acoustics* (COA), solver notes, runbooks and the visualization standard. Only when the notes fall short does it read a targeted page range of a book PDF: COA, or one of four more books through its source note. Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. The agent is read-only: in Claude Code, Codex and OpenCode the harness stops it changing files; in DeepSeek-TUI, which has no such control for a skill, its instructions do.
+It selects the primary textbook by topic and reads substantive local notes first. Complex questions proactively cross-check other relevant books, even when COA already answers the main question. Targeted PDF pages fill gaps in the answer or the cross-check; a section map alone does not count as evidence. See [book selection](knowledge/book-selection.md). Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. The agent is read-only: in Claude Code, Codex and OpenCode the harness stops it changing files; in DeepSeek-TUI, which has no such control for a skill, its instructions do.
 
 The book PDFs are not part of this repository: put your own copies in the knowledge base to enable the book fallback (see [Books](#books)). Without them the expert still answers from the notes.
 
@@ -56,7 +56,7 @@ Rerun the install command to update. `@latest` uses the npm `latest` dist-tag, w
 To pin a version:
 
 ```sh
-npx --yes ocean-acoustics-expert@0.1.1 install
+npx --yes github:Sakulakime/ocean-acoustics-expert#v0.2.0 install
 ```
 
 On Windows, installer-owned directory links use junctions with absolute targets;
@@ -90,7 +90,7 @@ npx --yes ocean-acoustics-expert@latest doctor
 ### Using the expert
 
 - **Claude Code:** ask an underwater-acoustics question. The router skill routes it, or ask for the `ocean-acoustics-expert` agent.
-- **Codex:** Codex has no syntax for calling an agent directly; `$` calls skills. Ask for the expert as a sub-agent in plain words, for example `Spawn an ocean-acoustics-expert sub-agent to answer: ...`. Codex spawns sub-agents only when asked explicitly, so a plain question does not reach the expert. The sub-agent runs in Codex's read-only sandbox. To use only the router in the main session, call `$ocean-acoustics-router`.
+- **Codex:** ask for the expert as a sub-agent in plain words, for example `Spawn an ocean-acoustics-expert sub-agent to answer: ...`. The main agent selects the installed `ocean-acoustics-expert` role when spawning it; whether delegation happens automatically also depends on the session's instructions and enabled capabilities. The role uses `sandbox_mode = "read-only"`. `$ocean-acoustics-router` loads the router skill in the main session; loading that skill alone does not start the expert sub-agent. Reinstall after updating this checkout to refresh the generated role and router, and confirm a fresh session sees their new descriptions.
 - **OpenCode:** mention `@ocean-acoustics-expert`, or let the main agent hand the question to it.
 - **DeepSeek-TUI:** run `/ocean-acoustics-expert <question>` (it also appears in `/skills`). The expert runs inside the main agent, so it stays read-only by its instructions alone. Plain underwater-acoustics questions go through the router skill.
 
@@ -158,7 +158,7 @@ Run each command as `npx --yes ocean-acoustics-expert@latest <command>`, or as `
 
 The expert's page-range fallback reads five books (ADR 0006):
 
-- Jensen, Kuperman, Porter & Schmidt, *Computational Ocean Acoustics*, 2nd ed. (2011), the default book
+- Jensen, Kuperman, Porter & Schmidt, *Computational Ocean Acoustics*, 2nd ed. (2011)
 - Collins & Siegmann, *Parabolic Wave Equations with Applications* (2019)
 - Colosi, *Sound Propagation through the Stochastic Ocean* (2016)
 - Etter, *Underwater Acoustic Modeling and Simulation*, 5th ed. (2018)
@@ -166,7 +166,9 @@ The expert's page-range fallback reads five books (ADR 0006):
 
 The repository does not include them. Put your copies in `knowledge/sources/` of the installed copy (`~/.local/share/ocean-acoustics-expert/knowledge/sources/`; in link mode, the checkout's `knowledge/sources/`), under the file names listed in [`knowledge/sources/README.md`](knowledge/sources/README.md). Page numbers in the notes are PDF pages of these editions. Install never touches files it did not write, so your books survive reinstalls and uninstall. Run `doctor` to see which ones are missing.
 
-The expert reads a book only through notes that point at its pages. COA has chapter notes. Each of the other four has a source note: its page offset and a map from sections to PDF pages, which the routing map's fallback windows point into. When a book is missing, the expert answers from the notes and names the book and page range it would have read.
+The expert reads a book through its source note's edition and page map. COA has chapter notes; the other four books each have a first PDF-grounded topic note under `knowledge/topics/`: PE extensions, stochastic propagation, model evaluation and waveguide approximations. These notes cover their stated sections rather than their entire books. When a needed PDF is missing or its harness cannot read targeted pages, the expert uses available substantive notes and reports the unsupported claim or cross-check with the required book and page range. Sources used distinguish pages cited through notes from PDF pages actually read.
+
+In link mode, note changes are visible immediately. Agent descriptions and the router are generated files: run the installer again to refresh their instructions after updating this checkout.
 
 ## Development
 

@@ -118,8 +118,9 @@ Built from the PDF's own outline, since this book has no Zotero text cache. Rang
 
 ## Retrieval guidance
 
-- Read COA's notes first (`chapters/ch06-parabolic-equations.md`, `solvers/solver-ram.md`). Come here when they do not settle a PE question, or when it concerns a topic above that COA does not cover.
-- The `parabolic_equations` route in `routing-map.yaml` lists this book's fallback windows. For other topics, take the smallest section range from the map above.
+- Select this book as the primary source for PE coefficient generation, evanescent-mode stabilization, split-step Padé propagation, self-starter regularization, and accurate range-dependent interface treatments. Start with `topics/collins-pe-extensions.md`, whose claims were checked against targeted PDF pages; use the section map for details beyond its coverage.
+- For complex PE questions, actively compare this treatment with COA's `chapters/ch06-parabolic-equations.md` and, when code operation matters, `solvers/solver-ram.md`. Check differences in field conventions, source geometry, approximation error, and interface conditions even when one book already provides an answer.
+- The `parabolic_equations` route in `routing-map.yaml` lists this book's fallback windows. When the available notes do not settle the question, read the smallest relevant PDF range; for topics outside that route, use the section map above.
 - Read page ranges only, never the whole book. Cite the section and the PDF pages read, for example `[textbook: Collins & Siegmann 2019 §2.4, PDF pp. 44-46]`.
 
 ## File anchors

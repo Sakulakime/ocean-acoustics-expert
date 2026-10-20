@@ -82,6 +82,23 @@ test("in link mode the OpenCode agent may also read the folders the installed co
   ]);
 });
 
+test("OpenCode preserves cross-book selection while reporting unavailable PDF checks", (t) => {
+  const pkg = writePackage(t, { checkout: false });
+  const home = writeHome(t, OPENCODE_CONFIG);
+  const result = runInstaller(pkg, home, ["install", "--harness", "opencode", "--mode", "copy"]);
+  assert.equal(result.status, 0, result.stderr);
+  const { body } = parseFrontmatter(readFileSync(opencodeAgent(home), "utf8"));
+  const note = body.split("## Primary knowledge base")[0];
+  assert.match(body, /book-selection\.md/);
+  for (const field of ["primary_book", "cross_check_books", "cross_check_reason", "cross_check_status"]) {
+    assert.ok(body.includes(field), `preserves ${field}`);
+  }
+  assert.match(note, /primary and cross-check books/);
+  assert.match(note, /unavailable/);
+  assert.match(note, /substantive.*notes/);
+  assert.match(note, /name the book and the PDF page range/);
+});
+
 test("in copy mode without toolboxes the OpenCode agent may read only the data folder", (t) => {
   const pkg = writePackage(t, { checkout: false });
   const home = writeHome(t, OPENCODE_CONFIG);

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "title": "Reverse Concept Index",
-  "description": "Deterministic concept-to-route map for COA concepts and the topics of the other books with source notes, linking prompt-level technical terms to primary notes, secondary notes, and targeted fallback windows (COA's first, when COA covers the concept).",
+  "description": "Deterministic topic-driven concept map across five books. Primary notes identify the most relevant substantive source; book-selection.md defines proactive cross-book checks. Fallback windows are ordered for the concept, without a global book priority.",
   "match_policy": {
     "normalize_to_lowercase": true,
     "prefer_longest_alias": true,
@@ -76,9 +76,9 @@
       "key": "rough_surface_scattering",
       "aliases": ["rough surface scattering", "rough-surface scattering", "rayleigh parameter", "small perturbation method", "kirchhoff approximation", "tangent plane", "small-slope approximation", "粗糙海面散射", "粗糙界面散射"],
       "bucket": "fundamentals",
-      "primary_notes": ["chapters/ch01-fundamentals.md"],
-      "secondary_notes": [],
-      "fallback_windows": ["fundamentals.brekhovskikh_lysanov_rough_surface_scattering", "fundamentals.brekhovskikh_lysanov_tangent_plane"]
+      "primary_notes": ["topics/brekhovskikh-waveguide-approximations.md"],
+      "secondary_notes": ["chapters/ch01-fundamentals.md"],
+      "fallback_windows": ["fundamentals.brekhovskikh_lysanov_rough_surface_scattering", "fundamentals.brekhovskikh_lysanov_tangent_plane", "fundamentals.brekhovskikh_lysanov_small_slope"]
     },
     {
       "key": "wave_equation",
@@ -349,8 +349,8 @@
       "aliases": ["starter field", "starting field", "starting fields", "modal starter", "greene's source", "greene source", "thomson's source", "thomson source", "gaussian starter", "gaussian source", "起始场"],
       "bucket": "parabolic_equations",
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
-      "secondary_notes": ["chapters/ch08-broadband-modeling.md"],
-      "fallback_windows": ["parabolic_equations.starters_and_split_step"]
+      "secondary_notes": ["topics/collins-pe-extensions.md", "chapters/ch08-broadband-modeling.md"],
+      "fallback_windows": ["parabolic_equations.starters_and_split_step", "parabolic_equations.collins_siegmann_split_step_pade"]
     },
     {
       "key": "parabolic_equation",
@@ -372,24 +372,24 @@
       "key": "rational_approximation",
       "aliases": ["rational approximation", "padé approximation", "pade approximation", "split-step padé", "split-step pade", "有理近似", "帕德近似"],
       "bucket": "parabolic_equations",
-      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
-      "secondary_notes": ["solvers/solver-ram.md"],
-      "fallback_windows": ["parabolic_equations.derivation_and_limits", "parabolic_equations.starters_and_split_step", "parabolic_equations.collins_siegmann_rational_approximations", "parabolic_equations.collins_siegmann_split_step_pade"]
+      "primary_notes": ["topics/collins-pe-extensions.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md", "solvers/solver-ram.md"],
+      "fallback_windows": ["parabolic_equations.collins_siegmann_rational_approximations", "parabolic_equations.collins_siegmann_split_step_pade", "parabolic_equations.derivation_and_limits", "parabolic_equations.starters_and_split_step"]
     },
     {
       "key": "elastic_pe",
       "aliases": ["elastic parabolic equation", "elastic pe", "弹性抛物方程"],
       "bucket": "parabolic_equations",
-      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
-      "secondary_notes": ["solvers/solver-ram.md"],
-      "fallback_windows": ["parabolic_equations.derivation_and_limits", "parabolic_equations.collins_siegmann_elastic_pe"]
+      "primary_notes": ["01-source-collins-siegmann.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md", "solvers/solver-ram.md"],
+      "fallback_windows": ["parabolic_equations.collins_siegmann_elastic_pe", "parabolic_equations.derivation_and_limits"]
     },
     {
       "key": "poro_elastic_pe",
       "aliases": ["poro-elastic parabolic equation", "poroelastic parabolic equation", "poro-elastic pe", "poroelastic pe", "多孔弹性抛物方程"],
       "bucket": "parabolic_equations",
-      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
-      "secondary_notes": [],
+      "primary_notes": ["01-source-collins-siegmann.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md"],
       "fallback_windows": ["parabolic_equations.collins_siegmann_poro_elastic"]
     },
     {
@@ -412,9 +412,9 @@
       "key": "energy_conserving_pe",
       "aliases": ["energy-conserving pe", "energy conserving pe", "energy conservation in pe", "energy conservation in the pe", "energy conservation in pes", "stair-step", "stair step", "能量守恒抛物方程"],
       "bucket": "parabolic_equations",
-      "primary_notes": ["chapters/ch06-parabolic-equations.md"],
-      "secondary_notes": ["chapters/ch07-fd-fe-methods.md"],
-      "fallback_windows": ["parabolic_equations.energy_and_3d"]
+      "primary_notes": ["topics/collins-pe-extensions.md"],
+      "secondary_notes": ["chapters/ch06-parabolic-equations.md", "chapters/ch07-fd-fe-methods.md"],
+      "fallback_windows": ["parabolic_equations.collins_siegmann_range_dependence", "parabolic_equations.energy_and_3d"]
     },
     {
       "key": "three_d_pe",
@@ -422,7 +422,7 @@
       "bucket": "parabolic_equations",
       "primary_notes": ["chapters/ch06-parabolic-equations.md"],
       "secondary_notes": ["chapters/ch05-normal-modes.md"],
-      "fallback_windows": ["parabolic_equations.energy_and_3d"]
+      "fallback_windows": ["parabolic_equations.energy_and_3d", "parabolic_equations.collins_siegmann_three_dimensional"]
     },
     {
       "key": "pml",
@@ -516,7 +516,7 @@
       "key": "internal_waves",
       "aliases": ["internal wave", "internal waves", "internal-wave", "garrett-munk", "garrett munk", "gm spectrum", "内波"],
       "bucket": "ocean_fluctuations",
-      "primary_notes": ["01-source-colosi.md"],
+      "primary_notes": ["topics/colosi-stochastic-propagation.md", "01-source-colosi.md"],
       "secondary_notes": ["chapters/ch01-fundamentals.md"],
       "fallback_windows": ["ocean_fluctuations.colosi_internal_waves", "ocean_fluctuations.brekhovskikh_lysanov_internal_wave_fluctuations", "ocean_fluctuations.etter_fronts_eddies_internal_waves"]
     },
@@ -524,7 +524,7 @@
       "key": "acoustic_fluctuations",
       "aliases": ["acoustic fluctuations", "acoustic fluctuation", "scintillation", "saturation regime", "unsaturated regime", "λ-φ", "lambda-phi", "声起伏", "闪烁"],
       "bucket": "ocean_fluctuations",
-      "primary_notes": ["01-source-colosi.md"],
+      "primary_notes": ["topics/colosi-stochastic-propagation.md"],
       "secondary_notes": ["01-source-brekhovskikh-lysanov.md"],
       "fallback_windows": ["ocean_fluctuations.colosi_fluctuation_regimes", "ocean_fluctuations.colosi_weak_fluctuation"]
     },
@@ -540,9 +540,9 @@
       "key": "mutual_coherence",
       "aliases": ["mutual coherence", "path integral", "互相干"],
       "bucket": "ocean_fluctuations",
-      "primary_notes": ["01-source-colosi.md"],
+      "primary_notes": ["topics/colosi-stochastic-propagation.md"],
       "secondary_notes": [],
-      "fallback_windows": ["ocean_fluctuations.colosi_mutual_coherence"]
+      "fallback_windows": ["ocean_fluctuations.colosi_mutual_coherence", "ocean_fluctuations.colosi_frequency_coherence"]
     },
     {
       "key": "mode_transport",
@@ -550,7 +550,7 @@
       "bucket": "ocean_fluctuations",
       "primary_notes": ["01-source-colosi.md"],
       "secondary_notes": ["chapters/ch05-normal-modes.md"],
-      "fallback_windows": ["ocean_fluctuations.colosi_mode_transport"]
+      "fallback_windows": ["ocean_fluctuations.colosi_mode_transport", "ocean_fluctuations.colosi_mode_mean_intensity", "ocean_fluctuations.colosi_mode_space_time_coherence", "ocean_fluctuations.colosi_mode_frequency_coherence", "ocean_fluctuations.colosi_mode_intensity_variance"]
     },
     {
       "key": "benchmark_cases",
@@ -623,6 +623,30 @@
       "primary_notes": ["benchmark-cases.md"],
       "secondary_notes": ["chapters/ch04-wavenumber-integration.md"],
       "fallback_windows": ["benchmark_cases.wi_numerical_examples"]
+    },
+    {
+      "key": "frequency_coherence",
+      "aliases": ["frequency coherence", "cross-frequency coherence", "frequency decorrelation", "频率相干", "频率去相干"],
+      "bucket": "ocean_fluctuations",
+      "primary_notes": ["topics/colosi-stochastic-propagation.md"],
+      "secondary_notes": ["chapters/ch08-broadband-modeling.md"],
+      "fallback_windows": ["ocean_fluctuations.colosi_frequency_coherence"]
+    },
+    {
+      "key": "model_evaluation",
+      "aliases": ["model evaluation", "model assessment", "quantitative accuracy", "verification versus validation", "prediction uncertainty", "prediction uncertainties", "模型评估", "模型评价", "预测不确定性", "定量精度"],
+      "bucket": "model_evaluation",
+      "primary_notes": ["topics/etter-model-evaluation.md"],
+      "secondary_notes": ["workflows/model-selection.md", "benchmark-cases.md"],
+      "fallback_windows": ["model_evaluation.etter_benchmarks", "model_evaluation.etter_quantitative_accuracy", "model_evaluation.etter_evaluation_guidelines", "model_evaluation.etter_prediction_uncertainty"]
+    },
+    {
+      "key": "adiabatic_validity",
+      "aliases": ["adiabatic validity", "adiabatic validity conditions", "绝热近似适用条件"],
+      "bucket": "normal_modes",
+      "primary_notes": ["topics/brekhovskikh-waveguide-approximations.md"],
+      "secondary_notes": ["chapters/ch05-normal-modes.md"],
+      "fallback_windows": ["normal_modes.brekhovskikh_lysanov_adiabatic_and_coupled_modes", "normal_modes.range_dependence_and_mode_coupling"]
     }
   ]
 }
