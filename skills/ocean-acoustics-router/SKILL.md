@@ -1,7 +1,7 @@
 ---
 name: ocean-acoustics-router
-description: This skill should be used when the user asks about underwater acoustics, ocean acoustic propagation, transmission loss, sound-speed effects, ray methods, normal modes, parabolic equations, wavenumber integration, broadband propagation, ambient noise, sonar equation, beamforming, matched-field processing, reverberation, or sound propagation through internal waves and other ocean fluctuations. It routes the request through the local COA structured notes first and only falls back to targeted page ranges of the book PDFs (COA, or four more books through their source notes) when the notes are insufficient.
-version: 0.2.0
+description: Use for underwater acoustics, including propagation, transmission loss, rays, normal modes, parabolic equations, broadband fields, noise, sonar processing and ocean fluctuations. Select the most relevant of five textbooks by topic, use local substantive notes first, and proactively cross-check other relevant books for complex questions with notes or targeted PDF pages.
+version: 0.3.0
 ---
 
 # Ocean Acoustics Router
@@ -13,6 +13,8 @@ Route underwater acoustics questions through the installed knowledge base before
 - Hub: `{{knowledge_base}}/00-hub.md`
 - Topic routing: `{{knowledge_base}}/routing-map.yaml`
 - Reverse concept map: `{{knowledge_base}}/concept-index.yaml`
+- Book selection and cross-check policy: `{{knowledge_base}}/book-selection.md`
+- Non-COA topic notes: `{{knowledge_base}}/topics/`
 - Chapter notes: `{{knowledge_base}}/chapters/`
 - Solver notes: `{{knowledge_base}}/solvers/` (start at `solvers/00-solvers-hub.md`)
 - Runbooks: `{{knowledge_base}}/runbooks/`
@@ -28,15 +30,16 @@ Note paths in the hub, the routing map and the concept index are relative to `{{
 ## Mandatory retrieval order
 
 1. Read `00-hub.md`.
-2. Read `routing-map.yaml` and pick the matching route.
+2. Read `routing-map.yaml` and `book-selection.md`; select matching routes, the topic's primary book and relevant cross-check books for a complex question.
 3. Check `concept-index.yaml` for the concepts or subsection ideas the prompt names (searching it for the term is enough).
-4. Read the smallest relevant note set from the route and the concept entry:
+4. Read the smallest substantive note set that answers the question and completes the selected cross-book checks, from the route and concept entry:
    - chapter notes (`chapters/`);
+   - topic notes (`topics/`) from the other books; source-note section maps alone provide navigation, not technical evidence;
    - solver notes (`solvers/`);
    - runbooks (`runbooks/`) for building inputs or running BELLHOP, KRAKEN or RAM;
    - the visualization standard (`visualization.md`) for plotting questions;
    - when present, the benchmark-cases note and book source notes. Check the hub or the routing map for them; do not assume the files exist.
-5. Only if the notes do not settle the question, read a fallback window: the smallest relevant page range of a book PDF in `{{knowledge_base}}/sources/`, cited with its page range.
+5. When notes leave an answer claim or a required cross-book check unsupported, read a fallback window: the smallest relevant page range of a book PDF in `{{knowledge_base}}/sources/`, cited with its page range. A complete COA answer does not complete an unsupported check of another book.
 
 When searching notes, search for literal text (a fixed-string search) or escape regex metacharacters such as `{ } [ ] ( ) . * + ? |`; a pattern copied from an equation, such as `k_{rm}`, otherwise fails.
 
@@ -54,6 +57,8 @@ When searching notes, search for literal text (a fixed-string search) or escape 
 - signals in noise / sonar signal processing
 - visualization of TL and fields
 - model selection across methods
+- model evaluation and prediction uncertainty
+- ocean fluctuations and coherence
 
 ## Routing payload
 
@@ -61,8 +66,12 @@ Before deep analysis, produce this compact routing payload for yourself:
 - `bucket`: one classification bucket
 - `concept`: matched concept from `concept-index.yaml` when applicable
 - `notes`: selected note paths (chapter, solver, runbook, visualization, and benchmark-case or source notes when present)
+- `primary_book`: selected by topic using `book-selection.md`
+- `cross_check_books`: additional relevant books for a complex question
+- `cross_check_reason`: the comparison, validity, uncertainty or research decision requiring a cross-check; explain when none is needed
+- `cross_check_status`: per book, `checked-note`, `checked-pdf`, `unavailable` or `not-needed`; only mark evidence actually read as checked
 - `fallback_windows`: relevant PDF page ranges from `routing-map.yaml`, the concept entry or a source note
-- `fallback_reason`: only set when notes are insufficient
+- `fallback_reason`: an unsupported answer claim or required cross-book check
 
 ## Evidence tags
 
@@ -83,11 +92,11 @@ Examples:
 2. Governing idea or model family
 3. Assumptions and validity range
 4. Numerical or signal-processing implications
-5. Sources used: note paths read, and PDF page ranges read per book
+5. Sources used: notes and books actually read, pages cited through notes versus PDF pages read in this run, and what cross-checking added or left unresolved
 
 ## Escalation rule
 
-When the answer needs exact derivations, exact equations, subtle caveats, or section-specific evidence not present in the notes, read the book PDF selectively using the fallback windows (PDF page ranges) from `routing-map.yaml`, the concept entry or a source note. COA is the default book; read another book only through its source note, when present. Never load a whole book. If the PDF a fallback window needs is not in `{{knowledge_base}}/sources/` (each user supplies the books), answer from the notes, say plainly that a book fallback is needed, and name the book and the PDF page range to read.
+When the answer needs exact derivations, exact equations, subtle caveats, or section-specific evidence not present in the notes, read the book PDF selectively using the fallback windows (PDF page ranges) from `routing-map.yaml`, the concept entry or a source note. Also read a targeted window when a required cross-book check lacks substantive note evidence, even if the primary book's notes already answer the question. Resolve each selected book through its source note. Follow `book-selection.md` for completion criteria and respect the executor's PDF-reading limits. Never load a whole book. If the PDF a fallback window needs is not in `{{knowledge_base}}/sources/` (each user supplies the books), answer from the notes, say plainly that a book fallback is needed, and name the book and the PDF page range to read.
 
 ## Preferred specialized executor
 

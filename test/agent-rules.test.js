@@ -8,17 +8,30 @@ import { installPaths, runInstaller, writeHome, writePackage } from "./helpers/i
 /**
  * Install into a fake home and return the rendered agent and router texts.
  * @param {import("node:test").TestContext} t
+ * @param {boolean} [allHarnesses] Render all four harnesses instead of only Claude.
  * @returns {[string, string][]} Label and text of each rendered file.
  */
-function renderedRules(t) {
+function renderedRules(t, allHarnesses = false) {
   const pkg = writePackage(t);
-  const home = writeHome(t);
+  const home = writeHome(t, allHarnesses ? {
+    ".codex/config.toml": "",
+    ".config/opencode/opencode.json": "{}\n",
+    ".dsh/settings.yaml.imported": "{}\n",
+  } : {});
   const paths = installPaths(home);
-  const result = runInstaller(pkg, home, ["install"]);
+  const args = allHarnesses
+    ? ["install", ...["claude", "codex", "opencode", "deepseek"].flatMap((name) => ["--harness", name])]
+    : ["install"];
+  const result = runInstaller(pkg, home, args);
   assert.equal(result.status, 0, result.stderr);
   return [
     ["agent", readFileSync(paths.agent, "utf8")],
     ["router", readFileSync(join(paths.sharedSkill, "SKILL.md"), "utf8")],
+    ...(allHarnesses ? [
+      ["codex", readFileSync(join(home, ".codex/agents/ocean-acoustics-expert.toml"), "utf8")],
+      ["opencode", readFileSync(join(home, ".config/opencode/agents/ocean-acoustics-expert.md"), "utf8")],
+      ["deepseek", readFileSync(join(home, ".dsh/skills/ocean-acoustics-expert/SKILL.md"), "utf8")],
+    ] : []),
   ];
 }
 
@@ -107,5 +120,16 @@ test("agent and router answer from the notes and name the pages when a book PDF 
   for (const [label, text] of renderedRules(t)) {
     assert.match(text, /each user supplies the books/i, `${label}: says the books are user-supplied`);
     assert.match(text, /is not in `[^`]+\/sources\/`[^.]*, answer from the notes, say plainly that a book fallback is needed, and name the book and the PDF page range/, `${label}: missing-book rule`);
+  }
+});
+
+test("rendered rules select books by topic and make proactive cross-book checks observable", (t) => {
+  for (const [label, text] of renderedRules(t, true)) {
+    assert.match(text, /book-selection\.md/, `${label}: shared source-selection policy`);
+    for (const field of ["primary_book", "cross_check_books", "cross_check_reason", "cross_check_status"]) {
+      assert.ok(text.includes(field), `${label}: records ${field}`);
+    }
+    assert.doesNotMatch(text, /COA is the default book|COA.*first, and reads targeted/, `${label}: no global COA priority`);
+    assert.match(retrievalSteps(text)[4], /cross-book check/, `${label}: PDF step covers a missing cross-book check`);
   }
 });

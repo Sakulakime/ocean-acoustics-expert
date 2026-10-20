@@ -19,6 +19,10 @@ _Avoid_: book note, book card
 **Chapter note**:
 A structured summary of one chapter of a source, anchored to that chapter's page span.
 
+**Topic note**:
+A substantive account of a bounded topic from one book, anchored to the specific sections and pages actually checked.
+_Avoid_: source note, chapter note
+
 **Paper card** (论文卡片):
 A fixed-field, project-neutral record of what one paper claims, how it supports the claim, and under which conditions.
 _Avoid_: paper note, literature note, 文献笔记
@@ -44,8 +48,16 @@ _Avoid_: tutorial, guide
 **Route**:
 The mapping from a topic bucket to the notes and fallback windows the agent reads for it.
 
+**Primary book**:
+The book selected as the main technical source for a particular question because of its topic.
+_Avoid_: default book
+
+**Cross-book check**:
+A comparison of relevant substantive evidence from different books, including the assumptions and limits that qualify their claims.
+_Avoid_: source count, section-map lookup
+
 **Fallback window**:
-A targeted page range of a source, read only when the notes do not settle the question.
+A targeted page range of a source, read when notes leave an answer claim or a required cross-book check unsupported.
 _Avoid_: page reference, citation
 
 **Uncurated evidence** (未整理证据):

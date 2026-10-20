@@ -1,6 +1,6 @@
 # Book PDFs
 
-This folder holds the book PDFs the expert reads page ranges of when the notes do not settle a question. The package ships no books: put your own copies here, under these exact file names (ADR 0006).
+This folder holds the book PDFs the expert reads by targeted page range when an answer claim or required cross-book check lacks substantive note evidence. `book-selection.md` selects the books by topic. The package ships no books: put your own copies here, under these exact file names (ADR 0006).
 
 | File name | Book |
 |---|---|

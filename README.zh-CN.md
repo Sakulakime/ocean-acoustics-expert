@@ -6,7 +6,7 @@
 
 本专家涵盖声传播建模和面向声呐的信号处理：声速结构、传输损失、射线和高斯波束方法、波数积分、简正波、抛物方程、宽带传播、环境噪声、混响、声呐方程、波束形成、匹配场处理，以及声波在内波和其他海洋波动中的传播。它还知道如何通过捆绑的 MATLAB 辅助工具为 BELLHOP、KRAKEN 和 RAM 构建输入、运行和绘图。
 
-它优先从笔记中回答问题。它会读取中心文档、路由映射和概念索引，然后读取能够解决问题的最小笔记集：《计算海洋声学》(COA) 的章节笔记、求解器笔记、运行手册和可视化标准。只有当笔记不足时，它才会读取书籍 PDF 的目标页面范围：COA，或通过源笔记读取其他四本书中的某一本。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。该智能体是只读的：在 Claude Code、Codex 和 OpenCode 中由平台阻止它修改文件；DeepSeek-TUI 无法对技能做这种限制，只能靠其指令约束。
+它按主题选择主要教材，优先读取有实质内容的本地笔记。复杂问题会主动核对其他相关书籍，即使 COA 已能回答主要问题；答案或跨书核对缺少证据时，才读取 PDF 的目标页段。仅发现目录或页码不算完成技术核对。选书规则见 [book selection](knowledge/book-selection.md)。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。该智能体是只读的：在 Claude Code、Codex 和 OpenCode 中由平台阻止它修改文件；DeepSeek-TUI 无法对技能做这种限制，只能靠其指令约束。
 
 本仓库不包含书籍 PDF：把你自己的副本放进知识库，即可启用书籍回退（参见[书籍](#书籍)）。没有它们，专家仍然根据笔记回答。
 
@@ -56,7 +56,7 @@ npx --yes ocean-acoustics-expert@latest install
 如需固定版本：
 
 ```sh
-npx --yes ocean-acoustics-expert@0.1.1 install
+npx --yes github:Sakulakime/ocean-acoustics-expert#v0.2.0 install
 ```
 
 Windows 上安装器创建的目录链接使用绝对目标的 junction；POSIX 系统使用目录 symlink。重新安装、`doctor` 和 `uninstall` 兼容已有的相对链接记录。目录链接备份会保留目标并恢复为 junction，即使目标已不存在；文件 symlink 仍需要系统权限。无法仅凭目标路径的命名空间前缀判断缺少目录类型记录的旧失效链接。安装中断后，使用相同平台和模式重新运行修复后的安装器，并检查报告的备份。Linux 回归测试不替代 Windows 实机验证。
@@ -80,7 +80,7 @@ npx --yes ocean-acoustics-expert@latest doctor
 ### 使用专家
 
 - **Claude Code:** 提出水声学问题。路由技能会进行路由，或请求 `ocean-acoustics-expert` 智能体。
-- **Codex:** Codex 没有直接调用智能体的语法，`$` 用于调用技能。用自然语言要求派一个子代理，例如 `派一个 ocean-acoustics-expert 子代理回答：……`。Codex 只在明确要求时才派子代理，所以直接提问不会调用专家。子代理在 Codex 的只读沙箱中运行。若只想在主会话中使用路由技能，调用 `$ocean-acoustics-router`。
+- **Codex:** 用自然语言要求专家子代理，例如 `派一个 ocean-acoustics-expert 子代理回答：……`。主代理创建子代理时选择已安装的 `ocean-acoustics-expert` 角色；是否自动委派还取决于当前会话指令及可用能力。该角色配置 `sandbox_mode = "read-only"`。`$ocean-acoustics-router` 在主会话中加载路由技能，仅加载技能不等于已经启动专家子代理。更新仓库后需要重新安装以刷新生成的角色和路由技能，并在新会话中确认说明已更新。
 - **OpenCode:** 提及 `@ocean-acoustics-expert`，或让主智能体将问题交给它。
 - **DeepSeek-TUI:** 运行 `/ocean-acoustics-expert <问题>`（也会出现在 `/skills` 中）。专家在主智能体内运行，因此只读仅靠其指令约束。普通的水声学问题会经过路由技能。
 
@@ -148,7 +148,7 @@ node bin/ocean-acoustics-expert.js install
 
 专家的页面范围回退会读取五本书（ADR 0006）：
 
-- Jensen, Kuperman, Porter & Schmidt, *Computational Ocean Acoustics*, 2nd ed. (2011)，默认书籍
+- Jensen, Kuperman, Porter & Schmidt, *Computational Ocean Acoustics*, 2nd ed. (2011)
 - Collins & Siegmann, *Parabolic Wave Equations with Applications* (2019)
 - Colosi, *Sound Propagation through the Stochastic Ocean* (2016)
 - Etter, *Underwater Acoustic Modeling and Simulation*, 5th ed. (2018)
@@ -156,7 +156,9 @@ node bin/ocean-acoustics-expert.js install
 
 本仓库不包含这些书。把你的副本放进已安装副本的 `knowledge/sources/`（`~/.local/share/ocean-acoustics-expert/knowledge/sources/`；链接模式下为检出的 `knowledge/sources/`），文件名使用 [`knowledge/sources/README.md`](knowledge/sources/README.md) 中列出的名称。笔记中的页码是这些版本的 PDF 页码。安装从不触碰它没有写入的文件，因此你的书籍在重新安装和卸载后都会保留。运行 `doctor` 可查看缺少哪些书。
 
-专家仅通过指向其页面的笔记来阅读书籍。COA 有章节笔记。其他四本书各有一个源笔记：其页面偏移量和从章节到 PDF 页面的映射，路由映射的回退窗口指向其中。缺少某本书时，专家根据笔记回答，并说明本应读取的书籍和页面范围。
+专家通过源笔记确认书籍版本和 PDF 页码。COA 有章节笔记；其他四本书各增加了一篇经过 PDF 核实的专题笔记，位于 `knowledge/topics/`，分别覆盖 PE 扩展、随机传播、模型评估和波导近似。专题笔记只覆盖明确记录的章节，不代表整本书。缺书或平台无法按页读取 PDF 时，专家使用已有实质笔记，并说明尚缺的证据、书名和页段；来源列表区分通过笔记引用的页码和本次实际读取的 PDF 页码。
+
+链接模式下，笔记修改立即可见。智能体说明和路由技能是安装时生成的文件，更新仓库后需要重新运行安装器才能刷新其指令。
 
 ## 开发
 

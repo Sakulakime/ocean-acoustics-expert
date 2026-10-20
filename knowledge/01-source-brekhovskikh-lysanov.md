@@ -136,7 +136,8 @@ The PDF has no outline, so this map comes from the book's printed table of conte
 
 ## Retrieval guidance
 
-- Read COA's notes first. Come here for the analytical theory behind a result: reflection coefficients and the lateral wave, WKB modes, the adiabatic approximation's validity, rough-surface scattering, and fluctuations in the random ocean.
+- Follow [book-selection.md](book-selection.md): choose this book as the primary source for analytical propagation theory, reflection coefficients and the lateral wave, WKB modes, adiabatic validity, and rough-surface approximation conditions. COA is a complementary computational treatment rather than a mandatory first stop.
+- Start with [Waveguide and Rough-Surface Approximations](topics/brekhovskikh-waveguide-approximations.md) for ray-cycle and modal-coupling criteria or the distinctions among small perturbation, tangent-plane, and small-slope scattering. For complex questions, compare relevant treatments in the other books even when this book already supplies an answer, stating their assumptions and contributions separately.
 - Routes in `routing-map.yaml` list this book's fallback windows next to COA's: `fundamentals`, `wave_propagation_theory`, `ray_methods`, `normal_modes` and `ocean_fluctuations`. For other topics, take the smallest section range from the map above.
 - Read page ranges only, never the whole book. Cite the section and the PDF pages read, for example `[textbook: Brekhovskikh & Lysanov 2003 §4.4, PDF pp. 103-107]`.
 

@@ -91,7 +91,7 @@ function readableDirs(locations, variables, linkTargets) {
  */
 const HARNESS_NOTE = `## Harness note: OpenCode
 
-OpenCode cannot read a page range of a PDF: opening one attaches the whole book, which fails, so reading the PDFs in \`{{knowledge_base}}/sources/\` is blocked. This replaces step 5 of the retrieval order and the fallback rules below. When the notes do not settle a question, answer from the notes, say plainly that a book fallback is needed, and name the book and the PDF page range to read (from the route, the concept entry or a source note), so the user can check it or ask again in Claude Code or Codex.
+OpenCode cannot read a page range of a PDF: opening one attaches the whole book, which fails, so reading the PDFs in \`{{knowledge_base}}/sources/\` is blocked. This replaces step 5 of the retrieval order and the fallback rules below, for both primary and cross-check books. Keep topic-driven book selection and read the relevant substantive chapter or topic notes from each selected book. When those notes leave an answer claim or cross-book check unsupported, answer from the notes, mark that check unavailable in \`cross_check_status\`, say plainly that a book fallback is needed, and name the book and the PDF page range to read (from the route, the concept entry or a source note), so the user can check it or ask again in a harness with targeted PDF reads. A source-note section map alone does not complete the check.
 
 `;
 

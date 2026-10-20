@@ -155,10 +155,12 @@
           "chapters/ch06-parabolic-equations.md"
         ],
         "secondary_notes": [
+          "topics/collins-pe-extensions.md",
           "chapters/ch08-broadband-modeling.md"
         ],
         "fallback_windows": [
-          "parabolic_equations.starters_and_split_step"
+          "parabolic_equations.starters_and_split_step",
+          "parabolic_equations.collins_siegmann_split_step_pade"
         ]
       }
     },
@@ -238,16 +240,17 @@
         "concept_key": "rational_approximation",
         "bucket": "parabolic_equations",
         "primary_notes": [
-          "chapters/ch06-parabolic-equations.md"
+          "topics/collins-pe-extensions.md"
         ],
         "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md",
           "solvers/solver-ram.md"
         ],
         "fallback_windows": [
-          "parabolic_equations.derivation_and_limits",
-          "parabolic_equations.starters_and_split_step",
           "parabolic_equations.collins_siegmann_rational_approximations",
-          "parabolic_equations.collins_siegmann_split_step_pade"
+          "parabolic_equations.collins_siegmann_split_step_pade",
+          "parabolic_equations.derivation_and_limits",
+          "parabolic_equations.starters_and_split_step"
         ]
       }
     },
@@ -258,9 +261,11 @@
         "concept_key": "poro_elastic_pe",
         "bucket": "parabolic_equations",
         "primary_notes": [
+          "01-source-collins-siegmann.md"
+        ],
+        "secondary_notes": [
           "chapters/ch06-parabolic-equations.md"
         ],
-        "secondary_notes": [],
         "fallback_windows": [
           "parabolic_equations.collins_siegmann_poro_elastic"
         ]
@@ -273,11 +278,13 @@
         "concept_key": "internal_waves",
         "bucket": "ocean_fluctuations",
         "route_notes": [
+          "topics/colosi-stochastic-propagation.md",
           "01-source-colosi.md",
           "01-source-brekhovskikh-lysanov.md",
           "chapters/ch01-fundamentals.md"
         ],
         "primary_notes": [
+          "topics/colosi-stochastic-propagation.md",
           "01-source-colosi.md"
         ],
         "secondary_notes": [
@@ -536,10 +543,12 @@
           "chapters/ch06-parabolic-equations.md"
         ],
         "secondary_notes": [
+          "topics/collins-pe-extensions.md",
           "chapters/ch08-broadband-modeling.md"
         ],
         "fallback_windows": [
-          "parabolic_equations.starters_and_split_step"
+          "parabolic_equations.starters_and_split_step",
+          "parabolic_equations.collins_siegmann_split_step_pade"
         ]
       }
     },
@@ -601,12 +610,14 @@
         "concept_key": "energy_conserving_pe",
         "bucket": "parabolic_equations",
         "primary_notes": [
-          "chapters/ch06-parabolic-equations.md"
+          "topics/collins-pe-extensions.md"
         ],
         "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md",
           "chapters/ch07-fd-fe-methods.md"
         ],
         "fallback_windows": [
+          "parabolic_equations.collins_siegmann_range_dependence",
           "parabolic_equations.energy_and_3d"
         ]
       }
@@ -624,7 +635,8 @@
           "chapters/ch05-normal-modes.md"
         ],
         "fallback_windows": [
-          "parabolic_equations.energy_and_3d"
+          "parabolic_equations.energy_and_3d",
+          "parabolic_equations.collins_siegmann_three_dimensional"
         ]
       }
     },
@@ -635,6 +647,7 @@
         "concept_key": "internal_waves",
         "bucket": "ocean_fluctuations",
         "primary_notes": [
+          "topics/colosi-stochastic-propagation.md",
           "01-source-colosi.md"
         ],
         "secondary_notes": [
@@ -654,6 +667,7 @@
         "concept_key": "internal_waves",
         "bucket": "ocean_fluctuations",
         "primary_notes": [
+          "topics/colosi-stochastic-propagation.md",
           "01-source-colosi.md"
         ],
         "secondary_notes": [
@@ -888,6 +902,7 @@
         "concept_key": "internal_waves",
         "bucket": "ocean_fluctuations",
         "primary_notes": [
+          "topics/colosi-stochastic-propagation.md",
           "01-source-colosi.md"
         ],
         "secondary_notes": [
@@ -1098,6 +1113,83 @@
         "primary_notes": [],
         "secondary_notes": [],
         "fallback_windows": []
+      }
+    },
+    {
+      "name": "topic - Collins primary for split-step Pade",
+      "prompt": "Compare split-step Padé approximation and a self-starter for a range-dependent PE.",
+      "expected": {
+        "concept_key": "rational_approximation",
+        "bucket": "parabolic_equations",
+        "primary_notes": [
+          "topics/collins-pe-extensions.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch06-parabolic-equations.md",
+          "solvers/solver-ram.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.collins_siegmann_rational_approximations",
+          "parabolic_equations.collins_siegmann_split_step_pade",
+          "parabolic_equations.derivation_and_limits",
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "topic - Colosi frequency coherence",
+      "prompt": "How does cross-frequency coherence change with frequency separation in a stochastic ocean?",
+      "expected": {
+        "concept_key": "frequency_coherence",
+        "bucket": "ocean_fluctuations",
+        "primary_notes": [
+          "topics/colosi-stochastic-propagation.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch08-broadband-modeling.md"
+        ],
+        "fallback_windows": [
+          "ocean_fluctuations.colosi_frequency_coherence"
+        ]
+      }
+    },
+    {
+      "name": "topic - Etter model evaluation",
+      "prompt": "How should model evaluation separate verification, validity and prediction uncertainty?",
+      "expected": {
+        "concept_key": "model_evaluation",
+        "bucket": "model_evaluation",
+        "primary_notes": [
+          "topics/etter-model-evaluation.md"
+        ],
+        "secondary_notes": [
+          "workflows/model-selection.md",
+          "benchmark-cases.md"
+        ],
+        "fallback_windows": [
+          "model_evaluation.etter_benchmarks",
+          "model_evaluation.etter_quantitative_accuracy",
+          "model_evaluation.etter_evaluation_guidelines",
+          "model_evaluation.etter_prediction_uncertainty"
+        ]
+      }
+    },
+    {
+      "name": "topic - Brekhovskikh adiabatic validity",
+      "prompt": "What are the adiabatic validity conditions in a range-dependent waveguide?",
+      "expected": {
+        "concept_key": "adiabatic_validity",
+        "bucket": "normal_modes",
+        "primary_notes": [
+          "topics/brekhovskikh-waveguide-approximations.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch05-normal-modes.md"
+        ],
+        "fallback_windows": [
+          "normal_modes.brekhovskikh_lysanov_adiabatic_and_coupled_modes",
+          "normal_modes.range_dependence_and_mode_coupling"
+        ]
       }
     }
   ]

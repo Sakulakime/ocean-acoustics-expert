@@ -8,6 +8,8 @@ status: active
 
 Use this note when the question is not only "how does the method work" but "which method should I use for this scenario".
 
+Select the primary and cross-check books using `book-selection.md` before applying these heuristics. Method comparison is a complex question: complete the relevant cross-book checks even when one method note already gives an answer. Use `topics/etter-model-evaluation.md` to distinguish verification, validity, uncertainty and fitness for the required output.
+
 ## Default comparison axes
 
 1. Geometry and dimensionality
@@ -84,8 +86,10 @@ When answering a model-selection question, compare methods under these headings:
 
 ## Typical routing examples
 
-- Shallow-water range-dependent TL -> read Ch. 1, Ch. 2, Ch. 6
+- Shallow-water range-dependent TL -> read COA Ch. 1, Ch. 2 and Ch. 6; add `topics/collins-pe-extensions.md` for PE interface corrections
 - Deep-water arrival analysis -> read Ch. 2, Ch. 3, Ch. 5
 - Layered elastic-bottom reverberation -> read Ch. 4 and Ch. 7
-- Broadband pulse propagation -> read Ch. 8, then Ch. 5 or Ch. 6 depending on environment
+- Broadband pulse propagation -> read COA Ch. 8, then Ch. 5 or Ch. 6; add `topics/colosi-stochastic-propagation.md` when random-medium coherence or pulse statistics matter
+- Adiabatic validity -> read `topics/brekhovskikh-waveguide-approximations.md` and compare COA Ch. 5 under their respective assumptions
+- Numerical-model validation -> start with `topics/etter-model-evaluation.md`, then the method note and the relevant benchmark case
 - Matched-field processing sensitivity -> read Ch. 10 plus the propagation note producing the replica field

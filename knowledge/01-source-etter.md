@@ -180,8 +180,8 @@ Built from the PDF's outline. Ranges are inclusive. A section ends on the page w
 
 ## Retrieval guidance
 
-- Read COA's notes first for the physics and numerics of a method. Come here for which models exist and what they need, for noise, reverberation and sonar performance modeling, and for model evaluation.
-- Routes in `routing-map.yaml` list this book's fallback windows next to COA's: `fundamentals`, `ray_methods`, `wavenumber_integration`, `normal_modes`, `parabolic_equations`, `ambient_noise`, `sonar_signal_processing` and `ocean_fluctuations`. For other topics, take the smallest section range from the map above.
+- Use Etter as the primary book for model evaluation, engineering model catalogues, data requirements and sonar-performance workflows. Start at `topics/etter-model-evaluation.md` for quantitative assessment, verification versus validity, and prediction uncertainty. Consult the relevant COA method note for the underlying numerical approximation when the question needs it.
+- Routes in `routing-map.yaml` list this book's targeted windows, including `model_evaluation`, `fundamentals`, `ray_methods`, `wavenumber_integration`, `normal_modes`, `parabolic_equations`, `ambient_noise`, `sonar_signal_processing` and `ocean_fluctuations`. For other topics, take the smallest section range from the map above. Follow `book-selection.md` for proactive cross-book checks; a section title alone is navigation rather than technical evidence.
 - Read page ranges only, never the whole book. Cite the section and the PDF pages read, for example `[textbook: Etter 2018 §11.2, PDF pp. 407-413]`.
 
 ## File anchors
