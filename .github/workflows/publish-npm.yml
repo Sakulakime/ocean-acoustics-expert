@@ -131,13 +131,13 @@ jobs:
         if: inputs.dry_run != true
         working-directory: package
         run: |
-          for attempt in 1 2 3 4 5; do
+          for delay in 0 5 10 20 30 45 60; do
+            if [ "$delay" -gt 0 ]; then sleep "$delay"; fi
             if node ../automation/scripts/npm-release.mjs verify \
               --tag "$RELEASE_TAG" --prerelease "$RELEASE_PRERELEASE" \
               --pack-manifest "$RUNNER_TEMP/npm-pack.json"; then
               exit 0
             fi
-            if [ "$attempt" -lt 5 ]; then sleep 3; fi
           done
           exit 1
 

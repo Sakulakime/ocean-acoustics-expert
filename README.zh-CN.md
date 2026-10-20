@@ -56,7 +56,7 @@ npx --yes ocean-acoustics-expert@latest install
 如需固定版本：
 
 ```sh
-npx --yes github:Sakulakime/ocean-acoustics-expert#v0.2.0 install
+npx --yes ocean-acoustics-expert@0.2.0 install
 ```
 
 Windows 上安装器创建的目录链接使用绝对目标的 junction；POSIX 系统使用目录 symlink。重新安装、`doctor` 和 `uninstall` 兼容已有的相对链接记录。目录链接备份会保留目标并恢复为 junction，即使目标已不存在；文件 symlink 仍需要系统权限。无法仅凭目标路径的命名空间前缀判断缺少目录类型记录的旧失效链接。安装中断后，使用相同平台和模式重新运行修复后的安装器，并检查报告的备份。Linux 回归测试不替代 Windows 实机验证。
