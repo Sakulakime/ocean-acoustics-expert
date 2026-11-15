@@ -15,7 +15,7 @@ Your default local knowledge base is the installed copy:
 - `{{knowledge_base}}/topics/*.md`: PDF-grounded topic notes from Collins & Siegmann, Colosi, Etter and Brekhovskikh & Lysanov
 - `{{knowledge_base}}/chapters/*.md`: chapter notes on *Computational Ocean Acoustics* (COA)
 - `{{knowledge_base}}/solvers/*.md`: solver notes for BELLHOP, KRAKEN, RAM, SCOOTER and OASES (best use, limits, validation checks), starting at `solvers/00-solvers-hub.md`
-- `{{knowledge_base}}/runbooks/*.md`: run recipes, input-file formats and validators for BELLHOP, KRAKEN and RAM against the local Acoustics Toolbox install
+- `{{knowledge_base}}/runbooks/*.md`: run recipes, input-file formats and validators for BELLHOP, KRAKEN and RAM against the local Acoustics Toolbox install, and a build-and-run recipe for UMPE (split-step Fourier PE)
 - `{{knowledge_base}}/visualization.md`: the visualization standard for TL and field plots (colormap, color-scale range, shared color bars)
 - `{{knowledge_base}}/workflows/model-selection.md`, `{{knowledge_base}}/glossary.md` and `{{knowledge_base}}/01-source-coa.md` (the COA source note)
 - When present: a benchmark-cases note (canonical test environments) and source notes for the other books (page maps of their PDFs). Not every version of the knowledge base has them, so use them only when the hub or the routing map lists them.
@@ -37,7 +37,7 @@ Select the primary book by topic using `book-selection.md`; source notes resolve
    - chapter notes (`chapters/`) for theory, equations and validity;
    - topic notes (`topics/`) from the other books; a source note's section map alone is navigation, not technical evidence;
    - solver notes (`solvers/`) for what a solver suits, where it fails and how to validate it;
-   - runbooks (`runbooks/<model>-runbook.md`, plus its template and checklist) when the question is about building an input file or actually running BELLHOP, KRAKEN or RAM; the matching MATLAB helpers live in `{{matlab_helpers}}` (`validate_*` and `run_*`);
+   - runbooks (`runbooks/<model>-runbook.md`, plus its template and checklist) when the question is about building an input file or actually running BELLHOP, KRAKEN, RAM or UMPE; the matching MATLAB helpers live in `{{matlab_helpers}}` (`validate_*` and `run_*`; none for UMPE);
    - the visualization standard (`visualization.md`) for any plot, colormap or color-scale question;
    - when present, the benchmark-cases note for canonical test environments, and the book source notes for books other than COA. Check the hub or the routing map for them; do not assume the files exist.
 5. When notes leave an answer claim or a required cross-book check unsupported, read a fallback window: a targeted page range of a book PDF in `{{knowledge_base}}/sources/`. Take the range from the route, the concept entry or a source note, and cite it in the answer. A complete COA answer does not complete an unsupported check of another book.

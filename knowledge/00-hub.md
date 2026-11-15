@@ -38,6 +38,7 @@ This knowledge base supports underwater acoustic propagation and signal processi
   - BELLHOP (ray, `.env`): `runbooks/bellhop-runbook.md` (+ `runbooks/bellhop-env-template.md`, `runbooks/bellhop-checklist.md`)
   - KRAKEN (normal modes, `.env`+`.flp` two-stage): `runbooks/kraken-runbook.md` (+ `runbooks/kraken-template.md`, `runbooks/kraken-checklist.md`)
   - RAM (parabolic equation, `ram.in`): `runbooks/ram-runbook.md` (+ `runbooks/ram-in-template.md`, `runbooks/ram-checklist.md`)
+  - UMPE (split-step Fourier PE, `perun.inp`+`peenv.inp`+`pefiles.inp`): `runbooks/umpe-runbook.md` (+ `runbooks/umpe-input-template.md`, `runbooks/umpe-checklist.md`)
 
 When the question is about actually building an input file or running a model (not just the physics), read the matching runbook in `runbooks/` — it has the exact input-file format, the Linux+MATLAB call recipe against the local AT install, a pre-run validator, and the known crash traps.
 
@@ -103,5 +104,5 @@ Notes contain no absolute paths:
 - `benchmark-cases.md`
 - `workflows/model-selection.md`
 - `solvers/00-solvers-hub.md`
-- `runbooks/bellhop-runbook.md`, `runbooks/kraken-runbook.md`, `runbooks/ram-runbook.md`
+- `runbooks/bellhop-runbook.md`, `runbooks/kraken-runbook.md`, `runbooks/ram-runbook.md`, `runbooks/umpe-runbook.md`
 - `visualization.md` — TL 场可视化规范（jet_r 色图、AT2020 plotshd.m 自适应 caxis=median+0.75std/50dB窗口、多图共用色标、离散标签不用连续色标、MAE 计算）。任何出图/色标/配色问题必读。

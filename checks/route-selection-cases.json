@@ -968,6 +968,31 @@
       }
     },
     {
+      "name": "runbook - UMPE input files route to the PE route that lists the UMPE runbook",
+      "prompt": "How do I build perun.inp, peenv.inp and pefiles.inp to run UMPE?",
+      "expected": {
+        "concept_key": "parabolic_equation",
+        "bucket": "parabolic_equations",
+        "route_notes": [
+          "topics/collins-pe-extensions.md",
+          "chapters/ch06-parabolic-equations.md",
+          "solvers/solver-ram.md",
+          "runbooks/ram-runbook.md",
+          "runbooks/umpe-runbook.md",
+          "workflows/model-selection.md"
+        ],
+        "primary_notes": [
+          "chapters/ch06-parabolic-equations.md"
+        ],
+        "secondary_notes": [
+          "solvers/solver-ram.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.derivation_and_limits"
+        ]
+      }
+    },
+    {
       "name": "concept - transmission-loss normalization",
       "prompt": "What is the standard transmission-loss normalization?",
       "expected": {
