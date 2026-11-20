@@ -5,6 +5,7 @@
   "match_policy": {
     "normalize_to_lowercase": true,
     "prefer_longest_alias": true,
+    "umpe_operational_precedence": "Prefer UMPE for a run or configuration request tied to a named UMPE deck (perun.inp, peenv.inp or pefiles.inp), including questions about its syntax or format. The deck can be an adjacent attachment. A previous run mentioning the deck does not override a theory question.",
     "when_to_use": "Use when a prompt names a specific concept, subsection idea, or technical term rather than only a broad method family."
   },
   "concepts": [

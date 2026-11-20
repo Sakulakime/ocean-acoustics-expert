@@ -15,7 +15,12 @@ without a decimal point. Detailed rationale and source citations are in
 
 Run `ocean-acoustics-expert validate_umpe_inp <case-dir>` first (defaults to the
 current directory). Exit 0 means the checked records passed; a diagnostic names
-the first bad record. It checks fixed-width numbers, list counts, environment
+the first bad record. For a binary rebuilt with the documented MKS range-index
+patch, add `--patched-range-index`; never use it to suppress a stock-build
+diagnostic. Both modes check actual selected ranges after skip adjustment. If rounding of
+an automatic step could change the selected grid, record an explicit nonzero
+`DZKM` in field 18 and rerun the check; do not just ignore the diagnostic.
+It checks fixed-width numbers, list counts, environment
 blocks and whether basement depth minus sediment thickness leaves water. It
 cannot identify an absolute interface depth that also fits as a thickness;
 compare with independent water depths. Geometry is checked on the input knot
@@ -60,8 +65,9 @@ lengths, build flags, convergence or field accuracy.
 - [ ] `REF. SOUND SPEED` near the depth-averaged water speed?
 - [ ] `MAX COMPUTATIONAL DEPTH` (`HD`) such that the deepest basement is
       above `0.75*HD`, with margin?
-- [ ] Output range window inside `[0, MAXIMUM RANGE]`, depth window inside
-      `[0, HD]`?
+- [ ] Output windows inside `[0, MAXIMUM RANGE]` and `[0, HD]`, and at most
+      1000 actual output ranges? For stock `ex4b`, use `60.00 79.99 2` in a
+      copy; keep the original input for the patched build.
 - [ ] FFT size 0 (auto) or a power of 2 ≤ 4096; range step 0.0 (auto) or not
       larger than the ideal step the log prints?
 

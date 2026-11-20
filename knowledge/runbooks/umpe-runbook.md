@@ -85,8 +85,8 @@ examples:          {{umpe_root}}/examples/ex*/   (perun.inp, peenv.inp, pefiles.
 
 ## Building with modern gfortran
 
-The distributed makefile has `FC = f77` and `FFLAGS = -g`. Four changes make it
-build and run correctly with gfortran 15.2:
+The distributed makefile has `FC = f77` and `FFLAGS = -g`. For a stock
+range-index build with gfortran 15.2:
 
 1. **`FFLAGS = -g -O2 -fno-automatic -std=legacy`.** `-fno-automatic` is the
    one that matters. `phase2` reads the whole environment into local arrays on
@@ -115,9 +115,11 @@ arithmetic IF), which are harmless. On Ubuntu `f77` is a symlink to gfortran,
 so `FC = f77` can stay.
 
 ```bash
-cp -r "{{umpe_root}}" /path/to/umpe_build && cd /path/to/umpe_build
-# apply edits 2 and 3, then:
-make FFLAGS="-g -O2 -fno-automatic -std=legacy"
+build_dir=$(mktemp -d)
+cp "{{umpe_root}}"/*.f "{{umpe_root}}/makefile" "$build_dir/"
+cd "$build_dir"
+# Apply edits 2 and 3 above if the source is not already adapted, then:
+make FC=gfortran FFLAGS="-g -O2 -fno-automatic -std=legacy"
 # debug build: add -fcheck=bounds -ffpe-trap=invalid,zero,overflow
 ```
 
@@ -125,6 +127,42 @@ Observed with the debug flags plus `-fno-automatic`: a 70 km, 150 Hz,
 N = 4096 run finishes cleanly. Its TL matched the plain `-O2` build to within
 0.1 dB in 99.95 % of cells (max difference 2.2 dB), so use the plain build for
 production numbers.
+
+### Preserve the official ex4b input (MKS range-index fix)
+
+Stock v1.1 undercounts some inclusive output windows (`pemp.f:312-321,1036-1039`).
+In `ex4b`, `60.00 80.00 2` selects 60.01, 60.03, …, **80.01 km**: 1001
+records although the log predicts 1000. With bottom TL enabled, accessing
+`TLB(1001)` exceeds the array bound (`pemp.f:19,1132`). The plotting script
+`examples/ex4b/gmtf.t3` expects 1000 ranges × 171 depths.
+
+To keep the three original input files, apply the supplied patch **once in a
+separate build directory** containing the compiler-adapted sources above. The
+patch changes only output indexing; neither the propagation operator nor the
+100-km march changes. Partial windows use `(start, end]` on the actual marched
+metre coordinates. A full window (`end = ZMAX`) keeps the rounded final march
+step, even if that step is slightly beyond the nominal `ZMAX`. Installation never patches `{{umpe_root}}` or its binary.
+
+```bash
+# From that source copy, not the original tree. Verify the stock pemp.f first.
+echo '937cc70b89361cb2a3f3432d681fd51f10530af14750c655537009e1c437f2fd  pemp.f' | sha256sum -c - &&
+  patch --fuzz=0 --forward -p1 < "{{knowledge_base}}/runbooks/patches/umpe-v1.1-mks-range.patch" &&
+  make -B FC=gfortran FFLAGS="-g -O2 -fno-automatic -std=legacy -fcheck=bounds"
+```
+
+From a fresh case directory containing the original `ex4b` inputs, run
+`ocean-acoustics-expert validate_umpe_inp --patched-range-index .` and then
+**that rebuilt binary**. The flag declares which index rule to check; it does
+not detect, patch, or execute a binary. Expect 1000 records from 60.01 to
+79.99 km at 20-m intervals (`tlgmt.bin`: 684000 bytes on the tested build).
+
+If using the stock solver, omit the flag. In a **case copy only**, change
+`perun.inp` line 31 to `60.00 79.99 2` after the colon; leave the 100-km
+propagation maximum alone. Its eight requested outputs matched the patched
+run byte for byte. Raising the skip to 3 is safe but yields only 667 records.
+From a repository checkout, repeat the eight official example checks with
+`python3 scripts/verify-umpe-examples.py <UMPE_ROOT>` (requires Python 3.10+,
+Node.js, gfortran and patch; builds and runs in temporary directories).
 
 ## How to run
 
@@ -246,8 +284,9 @@ Constraints:
   freq and multiple realizations simultaneously." (`pemp.f:540-544`); the
   older comment at `pemp.f:190-193` only says the output "may be meaningless".
 - **At most 1000 output ranges.** If the output window and `NSKIP` give more,
-  the code raises `NSKIP` until they fit and prints "WARNING: Number of range
-  points output cannot exceed 1000." (`pemp.f:312-321`).
+  stock v1.1 raises `NSKIP` based on its *estimated* count (`pemp.f:312-321`),
+  not necessarily the number the march selects. Preflight checks the effective
+  skip and the actual selected count; see the `ex4b` fix above.
 - **`HD` and the sponge.** The deepest quarter of the real-ocean grid is an
   absorbing sponge (manual §8, p. 55 (PDF 57); "deepest 1/4" in
   `examples/ex1a/README`). If the deepest basement depth is at or below
@@ -370,7 +409,7 @@ n_depth = raw.size // n_range
 tl = raw.reshape(n_range, n_depth).T        # rows = depth, cols = range
 ```
 
-- **Range count: take it from `botgmt.dat`, not from the log.** The log's
+- **Range count: take it from `botgmt.dat`, not from the log.** In stock v1.1 the log's
   "RANGE POINTS" is `MZTOT`, a floored count (`pemp.f:314`), while the march
   writes a record at every step that passes the skip test (`pemp.f:1036-1039`).
   Observed: log 974, `tlgmt.bin` and `botgmt.dat` 975, `tldr.001` 974 (the

@@ -1,2 +1,5 @@
 # Book PDFs must never be diffed, merged or line-ending converted.
 *.pdf binary
+
+# Unified-diff context starts with a space followed by the original Fortran tab.
+knowledge/runbooks/patches/*.patch text eol=lf whitespace=-space-before-tab

@@ -8,13 +8,13 @@ import { writeDirectory } from "./helpers/knowledge-base.js";
 const template = readFileSync(new URL("../knowledge/runbooks/umpe-input-template.md", import.meta.url), "utf8");
 const [run, env, files] = [...template.matchAll(/^```\n([\s\S]*?)^```$/gm)].map((match) => match[1].trimEnd().split("\n"));
 
-function preflight(t, { runRows = run, envRows = env, fileRows = files } = {}) {
+function preflight(t, { runRows = run, envRows = env, fileRows = files, args = [] } = {}) {
   const dir = writeDirectory(t, {
     "pefiles.inp": fileRows.join("\r\n"),
     [fileRows[0]]: runRows.join("\r\n"),
     [fileRows[1]]: envRows.join("\r\n"),
   });
-  return runCli(["validate_umpe_inp", dir]);
+  return runCli(["validate_umpe_inp", ...args, dir]);
 }
 
 function parameter(line, value) {
@@ -123,4 +123,78 @@ test("UMPE: single advance cannot skip two sediment knots on an explicit step", 
 test("UMPE: the solver still needs output records when outputs are disabled", (t) => {
   checkError(preflight(t, { fileRows: files.slice(0, 2) }), /44 file-list records/);
   checkError(preflight(t, { fileRows: files.with(37, "0 0") }), /:38: expected 3/);
+});
+
+// Recreate the shipped ex4b range grid without redistributing its input files.
+function rangeDeck(window, extra = {}) {
+  const values = { 18: "0.01", 19: "100.00", 31: window, ...extra };
+  return run.map((row, i) => Object.hasOwn(values, i + 1) ? row.slice(0, 33) + values[i + 1] : row);
+}
+
+const fixedIndex = ["--patched-range-index"];
+
+test("UMPE: stock checks actual selections, including after automatic skip adjustment", (t) => {
+  for (const skip of [1, 2]) {
+    checkError(preflight(t, { runRows: rangeDeck(`60.00 80.00 ${skip}`) }), /perun\.inp:31:.*1001 > 1000.*NSKIP=2/);
+  }
+  for (const [window, expected] of [["60.00 79.99 2", 1000], ["60.00 80.00 3", 667],
+    ["0.00 100.00 10", 1000], ["0.00 100.00 1", 1000], ["0.00 0.29 1", 30]]) {
+    const result = preflight(t, { runRows: rangeDeck(window) });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, new RegExp(`stock: ${expected} output ranges`));
+  }
+});
+
+test("UMPE: fixed MKS indexing preserves the ex4b window, validates empty windows and still checks the deck", (t) => {
+  for (const skip of [1, 2]) {
+    const result = preflight(t, { runRows: rangeDeck(`60.00 80.00 ${skip}`), args: fixedIndex });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /patched: 1000 output ranges.*NSKIP=2/);
+  }
+  checkError(preflight(t, { runRows: rangeDeck("60.00 60.001 2"), args: fixedIndex }), /:31:.*no marched step/);
+  checkError(preflight(t, { runRows: rangeDeck("60.00 80.00 2", { 18: "1" }), args: fixedIndex }), /decimal point/);
+  assert.equal(runCli(["validate_umpe_inp", ...fixedIndex, ...fixedIndex]).status, 2);
+  assert.equal(runCli(["validate_umpe_inp", "--unknown"]).status, 2);
+});
+
+test("UMPE: automatic MKS step uses frequency, bandwidth and source width; stock reports the ex2 phantom row", (t) => {
+  const ex2 = { 18: "0.0", 19: "7.000", 14: "25.000", 23: "60.0000", 24: "20.00000" };
+  for (const args of [[], fixedIndex]) {
+    const result = preflight(t, { runRows: rangeDeck("0.00 7.00 1", ex2), args });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /355 output ranges/);
+    if (!args.length) assert.match(result.stderr, /356.*355/);
+    else assert.doesNotMatch(result.stderr, /356/);
+  }
+  const broadband = preflight(t, { runRows: rangeDeck("0.00 7.00 1", { ...ex2, 15: "2", 16: "50.0" }), args: fixedIndex });
+  assert.equal(broadband.status, 0, broadband.stderr);
+  assert.match(broadband.stdout, /711 output ranges/);
+});
+
+test("UMPE: large stock grids count AMOD aliases, without iterating over every marching step", (t) => {
+  checkError(preflight(t, { runRows: rangeDeck("0.00 100.00 1", { 18: "0.0000000001" }) }), /32-bit/);
+  // Independent gfortran REAL/AMOD loop over 20 million integer indices: 1003 and 1.
+  checkError(preflight(t, { runRows: rangeDeck("0.00 100.00 1", { 18: "0.000005" }) }), /1003 > 1000.*NSKIP=19981/);
+  const sparse = preflight(t, { runRows: rangeDeck("0.00 99.99999 19999999", { 18: "0.000005" }) });
+  assert.equal(sparse.status, 0, sparse.stderr);
+  assert.match(sparse.stdout, /stock: 1 output range/);
+});
+
+
+test("UMPE: patched partial windows compare marched metres; full windows retain the last actual step", (t) => {
+  for (const [window, dz, maximum, count] of [
+    ["0.012 0.018 1", "0.006", "1.0", 1], ["0.018 0.024 1", "0.006", "1.0", 1],
+    ["0.00 1.006 1", "0.01", "1.006", 101], ["0.00 1.005 1", "0.01", "1.006", 100],
+  ]) {
+    const result = preflight(t, { runRows: rangeDeck(window, { 18: dz, 19: maximum }), args: fixedIndex });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, new RegExp(`patched: ${count} output range`));
+  }
+});
+
+test("UMPE: a platform-sensitive automatic step cannot certify an ambiguous index", (t) => {
+  const auto = { 18: "0.0", 19: "1.0", 14: "150.0", 23: "30.38", 24: "0.0" };
+  for (const args of [[], fixedIndex]) {
+    checkError(preflight(t, { runRows: rangeDeck("0 0.124453753 1", auto), args }), /automatic.*explicit.*step/i);
+  }
 });

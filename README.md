@@ -140,7 +140,7 @@ Run each command as `npx --yes ocean-acoustics-expert@latest <command>`, or as `
 | Command | What it does |
 |---|---|
 | `install` | Installs or updates the expert. Asks which harnesses on a terminal. Options: `--harness <name>`, `--mode link\|copy`, `--dry-run`, `--yes`, `--at-2023 <dir>`, `--at-2020 <dir>`, `--umpe-root <dir>`. Exits 130 when cancelled. |
-| `validate_umpe_inp [case-dir]` | Read-only preflight of the two input decks named in `pefiles.inp`. Does not run UMPE. |
+| `validate_umpe_inp [--patched-range-index] [case-dir]` | Read-only UMPE input and range-count checks. Defaults to stock v1.1; select the flag only for the rebuilt [MKS range-index fix](knowledge/runbooks/umpe-runbook.md#preserve-the-official-ex4b-input-mks-range-index-fix). Does not run or modify UMPE. |
 | `status` | Shows the installed version, mode, harnesses, data folder, local path map, and how many files, links and backups the manifest lists. |
 | `doctor` | Diagnoses the installation and changes nothing. It prints a `FAIL` line for each problem and exits non-zero when there is one; a `WARN` line does not fail it. |
 | `check` | Lints a knowledge base and runs the route-selection cases. It is for people editing the knowledge base. Options: `--kb <dir>`, `--cases <file>`, `--helpers <dir>`. |

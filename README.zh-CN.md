@@ -130,7 +130,7 @@ node bin/ocean-acoustics-expert.js install
 | 命令 | 作用 |
 |---|---|
 | `install` | 安装或更新专家。在终端中会询问安装平台。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--yes`、`--at-2023 <dir>`、`--at-2020 <dir>`、`--umpe-root <dir>`。取消时退出码为 130。 |
-| `validate_umpe_inp [case-dir]` | 只读校验 `pefiles.inp` 指向的运行参数和环境文件，不运行 UMPE。 |
+| `validate_umpe_inp [--patched-range-index] [case-dir]` | 只读校验 UMPE 输入和实际输出距离点数，默认按原版 v1.1 检查。仅在使用[公制距离索引补丁](knowledge/runbooks/umpe-runbook.md#preserve-the-official-ex4b-input-mks-range-index-fix)重新编译后指定该选项；不会运行或修改 UMPE。 |
 | `status` | 显示已安装的版本、模式、平台、数据文件夹、本地路径映射，以及清单列出的文件、链接和备份的数量。 |
 | `doctor` | 诊断安装并且不更改任何内容。每个问题打印一行 `FAIL`，有问题时以非零值退出；`WARN` 行不会导致失败。 |
 | `check` | 检查知识库并运行路由选择用例。用于编辑知识库的人。选项：`--kb <dir>`、`--cases <file>`、`--helpers <dir>`。 |

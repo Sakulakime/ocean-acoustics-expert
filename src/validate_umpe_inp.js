@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+import { automaticRangeSteps, lastStepAt, outputRanges } from "./umpe-range.js";
+
 // UMPE v1.1: pemp.f:158-252 and phase2.f:84-283. Keep records separate:
 // a list-directed READ can span lines, but the next READ starts a new record.
 function records(file) {
@@ -21,9 +23,9 @@ function integer(token, at, name, min, max) {
 }
 
 function real(token, at) {
-  const value = Number(token?.replace(/[dD]/, "e"));
+  const value = Math.fround(Number(token?.replace(/[dD]/, "e")));
   need(/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][+-]?\d+)?$/.test(token) && Number.isFinite(value),
-    at, `expected a real number, got ${token}`);
+    at, `expected a finite Fortran REAL number, got ${token}`);
   return value;
 }
 
@@ -36,7 +38,7 @@ const switches = new Map([
   [8, [1, 99999]], [9, [0, 1]], [15, [1, 512]], [17, [0, 4096]],
 ]);
 
-function readRun(file) {
+function readRun(file, patched) {
   const rows = records(file);
   need(rows.length === 32, file, `expected 32 parameter records, got ${rows.length}`);
   const params = {};
@@ -67,7 +69,8 @@ function readRun(file) {
       const start = real(fields[0], at), end = real(fields[1], at);
       const limit = params[line === 31 ? 19 : 20];
       need(0 <= start && start <= end && end <= limit, at, `output window must be ordered within [0, ${limit}]`);
-      integer(fields[2], at, "output skip", 1, 2147483647);
+      const skip = integer(fields[2], at, "output skip", 1, 2147483647);
+      if (line === 31) params[line] = { start, end, skip };
     }
   }
   // pemp.f:572-582 silently changes a non-power-of-two frequency count.
@@ -79,7 +82,17 @@ function readRun(file) {
   need(params[18] >= 0 && params[19] > 0, rows[18].at, "forward march requires nonnegative range step and positive maximum range");
   need(params[17] === 0 || (params[17] >= 4 && (params[17] & (params[17] - 1)) === 0), rows[16].at,
     "specify automatic FFT size (0) or a power of two from 4 through 4096");
-  return { hd: params[20], step: params[18], maxRange: params[19] };
+  const maxRange = params[19];
+  const step = Math.fround(params[18]);
+  const steps = step ? [step] : automaticRangeSteps({
+    speed: params[13], frequency: params[14], nfreq: params[15], bandwidth: params[16], rms: params[23], taper: params[24],
+  });
+  try {
+    const ranges = outputRanges({ ...params[31], maxRange, patched }, steps);
+    return { hd: params[20], step: params[18], maxRange, ranges, windowAt: rows[30].at };
+  } catch (error) {
+    throw new Error(`${rows[30].at}: ${error.message}`);
+  }
 }
 
 // Each interface is linear between its own knots and constant beyond its last.
@@ -92,6 +105,12 @@ function atRange(curve, r) {
 
 function readEnvironment(file, { hd, step, maxRange }) {
   const rows = records(file);
+  const f = Math.fround;
+  // pemp.f:277,564,837-846. Check the whole march, not just the output window.
+  // For DZKM=0 the solver chooses the step; knot crossings still need manual
+  // verification with the actual solver step, independent of output indexing.
+  const nz = step > 0 ? Math.trunc(f(f(maxRange / step) + 0.5)) : 0;
+  need(!nz || Number.isFinite(f(f(1000 * step) * f(nz))), file, "explicit march range must be finite in REAL meters");
   let cursor = 0;
   function take(name, size) {
     while (cursor < rows.length && !rows[cursor].text.trim()) cursor++;
@@ -105,22 +124,26 @@ function readEnvironment(file, { hd, step, maxRange }) {
     const { fields, at } = take(name, 1);
     return integer(fields[0], at, name, min, max);
   }
-  function range(r, previous, at) {
-    need(previous === undefined ? r === 0 : r > previous, at, "ranges must start at zero and strictly increase");
-    // phase2.f advances each cursor only once per step. Do not conflate
-    // distinct input knots with distinct steps on an explicitly supplied grid.
-    if (step > 0 && previous > 0 && r <= maxRange) {
-      need(Math.ceil(r / step) !== Math.ceil(previous / step), at, "one range step crosses multiple knots of the same environment list");
+  function range(token, previous, at) {
+    const km = real(token, at);
+    const r = f(1000 * km);
+    need(Number.isFinite(r), at, "range must be finite in REAL meters");
+    need(previous === undefined ? r === 0 : r > previous.r, at, "ranges must start at zero and strictly increase in REAL meters");
+    // phase2.f converts knots to meters and advances each cursor at most once
+    // per step, on equality as well as overshoot. The zero knot is initialized
+    // separately; nz + 1 denotes a knot that the march never reaches.
+    const crossing = nz && r > 0 ? lastStepAt(nz, step, km, false) + 1 : 0;
+    if (crossing > 0 && crossing <= nz) {
+      need(crossing !== previous?.crossing, at, "one range step crosses multiple knots of the same environment list");
     }
+    return { r, crossing };
   }
   count("ISEED", -2147483648, 2147483647);
   const profiles = count("NSS", 1, 100);
   let lastRange;
   for (let i = 0; i < profiles; i++) {
     const { fields, at } = take("SSP header", 2);
-    const r = real(fields[0], at);
-    range(r, lastRange, at);
-    lastRange = r;
+    lastRange = range(fields[0], lastRange, at);
     const n = integer(fields[1], at, "NSSD", 1, 512);
     const profile = [];
     while (profile.length < 2 * n) {
@@ -145,10 +168,10 @@ function readEnvironment(file, { hd, step, maxRange }) {
     const points = [];
     for (let i = 0; i < n; i++) {
       const { fields, at } = take(`${name} row`, width);
-      const [r, z] = fields.map((v) => real(v, at));
-      range(r, points.at(-1)?.r, at);
+      const knot = range(fields[0], points.at(-1), at);
+      const [z] = fields.slice(1).map((v) => real(v, at));
       if (name === "NBS") need(z >= 0, at, "negative sediment thickness; use zero for no sediment");
-      points.push({ r, z, at });
+      points.push({ ...knot, z, at });
     }
     return points;
   }
@@ -162,7 +185,7 @@ function readEnvironment(file, { hd, step, maxRange }) {
     const bd = atRange(basement, r);
     const thickness = sediment.length ? atRange(sediment, r) : 0;
     need(bd < hd, at, `basement depth ${bd} must be inside HD=${hd}`);
-    need(bd > thickness, at, `at range ${r}, basement depth ${bd} minus sediment thickness ${thickness} leaves no water`);
+    need(bd > thickness, at, `at range ${r / 1000} km, basement depth ${bd} minus sediment thickness ${thickness} leaves no water`);
   }
 }
 
@@ -186,12 +209,15 @@ function checkFileList(rows, file) {
 
 /** Validate a run directory without opening output files or executing UMPE. */
 export function validateUmpeCase(args) {
-  if (args.length > 1 || args[0]?.startsWith("-")) {
-    console.error("Usage: ocean-acoustics-expert validate_umpe_inp [case-dir]");
+  const patched = args.includes("--patched-range-index");
+  const positional = args.filter(arg => arg !== "--patched-range-index");
+  if (positional.length > 1 || positional.some(arg => arg.startsWith("-")) ||
+      args.length !== positional.length + Number(patched)) {
+    console.error("Usage: ocean-acoustics-expert validate_umpe_inp [--patched-range-index] [case-dir]");
     return 2;
   }
   try {
-    const dir = resolve(args[0] ?? ".");
+    const dir = resolve(positional[0] ?? ".");
     const file = resolve(dir, "pefiles.inp");
     const rows = records(file);
     function input(i) {
@@ -199,10 +225,14 @@ export function validateUmpeCase(args) {
       need(name && Buffer.byteLength(name) <= 50, `${file}:${i + 1}`, "expected an input filename fitting A50");
       return resolve(dir, name);
     }
-    const grid = readRun(input(0));
+    const grid = readRun(input(0), patched);
     readEnvironment(input(1), grid);
     checkFileList(rows, file);
-    console.log("UMPE input preflight passed (file list, parameter and environment records).");
+    const { count, reported, skip } = grid.ranges;
+    if (reported !== count) {
+      console.warn(`${grid.windowAt}: stock UMPE reports ${reported} ranges but selects ${count}; TL line and field lengths can differ.`);
+    }
+    console.log(`UMPE input preflight passed (${patched ? "patched" : "stock"}: ${count} output ranges, effective NSKIP=${skip}).`);
     return 0;
   } catch (error) {
     console.error(error.message);
