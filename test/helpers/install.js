@@ -59,6 +59,10 @@ export const LEGACY_FILES = {
 
 /** Toolbox trees as laid out on the author's machine, with look-alikes that must not match. */
 export const TOOLBOXES = {
+  "Tools/PE/source/pemp.f": "",
+  "Tools/PE/source/phase2.f": "",
+  "Tools/PE/source/makefile": "",
+  "Tools/PE/UMPE/pemp.f": "", // Incomplete tree must not match.
   "Tools/AT/atWin10_2020_11_4/linux-bin/bellhop.exe": "elf",
   "Tools/AT/atWin10_2020_11_4/Matlab/Plot/plotshd.m": "% plotshd",
   "Tools/AT/atWin10_2020_11_4/RAM/ram.exe": "elf",

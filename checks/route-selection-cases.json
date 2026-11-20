@@ -971,24 +971,25 @@
       "name": "runbook - UMPE input files route to the PE route that lists the UMPE runbook",
       "prompt": "How do I build perun.inp, peenv.inp and pefiles.inp to run UMPE?",
       "expected": {
-        "concept_key": "parabolic_equation",
+        "concept_key": "umpe",
         "bucket": "parabolic_equations",
         "route_notes": [
           "topics/collins-pe-extensions.md",
           "chapters/ch06-parabolic-equations.md",
           "solvers/solver-ram.md",
           "runbooks/ram-runbook.md",
+          "solvers/solver-umpe.md",
           "runbooks/umpe-runbook.md",
           "workflows/model-selection.md"
         ],
         "primary_notes": [
-          "chapters/ch06-parabolic-equations.md"
+          "solvers/solver-umpe.md"
         ],
         "secondary_notes": [
-          "solvers/solver-ram.md"
+          "runbooks/umpe-runbook.md"
         ],
         "fallback_windows": [
-          "parabolic_equations.derivation_and_limits"
+          "parabolic_equations.starters_and_split_step"
         ]
       }
     },

@@ -11,7 +11,7 @@ Operational guide for building and running UMPE (University of Miami
 Parabolic Equation, Kevin B. Smith, v1.1, 1994), a split-step Fourier PE model
 in Fortran 77, on a Linux workstation with a modern gfortran, and for reading
 its `tlgmt.bin` / `botgmt.dat` / `tldr.NNN` outputs. For physics background see
-`../chapters/ch06-parabolic-equations.md`; for the RAM counterpart see
+`../solvers/solver-umpe.md` and `../chapters/ch06-parabolic-equations.md`; for the RAM counterpart see
 `ram-runbook.md`.
 
 Provenance. Every format statement below was checked against the Fortran source
@@ -53,7 +53,8 @@ depth, with FFTs between them (manual §11, p. 64 (PDF 66)). Pick it for:
   (wind speed), plus an equivalent bubble layer, with several random
   realizations averaged incoherently (manual p. 70 (PDF 72); `phase2.f:222-283`).
 - **Broadband runs.** Several frequencies across a band, Fourier-synthesized
-  into time-domain TL at up to 4 ranges (`pemp.f:242-244`; manual §5).
+  into time-domain TL (manual §5). Use up to three ranges with the unmodified
+  source; the fourth slot is needed for a sentinel (`pemp.f:242-244,569`).
 
 Compared with RAM (`ram-runbook.md`):
 
@@ -72,14 +73,14 @@ Compared with RAM (`ram-runbook.md`):
 
 ## Environment and paths
 
-UMPE is not part of the Acoustics Toolbox and the knowledge base defines no
-logical name for its folder yet. Below, `/path/to/UMPE` stands for the
-unpacked source tree that holds `pemp.f`, `makefile` and `UMPE.pdf`.
+UMPE is independent of the Acoustics Toolbox. Resolve `{{umpe_root}}` through
+`local-paths.yaml` before using these recipes. If it is unset, reinstall with
+`--umpe-root <dir>` pointing to the unpacked source (not the executable or a case).
 
 ```
-source + makefile: /path/to/UMPE/*.f, /path/to/UMPE/makefile
-manual:            /path/to/UMPE/UMPE.pdf   (sections 11 and 12)
-examples:          /path/to/UMPE/examples/ex*/   (perun.inp, peenv.inp, pefiles.inp, README)
+source + makefile: {{umpe_root}}/*.f, {{umpe_root}}/makefile
+manual:            {{umpe_root}}/UMPE.pdf   (sections 11 and 12)
+examples:          {{umpe_root}}/examples/ex*/   (perun.inp, peenv.inp, pefiles.inp, README)
 ```
 
 ## Building with modern gfortran
@@ -114,7 +115,7 @@ arithmetic IF), which are harmless. On Ubuntu `f77` is a symlink to gfortran,
 so `FC = f77` can stay.
 
 ```bash
-cp -r /path/to/UMPE /path/to/umpe_build && cd /path/to/umpe_build
+cp -r "{{umpe_root}}" /path/to/umpe_build && cd /path/to/umpe_build
 # apply edits 2 and 3, then:
 make FFLAGS="-g -O2 -fno-automatic -std=legacy"
 # debug build: add -fcheck=bounds -ffpe-trap=invalid,zero,overflow
@@ -135,7 +136,7 @@ and the environment file (`pemp.f:76-81`). Only `pefiles.inp` has a fixed name
 ```bash
 mkdir -p /path/to/umpe_run && cd /path/to/umpe_run
 cp /path/to/case/perun.inp /path/to/case/peenv.inp /path/to/case/pefiles.inp .
-/path/to/umpe_build/umpe > umpe.log 2>&1
+ocean-acoustics-expert validate_umpe_inp . && /path/to/umpe_build/umpe > umpe.log 2>&1
 grep -n "ERROR\|WARNING" umpe.log      # must be empty or understood
 tail -2 umpe.log                       # last line: STOP : <date>
 ls -l tlgmt.bin botgmt.dat tldr.001
@@ -155,6 +156,10 @@ ls -l tlgmt.bin botgmt.dat tldr.001
   message and returns (`phase2.f:100-104`), but the run then crashed with
   SIGSEGV (observed), and the buffered message was lost from the log.
 - Outputs are overwritten in place: use one directory per case.
+
+The read-only `validate_umpe_inp` command follows the first two filenames in
+`pefiles.inp` and checks the parameter and environment records before a run.
+See `umpe-checklist.md` for its scope and the remaining manual checks.
 
 ## perun.inp: run parameters
 
@@ -180,7 +185,9 @@ stopped with "ERROR IN SPECIFIED OUTPUT RANGES" (observed), because an
 point.
 
 Fields in order (`pemp.f:166-252`; manual pp. 69-71 (PDF 71-73)). Units shown
-are for `units = 1`; `units = 2` uses ft, ft/s and nm instead.
+are for `units = 1`. The manual also specifies ft, ft/s and nm (`units = 2`),
+but the unmodified English-units branch does not initialize the range-step
+count `NZ` used by the march (`pemp.f:277,390-528,837`). Use MKS for runs.
 
 | # | Label | Meaning |
 |---|---|---|
@@ -198,7 +205,7 @@ are for `units = 1`; `units = 2` uses ft, ft/s and nm instead.
 | 12 | `SOURCE DEPTH (m,ft)` | positive down |
 | 13 | `REF. SOUND SPEED (m/s,ft/s)` | \(c_0\), constant for the run |
 | 14 | `CENTER FREQUENCY (Hz)` | |
-| 15 | `NUMBER OF FREQUENCIES` | 1 = CW |
+| 15 | `NUMBER OF FREQUENCIES` | 1 = CW; request a power of two up to 512 to preserve the frequency count (`pemp.f:572-582`) |
 | 16 | `FREQUENCY BANDWIDTH (Hz)` | used only when field 15 > 1 |
 | 17 | `FFT TRANSFORM SIZE` | 0 = automatic; rounded up to a power of 2, max 4096 for units 1 |
 | 18 | `RANGE STEP SIZE (km,nm)` | 0.0 = automatic |
@@ -210,7 +217,7 @@ are for `units = 1`; `units = 2` uses ft, ft/s and nm instead.
 | 24 | `SOURCE TAPER WIDTH (DEG)` | taper beyond field 23; keep 23 + 24 ≤ 90 ("cannot specify more than that", `examples/ex1a/README`; the code does not check it) |
 | 25-27 | `DENSITY MIX`, `SSPEED MIX`, `SURF LOSS FCTN WIDTH` | in depth cells; 0.0 = automatic |
 | 28 | `# TL DEPTHS, TL DEPTHS (m,ft)` | count ≤ 10, then the depths (`pemp.f:238-240`) |
-| 29 | `# BB RANGES, BB RANGES (km,nm)` | count ≤ 4, then the ranges (`pemp.f:242-244`) |
+| 29 | `# BB RANGES, BB RANGES (km,nm)` | reader accepts ≤ 4, but use ≤ 3: the sentinel `ZTIME(NZTL+1)` also needs a slot (`pemp.f:22,242-244,569`) |
 | 30 | `BB EXTRACTION DEPTH (m,ft)` | broadband only |
 | 31 | `MIN, MAX OUTPUT RANGE, NSKIP` | output range window and range-step decimation |
 | 32 | `MIN, MAX OUTPUT DEPTH, NSKIP` | output depth window and depth-cell decimation |
@@ -302,7 +309,7 @@ Counts and limits:
   (`phase2.f:310-314,328-336,350-358`).
 - Each sound-speed profile holds at most 512 depth points (`SS(512,101)`,
   `phase2.f:35`), and the read does not check `NSSD` against it
-  (`phase2.f:106-110`).
+  (`phase2.f:106-110`). If the last depth is below `HD` numerically, allow at most 511 input points: extending to `HD` writes one more (`phase2.f:118-122`).
 - **Ranges after the first entry must be > 0 and increasing.** The end of each
   range list is found at the first entry after the first whose range is ≤ 0
   (`phase2.f:298,320,342,362,371`), so a repeated `0.0` silently truncates

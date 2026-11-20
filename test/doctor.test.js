@@ -125,11 +125,11 @@ test("doctor warns about a toolbox that is not set but passes", (t) => {
   const result = runDoctor(pkg, home);
 
   assert.equal(result.status, 0, result.stderr);
-  for (const name of ["at_2023", "at_2020"]) {
+  for (const name of ["at_2023", "at_2020", "umpe_root"]) {
     const flag = `--${name.replace("_", "-")}`;
     assert.ok(result.stderrLines.includes(`WARN local path map: ${name} is not set on this machine; reinstall with ${flag} <dir>`), result.stderr);
   }
-  assert.equal(result.stdoutLines.at(-2), "doctor found no problems; 2 warnings.");
+  assert.equal(result.stdoutLines.at(-2), "doctor found no problems; 3 warnings.");
 });
 
 test("doctor fails when a path-map entry no longer exists or the path map is unreadable", async (t) => {

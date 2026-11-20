@@ -361,6 +361,14 @@
       "fallback_windows": ["parabolic_equations.derivation_and_limits"]
     },
     {
+      "key": "umpe",
+      "aliases": ["UMPE", "perun.inp", "peenv.inp", "pefiles.inp"],
+      "bucket": "parabolic_equations",
+      "primary_notes": ["solvers/solver-umpe.md"],
+      "secondary_notes": ["runbooks/umpe-runbook.md"],
+      "fallback_windows": ["parabolic_equations.starters_and_split_step"]
+    },
+    {
       "key": "split_step_fourier",
       "aliases": ["split-step fourier", "split step fourier", "split-step pe", "split step pe", "分步傅里叶"],
       "bucket": "parabolic_equations",

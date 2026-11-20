@@ -20,7 +20,7 @@
  * How to recognise a toolbox folder. Several toolbox versions share a layout,
  * so the folder name must also carry the version.
  * @typedef {object} ToolboxSignature
- * @property {string} nameIncludes Text the folder's name contains.
+ * @property {string} [nameIncludes] Text the folder's name contains.
  * @property {string[]} files Files the folder holds, relative to it.
  */
 
@@ -40,6 +40,11 @@ export const LOCAL_PATHS = [
     description:
       "Acoustics Toolbox 2020 tree (atWin10_2020_11_4); holds the MATLAB scripts in Matlab/ (plotting included) and the BELLHOP and KRAKEN binaries in linux-bin/",
     detect: { nameIncludes: "2020", files: ["linux-bin/bellhop.exe", "Matlab/Plot/plotshd.m"] },
+  },
+  {
+    name: "umpe_root",
+    description: "Unpacked UMPE source tree (not an Acoustics Toolbox binary)",
+    detect: { files: ["pemp.f", "phase2.f", "makefile"] },
   },
   {
     name: "matlab_helpers",

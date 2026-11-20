@@ -18,5 +18,6 @@ function paths = oae_local_paths( )
 %                RAM binary at RAM/ram.exe.
 
     paths.at_2020 = '/path/to/atWin10_2020_11_4';
+    paths.umpe_root = ''; % Optional independent UMPE source tree.
     paths.at_2023 = '/path/to/at_2023';
 end

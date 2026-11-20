@@ -394,7 +394,7 @@ test("check rejects the retired Zotero storage logical name", (t) => {
 });
 
 test("check accepts every logical name of the local path map", (t) => {
-  const names = ["knowledge_base", "at_2023", "at_2020", "matlab_helpers", "authoring_root"];
+  const names = ["knowledge_base", "at_2023", "at_2020", "umpe_root", "matlab_helpers", "authoring_root"];
   const kb = writeKnowledgeBase(t, {
     "runbooks/run.md": names.map((name) => `- \`{{${name}}}/sub/dir\``).join("\n"),
   });

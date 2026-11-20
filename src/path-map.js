@@ -98,7 +98,7 @@ function findToolboxes(home, entries) {
       const path = join(dir, child.name);
       for (const entry of entries) {
         const { nameIncludes, files } = entry.detect;
-        if (child.name.includes(nameIncludes) && files.every((file) => existsSync(join(path, file)))) {
+        if ((!nameIncludes || child.name.includes(nameIncludes)) && files.every((file) => existsSync(join(path, file)))) {
           found.get(entry.name).push(path);
         }
       }
@@ -152,7 +152,7 @@ export function renderMatlabConfig(paths) {
   );
   return [
     "function paths = oae_local_paths( )",
-    "% OAE_LOCAL_PATHS  Acoustics Toolbox locations on this machine.",
+    "% OAE_LOCAL_PATHS  Local solver locations on this machine.",
     "%",
     "%   Written by ocean-acoustics-expert install from its local path map; do",
     `%   not edit. Reinstall with ${flags} to change a location.`,

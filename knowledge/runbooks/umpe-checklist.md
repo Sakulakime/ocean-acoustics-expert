@@ -13,6 +13,19 @@ sediment depth typed where a thickness belongs, and a real number written
 without a decimal point. Detailed rationale and source citations are in
 `umpe-runbook.md`; annotated input files are in `umpe-input-template.md`.
 
+Run `ocean-acoustics-expert validate_umpe_inp <case-dir>` first (defaults to the
+current directory). Exit 0 means the checked records passed; a diagnostic names
+the first bad record. It checks fixed-width numbers, list counts, environment
+blocks and whether basement depth minus sediment thickness leaves water. It
+cannot identify an absolute interface depth that also fits as a thickness;
+compare with independent water depths. Geometry is checked on the input knot
+grids, not by simulating roughness or marching. With an automatic range step,
+check the resolved step against knot spacings in the log. The preflight accepts
+the plain numeric layout of `umpe-input-template.md` (one interface row per
+line, no comments or Fortran repetition syntax), not every list-directed dialect.
+It checks `pefiles.inp` record structure, not output selection, derived record
+lengths, build flags, convergence or field accuracy.
+
 ## Build
 
 - [ ] Binary built with `-fno-automatic` (plus `-O2 -std=legacy`)?
@@ -33,15 +46,15 @@ without a decimal point. Detailed rationale and source citations are in
 
 - [ ] Exactly 32 lines, labels unchanged, colon in column 33, value from
       column 34?
-- [ ] Every real value written with a decimal point (`70.0`, not `70`)?
+- [ ] Every fixed-width real value written with a decimal point (`70.0`, not `70`)?
 - [ ] Integer switches within columns 34-38?
-- [ ] PE type 1-5, density smoothing 1-2, starting field 1-3, units 1-2?
+- [ ] PE type 1-5, density smoothing 1-2, starting field 1-3, units 1 for the unmodified source?
 - [ ] Units 1 means ranges in km and depths in m everywhere, in both input
       files?
 - [ ] Not both `# OF ROUGHNESS REALIZATIONS` > 1 and `NUMBER OF FREQUENCIES`
       > 1 (the run aborts)?
 - [ ] If PE type 3: aware the code uses the LOGPE kinetic operator there?
-- [ ] `# TL DEPTHS` ≤ 10 and `# BB RANGES` ≤ 4?
+- [ ] `# TL DEPTHS` ≤ 10 and `# BB RANGES` ≤ 3 (one of four slots is needed for the sentinel)?
 - [ ] `RMS SOURCE WIDTH + SOURCE TAPER WIDTH` ≤ 90° (example README; not
       checked by the code)?
 - [ ] `REF. SOUND SPEED` near the depth-averaged water speed?
@@ -58,7 +71,7 @@ without a decimal point. Detailed rationale and source citations are in
       rows, `NSB` + rows?
 - [ ] `NSS` and `NB` in 1-100; `NBS`, `NS`, `NSB` in 0-100?
 - [ ] Each SSP block header is `ZV(km) NSSD`, first profile at `ZV = 0.0`?
-- [ ] Each profile ≤ 512 depth points (not checked by the code)?
+- [ ] Each profile ≤ 512 depth points, or ≤ 511 when the code appends `HD`?
 - [ ] Every basement and sediment row has all 10 fields?
 - [ ] **Sediment second field is a THICKNESS (m), not a depth?**
 - [ ] With sediment, basement `BD` = water depth + sediment thickness?
