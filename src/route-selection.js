@@ -45,9 +45,13 @@ const REQUEST_PREFIX_ZH = /请|怎么|如何|怎样|能否|应该|需要|该/u;
 // temporal conjunction, not at a question word inside a phrase like 什么格式.
 const AFTER_SETUP_ZH = /[之以]后\s*|后\s*(?=为什么|为何|如何|怎么|怎样|请问|应该|需要|什么|哪种)/u;
 
-function mainRequest(clause) {
+function mainRequest(clause, hasDeck) {
   const boundary = AFTER_SETUP_ZH.exec(clause);
-  if (!boundary || !ACTION_ZH.test(clause.slice(0, boundary.index))) return clause;
+  if (!boundary) return clause;
+  const setup = clause.slice(0, boundary.index);
+  // Strip a completed deck action, not a time modifier inside a directive
+  // (如何把运行之后测得的 ... 写入 ...). A polite 请问 can still introduce history.
+  if (!hasDeck(setup) || !ACTION_ZH.test(setup) || /^(?:如何|怎么|怎样|能否|可否|请(?:把|将|帮|教))/u.test(setup)) return clause;
   const main = clause.slice(boundary.index + boundary[0].length);
   return ASK.test(main) ? main : clause;
 }
@@ -97,7 +101,7 @@ export function resolveConcept(prompt, concepts) {
     const clauses = text.split(CLAUSE_BREAK).map((s) => s.trim()).filter(Boolean);
     // Keep the original clause for the deck identity, but only the main
     // request supplies intent and competing concepts.
-    const requests = clauses.map(mainRequest);
+    const requests = clauses.map((s) => mainRequest(s, hasDeck));
     const questions = requests.filter((s) => ASK.test(s));
     const deckClauses = clauses.map(hasDeck);
     const locators = clauses.map((s, i) => deckClauses[i] && LOCATOR_PATH.test(s.replace(LOCATOR_LABEL, "")));

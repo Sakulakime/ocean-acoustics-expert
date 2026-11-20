@@ -45,6 +45,8 @@ for (const [name, prompt, expected] of [
   ["completed deck setup before why", "在 peenv.inp 中设置好声速剖面后为什么声速剖面会导致折射？", "sound_speed_profile"],
   ["same setup with a comma", "在 peenv.inp 中设置好声速剖面后，为什么声速剖面会导致折射？", "sound_speed_profile"],
   ["completed run before a short theory question", `运行 ${deck} 之后为何 SSP 会影响折射？`, "sound_speed_profile"],
+  ["temporal modifier inside a write request", "如何把运行之后测得的 sound speed profile 写入 peenv.inp？", "umpe"],
+  ["temporal modifier after an already-named deck", `如何在 ${deck} 中填写运行之后测得的 sound speed profile？`, "umpe"],
   ["what format in the configuration clause", `在 ${deck} 里应把 sound speed profile 设置为什么格式？`, "umpe"],
   ["format request following setup", `在 ${deck} 里设置好频率后应该用什么格式填写 sound speed profile？`, "umpe"],
   ["why the deck requires a particular format", `在 ${deck} 里设置好频率后为什么 sound speed profile 必须用这种格式？`, "umpe"],
