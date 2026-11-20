@@ -36,7 +36,8 @@ The data folder holds:
 
 ## Requirements
 
-- Node.js 22 or later.
+- Node.js 22 or later. The UMPE input validator needs no Fortran compiler or MATLAB.
+- To build UMPE on Linux, supply the UMPE v1.1 source, `gfortran` and `make`. The optional `ex4b` fix also needs `patch`; replaying UMPE's own examples with the repository verification script requires Python 3.10+.
 - Optional: git, for installing from GitHub or working in a checkout.
 - Optional: your own PDFs of the five books, for the book fallback (see [Books](#books)).
 - For the book fallbacks of Codex and DeepSeek-TUI: `pdftotext` from poppler-utils.
@@ -56,7 +57,7 @@ Rerun the install command to update. After the package maintainer completes the 
 To pin a version:
 
 ```sh
-npx --yes ocean-acoustics-expert@0.2.0 install
+npx --yes ocean-acoustics-expert@0.3.0 install
 ```
 
 On Windows, installer-owned directory links use junctions with absolute targets;

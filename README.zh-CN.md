@@ -36,7 +36,8 @@
 
 ## 系统要求
 
-- Node.js 22 或更高版本。
+- Node.js 22 或更高版本。仅校验 UMPE 输入不需要 Fortran 编译器或 MATLAB。
+- 在 Linux 上编译 UMPE 需自备 UMPE v1.1 源码、`gfortran` 和 `make`。应用可选的 `ex4b` 补丁还需 `patch`；从本仓库复测 UMPE 自带算例还需 Python 3.10+。
 - 可选：git，用于从 GitHub 安装或使用仓库检出。
 - 可选：你自己的五本书的 PDF，用于书籍回退（参见[书籍](#书籍)）。
 - 对于 Codex 和 DeepSeek-TUI 的书籍回退：来自 poppler-utils 的 `pdftotext`。
@@ -56,7 +57,7 @@ npx --yes ocean-acoustics-expert@latest install
 如需固定版本：
 
 ```sh
-npx --yes ocean-acoustics-expert@0.2.0 install
+npx --yes ocean-acoustics-expert@0.3.0 install
 ```
 
 Windows 上安装器创建的目录链接使用绝对目标的 junction；POSIX 系统使用目录 symlink。重新安装、`doctor` 和 `uninstall` 兼容已有的相对链接记录。目录链接备份会保留目标并恢复为 junction，即使目标已不存在；文件 symlink 仍需要系统权限。无法仅凭目标路径的命名空间前缀判断缺少目录类型记录的旧失效链接。安装中断后，使用相同平台和模式重新运行修复后的安装器，并检查报告的备份。Linux 回归测试不替代 Windows 实机验证。

@@ -1,6 +1,6 @@
 {
   "name": "ocean-acoustics-expert",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Underwater-acoustics expert agent and knowledge base, installable into Claude Code, Codex and OpenCode",
   "type": "module",
   "bin": {
