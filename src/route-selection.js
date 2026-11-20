@@ -44,16 +44,18 @@ const REQUEST_PREFIX_ZH = /请|怎么|如何|怎样|能否|应该|需要|该/u;
 // A completed action can introduce a question without a comma. Split at the
 // temporal conjunction, not at a question word inside a phrase like 什么格式.
 const AFTER_SETUP_ZH = /[之以]后\s*|后\s*(?=为什么|为何|如何|怎么|怎样|请问|应该|需要|什么|哪种)/u;
+const REQUEST_CUE = /如何|怎么|怎样|为什么|为何|什么|哪种|请|应该|需要|能否|可否|是否|[吗呢](?=[?？]|$)|^(?:how|why|what|which|please)\b/u;
 
 function mainRequest(clause, hasDeck) {
   const boundary = AFTER_SETUP_ZH.exec(clause);
   if (!boundary) return clause;
   const setup = clause.slice(0, boundary.index);
-  // Strip a completed deck action, not a time modifier inside a directive
-  // (如何把运行之后测得的 ... 写入 ...). A polite 请问 can still introduce history.
-  if (!hasDeck(setup) || !ACTION_ZH.test(setup) || /^(?:如何|怎么|怎样|能否|可否|请(?:把|将|帮|教))/u.test(setup)) return clause;
+  if (!ACTION_ZH.test(setup)) return clause;
   const main = clause.slice(boundary.index + boundary[0].length);
-  return ASK.test(main) ? main : clause;
+  // A question mark alone does not start a new request. Keep the governing
+  // cue in 如何把运行之后测得的 ... 写入 ..., but not the preamble in 请帮我解释 ... 之后为什么 ... .
+  const newRequest = REQUEST_CUE.test(main) || (hasDeck(setup) && !REQUEST_CUE.test(setup));
+  return newRequest && ASK.test(main) ? main : clause;
 }
 
 function asksForDeckWork(clause) {
