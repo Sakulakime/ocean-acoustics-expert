@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { automaticRangeSteps, lastStepAt, outputRanges } from "./umpe-range.js";
+import { parseUmpeReal } from "./umpe-real.js";
 
 // UMPE v1.1: pemp.f:158-252 and phase2.f:84-283. Keep records separate:
 // a list-directed READ can span lines, but the next READ starts a new record.
@@ -23,8 +24,8 @@ function integer(token, at, name, min, max) {
 }
 
 function real(token, at) {
-  const value = Math.fround(Number(token?.replace(/[dD]/, "e")));
-  need(/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][+-]?\d+)?$/.test(token) && Number.isFinite(value),
+  const value = parseUmpeReal(token);
+  need(Number.isFinite(value),
     at, `expected a finite Fortran REAL number, got ${token}`);
   return value;
 }

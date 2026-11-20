@@ -73,3 +73,14 @@ test("UMPE REAL: processes environment knots near the end of a billion-step marc
     environment: sedimentKnots("99.9990005493164", "99.99900817871094"), patched: true }),
   /peenv\.inp:17:.*step crosses multiple knots/);
 });
+
+test("UMPE REAL: a decimal just above a binary32 midpoint exceeds ZMAX despite a binary64 tie", (t) => {
+  const params = { 18: "0.01", 19: "1.0" };
+  for (const patched of [false, true]) {
+    rejects(preflight(t, { params: { ...params, 31: "0 1.0000000596046448 1" }, patched }), /perun\.inp:31:.*within \[0, 1\]/);
+    for (const end of ["1.0000000596046447", "1.000000059604644775390625"]) {
+      const result = preflight(t, { params: { ...params, 31: `0 ${end} 1` }, patched });
+      assert.equal(result.status, 0, result.stderr);
+    }
+  }
+});

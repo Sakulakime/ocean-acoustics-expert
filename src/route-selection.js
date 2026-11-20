@@ -41,6 +41,17 @@ const REQUEST_PREFIX_EN = /\b(?:please|(?:how|where) to|(?:do|can|could|should|w
 const ACTION_ZH = /运行|执行|配置|设置|填写|填入|修改|编写|校验|加载|读入|导入|跑|写|填/u;
 const REQUEST_PREFIX_ZH = /请|怎么|如何|怎样|能否|应该|需要|该/u;
 
+// A completed action can introduce a question without a comma. Split at the
+// temporal conjunction, not at a question word inside a phrase like 什么格式.
+const AFTER_SETUP_ZH = /[之以]后\s*|后\s*(?=为什么|为何|如何|怎么|怎样|请问|应该|需要|什么|哪种)/u;
+
+function mainRequest(clause) {
+  const boundary = AFTER_SETUP_ZH.exec(clause);
+  if (!boundary || !ACTION_ZH.test(clause.slice(0, boundary.index))) return clause;
+  const main = clause.slice(boundary.index + boundary[0].length);
+  return ASK.test(main) ? main : clause;
+}
+
 function asksForDeckWork(clause) {
   if (FORM_HEADING.test(clause) || (DECK_FORM.test(clause) && ASK.test(clause))) return true;
   if (clause.split(REQUEST_PREFIX_EN).some((part) => ACTION_EN.test(part))) return true;
@@ -84,17 +95,21 @@ export function resolveConcept(prompt, concepts) {
   const hasDeck = (s) => decks.some((deck) => findUmpeAlias(s, deck) >= 0);
   if (hasDeck(text)) {
     const clauses = text.split(CLAUSE_BREAK).map((s) => s.trim()).filter(Boolean);
-    const questions = clauses.filter((s) => ASK.test(s));
+    // Keep the original clause for the deck identity, but only the main
+    // request supplies intent and competing concepts.
+    const requests = clauses.map(mainRequest);
+    const questions = requests.filter((s) => ASK.test(s));
     const deckClauses = clauses.map(hasDeck);
     const locators = clauses.map((s, i) => deckClauses[i] && LOCATOR_PATH.test(s.replace(LOCATOR_LABEL, "")));
-    if (clauses.some((s, i) =>
+    if (requests.some((s, i) =>
       (!questions.length || ASK.test(s)) &&
       (deckClauses[i] || locators[i - 1] || locators[i + 1]) && asksForDeckWork(s)
     )) {
       return umpe;
     }
-    if (questions.length && questions.length < clauses.length) {
-      const focused = longestAlias(questions.join("\n"), concepts);
+    const questionText = questions.join("\n");
+    if (questionText && questionText !== text) {
+      const focused = longestAlias(questionText, concepts);
       if (focused) return focused;
     }
   }
