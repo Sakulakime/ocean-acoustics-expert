@@ -4,7 +4,7 @@ English | [简体中文](README.zh-CN.md)
 
 An underwater-acoustics expert agent and the knowledge base it answers from, installable into Claude Code, Codex, OpenCode and DeepSeek-TUI.
 
-The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers.
+The expert covers acoustic propagation modeling and sonar-oriented signal processing: sound-speed structure, transmission loss, ray and Gaussian-beam methods, wavenumber integration, normal modes, parabolic equations, broadband propagation, ambient noise, reverberation, the sonar equation, beamforming, matched-field processing, and sound propagation through internal waves and other ocean fluctuations. It also knows how to build inputs for, run and plot BELLHOP, KRAKEN and RAM through the bundled MATLAB helpers. For UMPE, it provides a build-and-run guide and a read-only Node.js input validator.
 
 It selects the primary textbook by topic and reads substantive local notes first. Complex questions proactively cross-check other relevant books, even when COA already answers the main question. Targeted PDF pages fill gaps in the answer or the cross-check; a section map alone does not count as evidence. See [book selection](knowledge/book-selection.md). Every claim in an answer carries an evidence tag, `[textbook: <source> <section/pages>]` or `[inference]`. The agent is read-only: in Claude Code, Codex and OpenCode the harness stops it changing files; in DeepSeek-TUI, which has no such control for a skill, its instructions do.
 
@@ -29,7 +29,7 @@ The data folder holds:
 ~/.local/share/ocean-acoustics-expert/
 ├── knowledge/        installed copy of the knowledge base; your book PDFs go in knowledge/sources/
 ├── matlab/           MATLAB solver helpers
-├── local-paths.yaml  local path map: where this machine keeps the Acoustics Toolbox
+├── local-paths.yaml  local path map: local solver locations, including UMPE
 ├── manifest.json     every file and link install wrote
 └── backups/          everything install replaced or removed
 ```
@@ -111,12 +111,13 @@ Force a mode with `--mode link` or `--mode copy`; link mode needs a checkout. To
 
 ## Path overrides
 
-**Acoustics Toolbox.** The local path map records where two Acoustics Toolbox trees live. The solver helpers need them; the rest of the expert works without them. Install searches your home folder up to five levels deep, skipping hidden folders, `node_modules` and symbolic links:
+**Solver locations.** The local path map records two Acoustics Toolbox trees and the independent UMPE source tree. Only local runs of the corresponding solver need its tree. Install searches your home folder up to five levels deep, skipping hidden folders, `node_modules` and symbolic links:
 
 | Entry | Flag | Recognised by |
 |---|---|---|
 | `at_2023` | `--at-2023 <dir>` | a folder whose name contains `2023` and that holds `RAM/ram.exe` |
 | `at_2020` | `--at-2020 <dir>` | a folder whose name contains `2020` and that holds `linux-bin/bellhop.exe` and `Matlab/Plot/plotshd.m` |
+| `umpe_root` | `--umpe-root <dir>` | unpacked UMPE source directory containing `pemp.f`, `phase2.f`, `makefile` |
 
 A flag overrides the search. Later installs reuse the recorded locations, so you pass a flag only once. An entry with no match or several is left unset with a warning; reinstall with its flag to set it.
 
@@ -138,7 +139,8 @@ Run each command as `npx --yes ocean-acoustics-expert@latest <command>`, or as `
 
 | Command | What it does |
 |---|---|
-| `install` | Installs or updates the expert. Asks which harnesses on a terminal. Options: `--harness <name>`, `--mode link\|copy`, `--dry-run`, `--yes`, `--at-2023 <dir>`, `--at-2020 <dir>`. Exits 130 when cancelled. |
+| `install` | Installs or updates the expert. Asks which harnesses on a terminal. Options: `--harness <name>`, `--mode link\|copy`, `--dry-run`, `--yes`, `--at-2023 <dir>`, `--at-2020 <dir>`, `--umpe-root <dir>`. Exits 130 when cancelled. |
+| `validate_umpe_inp [--patched-range-index] [case-dir]` | Read-only UMPE input and range-count checks. Defaults to stock v1.1; select the flag only for the rebuilt [MKS range-index fix](knowledge/runbooks/umpe-runbook.md#preserve-the-official-ex4b-input-mks-range-index-fix). Does not run or modify UMPE. |
 | `status` | Shows the installed version, mode, harnesses, data folder, local path map, and how many files, links and backups the manifest lists. |
 | `doctor` | Diagnoses the installation and changes nothing. It prints a `FAIL` line for each problem and exits non-zero when there is one; a `WARN` line does not fail it. |
 | `check` | Lints a knowledge base and runs the route-selection cases. It is for people editing the knowledge base. Options: `--kb <dir>`, `--cases <file>`, `--helpers <dir>`. |

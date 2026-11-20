@@ -33,13 +33,14 @@ This knowledge base supports underwater acoustic propagation and signal processi
 - Glossary: `glossary.md`
 - Chapter notes: `chapters/`. The deepened ones (`status: deepened`: Ch. 2, Ch. 3, Ch. 5 and Ch. 6) give, per subsection, key equations with symbols, COA equation numbers and PDF pages, and validity conditions with COA's numbers; take equations and validity limits from them before reading the PDF.
 - Benchmark cases: `benchmark-cases.md`. COA's canonical test environments (Pekeris waveguide, Munk profile, ASA wedge, Dickins seamount, 3-D wedge and others), each with exact parameters, COA figures and pages, the solver families it validates and COA's reference solution. Read it for "which benchmark validates X" and "give me the parameters of case Y".
-- Solver notes: `solvers/`
-- Run recipes (Linux + MATLAB run recipe, input-file format, validators, gotchas):
+- Solver notes: `solvers/00-solvers-hub.md`, including `solvers/solver-umpe.md` for split-step Fourier PE.
+- Run recipes (inputs, invocation, validators and common errors):
   - BELLHOP (ray, `.env`): `runbooks/bellhop-runbook.md` (+ `runbooks/bellhop-env-template.md`, `runbooks/bellhop-checklist.md`)
   - KRAKEN (normal modes, `.env`+`.flp` two-stage): `runbooks/kraken-runbook.md` (+ `runbooks/kraken-template.md`, `runbooks/kraken-checklist.md`)
   - RAM (parabolic equation, `ram.in`): `runbooks/ram-runbook.md` (+ `runbooks/ram-in-template.md`, `runbooks/ram-checklist.md`)
+  - UMPE (split-step Fourier PE, `perun.inp`+`peenv.inp`+`pefiles.inp`): `runbooks/umpe-runbook.md` (+ `runbooks/umpe-input-template.md`, `runbooks/umpe-checklist.md`)
 
-When the question is about actually building an input file or running a model (not just the physics), read the matching runbook in `runbooks/` — it has the exact input-file format, the Linux+MATLAB call recipe against the local AT install, a pre-run validator, and the known crash traps.
+When the question is about actually building an input file or running a model (not just the physics), read the matching runbook in `runbooks/` — it has the exact input-file format, the solver-specific invocation, a pre-run validator, and the known crash traps.
 
 ## Sources and machine locations
 
@@ -50,6 +51,7 @@ Notes contain no absolute paths:
   - `{{knowledge_base}}`: the installed copy of this knowledge base
   - `{{at_2023}}`: the Acoustics Toolbox 2023 tree, which holds the working Linux RAM binary (RAM/ram.exe)
   - `{{at_2020}}`: the Acoustics Toolbox 2020 tree (atWin10_2020_11_4), which holds the MATLAB scripts and plotting (Matlab) and the BELLHOP and KRAKEN binaries (linux-bin)
+  - `{{umpe_root}}`: unpacked UMPE Fortran source, makefile and examples
   - `{{matlab_helpers}}`: the MATLAB solver helpers (validators and runners for BELLHOP, KRAKEN and RAM)
   - `{{authoring_root}}`: the project checkout holding the authoring copy (link-mode installs only)
 - A path beginning with /path/to/ in a recipe stands for a directory of the user's choice.
@@ -103,5 +105,5 @@ Notes contain no absolute paths:
 - `benchmark-cases.md`
 - `workflows/model-selection.md`
 - `solvers/00-solvers-hub.md`
-- `runbooks/bellhop-runbook.md`, `runbooks/kraken-runbook.md`, `runbooks/ram-runbook.md`
+- `runbooks/bellhop-runbook.md`, `runbooks/kraken-runbook.md`, `runbooks/ram-runbook.md`, `runbooks/umpe-runbook.md`
 - `visualization.md` — TL 场可视化规范（jet_r 色图、AT2020 plotshd.m 自适应 caxis=median+0.75std/50dB窗口、多图共用色标、离散标签不用连续色标、MAE 计算）。任何出图/色标/配色问题必读。

@@ -1,0 +1,72 @@
+--- a/pemp.f
++++ b/pemp.f
+@@ -13,6 +13,7 @@
+ C  PHYSICAL SPACE ARE CALLED SM AND CM
+ C
+       CHARACTER*20 DTG
++      integer nlastle
+       REAL X(4096),Y(4096),XS(4096),YS(4096)
+       REAL SK(4096),CK(4096),SM(4096),CM(4096)
+       REAL AK(4096),filt(2049)
+@@ -309,13 +310,19 @@
+ 	  print*,'ERROR IN SPECIFIED OUTPUT RANGES'
+ 	  goto 999
+ 	end if
+-	nzstrt=int(zstrt/dzkm)+1
+-	nzfin=int(zfin/dzkm)+1
+-	MZTOT=INT(FLOAT(NZFIN-NZSTRT+1)/FLOAT(NZSKIP))
+-	if(mztot.gt.1000)then
+-17	 nzskip=nzskip+1
+-	 MZTOT=INT(FLOAT(NZFIN-NZSTRT+1)/FLOAT(NZSKIP))
+-	 if(mztot.gt.1000)goto 17
++C     Partial output windows use (start,end] on the marched metre grid.
++C     A full-range window extends to the rounded final march step.
++      nzstrt=nlastle(zstrt,dzkm,nz)+1
++      nzfin=nz
++      if (zfin.lt.zmax) nzfin=nlastle(zfin,dzkm,nz)
++      if (nzskip.le.0.or.nzfin.lt.nzstrt) then
++        print *, 'ERROR: empty output range or nonpositive range skip'
++        stop 1
++      end if
++      mztot=1+(nzfin-nzstrt)/nzskip
++      if (mztot.gt.1000) then
++        nzskip=(nzfin-nzstrt)/1000+1
++        mztot=1+(nzfin-nzstrt)/nzskip
+ 	 print*,'WARNING:  Number of range points output cannot
+      & exceed 1000.'
+ 	 print*,'Range skip factor being increased to ',nzskip
+@@ -1034,7 +1041,7 @@
+ C
+ C	Begin output data section if at selected ranges
+       IF ((IZ.GE.NZSTRT).AND.(IZ.LE.NZFIN).AND.
+-     & (AMOD(FLOAT(IZ-NZSTRT),FLOAT(NZSKIP)).EQ.0.)) THEN
++     & (MOD(IZ-NZSTRT,NZSKIP).EQ.0)) THEN
+ C
+       MZ=MZ+1
+ C
+@@ -1408,3 +1415,25 @@
+         WRITE ( 6, '(1X,''STOP : '',A,/)' ) DTG
+ 	stop
+         end
++
++      integer function nlastle(edgekm,stepkm,nsteps)
++C     Last step at or before the edge. Use the REAL metre coordinates
++C     of the march, not INT(edgekm/stepkm) near a grid boundary.
++      implicit none
++      integer nsteps,lo,hi,mid
++      real edgekm,stepkm,edge,dzm,zmid
++      edge=edgekm*1000.
++      dzm=stepkm*1000.
++      lo=0
++      hi=nsteps
++      do while (lo.lt.hi)
++        mid=hi-(hi-lo)/2
++        zmid=dzm*float(mid)
++        if (zmid.le.edge) then
++          lo=mid
++        else
++          hi=mid-1
++        end if
++      end do
++      nlastle=lo
++      end

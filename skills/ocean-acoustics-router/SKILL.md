@@ -36,7 +36,7 @@ Note paths in the hub, the routing map and the concept index are relative to `{{
    - chapter notes (`chapters/`);
    - topic notes (`topics/`) from the other books; source-note section maps alone provide navigation, not technical evidence;
    - solver notes (`solvers/`);
-   - runbooks (`runbooks/`) for building inputs or running BELLHOP, KRAKEN or RAM;
+   - runbooks (`runbooks/`) for building inputs or running BELLHOP, KRAKEN, RAM or UMPE;
    - the visualization standard (`visualization.md`) for plotting questions;
    - when present, the benchmark-cases note and book source notes. Check the hub or the routing map for them; do not assume the files exist.
 5. When notes leave an answer claim or a required cross-book check unsupported, read a fallback window: the smallest relevant page range of a book PDF in `{{knowledge_base}}/sources/`, cited with its page range. A complete COA answer does not complete an unsupported check of another book.

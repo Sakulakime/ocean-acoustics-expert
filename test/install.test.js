@@ -140,7 +140,9 @@ test("install detects the toolbox trees and writes them to the path map and the 
   const pathMap = parseYaml(readFileSync(paths.pathMap, "utf8"));
   assert.equal(pathMap.at_2020, join(home, "Tools/AT/atWin10_2020_11_4"));
   assert.equal(pathMap.at_2023, join(home, "Tools/AT/at_2023"));
+  assert.equal(pathMap.umpe_root, join(home, "Tools/PE/source"));
   const config = readFileSync(join(pkg, "tools", "matlab", "oae_local_paths.m"), "utf8");
+  assert.match(config, /paths\.umpe_root = /);
   assert.match(config, /^function paths = oae_local_paths\( \)$/m);
   assert.match(config, new RegExp(`paths\\.at_2020 = '${join(home, "Tools/AT/atWin10_2020_11_4")}';`));
   assert.match(config, new RegExp(`paths\\.at_2023 = '${join(home, "Tools/AT/at_2023")}';`));
@@ -163,10 +165,11 @@ test("install keeps an earlier flag value when re-run without the flag", (t) => 
   const pkg = writePackage(t);
   const home = writeHome(t, { ...TOOLBOXES, "Elsewhere/at2020/.keep": "" });
 
-  runInstaller(pkg, home, ["install", "--at-2020", join(home, "Elsewhere/at2020")]);
+  runInstaller(pkg, home, ["install", "--at-2020", join(home, "Elsewhere/at2020"), "--umpe-root", join(home, "Elsewhere")]);
   const result = runInstaller(pkg, home, ["install"]);
 
   assert.equal(result.status, 0, result.stderr);
+  assert.equal(parseYaml(readFileSync(installPaths(home).pathMap, "utf8")).umpe_root, join(home, "Elsewhere"));
   assert.equal(parseYaml(readFileSync(installPaths(home).pathMap, "utf8")).at_2020, join(home, "Elsewhere/at2020"));
 });
 

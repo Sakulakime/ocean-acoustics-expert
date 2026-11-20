@@ -1,3 +1,4 @@
+import { validateUmpeCase } from "./validate_umpe_inp.js";
 import { runCheck } from "./check.js";
 import { runDoctor } from "./doctor.js";
 import { runInstall } from "./install.js";
@@ -8,7 +9,8 @@ const USAGE = `Usage: ocean-acoustics-expert <command> [options]
 
 Commands:
   install    Install the expert into coding-agent harnesses; on a terminal, asks which ones
-             [--harness <name>]... [--mode link|copy] [--dry-run] [--yes] [--at-2023 <dir>] [--at-2020 <dir>]
+             [--harness <name>]... [--mode link|copy] [--dry-run] [--yes] [--at-2023 <dir>] [--at-2020 <dir>] [--umpe-root <dir>]
+  validate_umpe_inp [--patched-range-index] [case-dir]  Check UMPE inputs; assumes stock v1.1 unless specified
   status     Show what is installed
   doctor     Diagnose the installation; reports problems, changes nothing
   uninstall  Remove what install wrote [--restore: also put back its backups]
@@ -16,6 +18,7 @@ Commands:
 
 const COMMANDS = {
   install: runInstall,
+  validate_umpe_inp: validateUmpeCase,
   status: runStatus,
   doctor: runDoctor,
   uninstall: runUninstall,

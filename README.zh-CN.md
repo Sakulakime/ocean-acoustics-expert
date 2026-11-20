@@ -4,7 +4,7 @@
 
 水声学专家智能体及其知识库，可安装到 Claude Code、Codex、OpenCode 和 DeepSeek-TUI。
 
-本专家涵盖声传播建模和面向声呐的信号处理：声速结构、传输损失、射线和高斯波束方法、波数积分、简正波、抛物方程、宽带传播、环境噪声、混响、声呐方程、波束形成、匹配场处理，以及声波在内波和其他海洋波动中的传播。它还知道如何通过捆绑的 MATLAB 辅助工具为 BELLHOP、KRAKEN 和 RAM 构建输入、运行和绘图。
+本专家涵盖声传播建模和面向声呐的信号处理：声速结构、传输损失、射线和高斯波束方法、波数积分、简正波、抛物方程、宽带传播、环境噪声、混响、声呐方程、波束形成、匹配场处理，以及声波在内波和其他海洋波动中的传播。它还知道如何通过捆绑的 MATLAB 辅助工具为 BELLHOP、KRAKEN 和 RAM 构建输入、运行和绘图。对于 UMPE，项目提供编译运行指南和只读的 Node.js 输入校验器。
 
 它按主题选择主要教材，优先读取有实质内容的本地笔记。复杂问题会主动核对其他相关书籍，即使 COA 已能回答主要问题；答案或跨书核对缺少证据时，才读取 PDF 的目标页段。仅发现目录或页码不算完成技术核对。选书规则见 [book selection](knowledge/book-selection.md)。答案中的每个主张都带有证据标签，`[textbook: <source> <section/pages>]` 或 `[inference]`。该智能体是只读的：在 Claude Code、Codex 和 OpenCode 中由平台阻止它修改文件；DeepSeek-TUI 无法对技能做这种限制，只能靠其指令约束。
 
@@ -29,7 +29,7 @@
 ~/.local/share/ocean-acoustics-expert/
 ├── knowledge/        知识库的已安装副本；你的书籍 PDF 放在 knowledge/sources/
 ├── matlab/           MATLAB 求解器辅助工具
-├── local-paths.yaml  本地路径映射：本机 Acoustics Toolbox 的位置
+├── local-paths.yaml  本地路径映射：本机求解器目录（含 UMPE）
 ├── manifest.json     安装写入的所有文件和链接
 └── backups/          安装替换或删除的所有内容
 ```
@@ -101,12 +101,13 @@ node bin/ocean-acoustics-expert.js install
 
 ## 路径覆盖
 
-**Acoustics Toolbox。** 本地路径映射记录两个 Acoustics Toolbox 树的位置。求解器辅助工具需要它们；专家的其余部分无需它们即可工作。安装会在你的主文件夹中搜索最多五层深度，跳过隐藏文件夹、`node_modules` 和符号链接：
+**求解器位置。** 本地路径映射记录两个 Acoustics Toolbox 目录和独立的 UMPE 源码目录。只有在本机运行相应求解器时才需要其目录。安装会在你的主文件夹中搜索最多五层深度，跳过隐藏文件夹、`node_modules` 和符号链接：
 
 | 条目 | 标志 | 识别方式 |
 |---|---|---|
 | `at_2023` | `--at-2023 <dir>` | 名称包含 `2023` 且包含 `RAM/ram.exe` 的文件夹 |
 | `at_2020` | `--at-2020 <dir>` | 名称包含 `2020` 且包含 `linux-bin/bellhop.exe` 和 `Matlab/Plot/plotshd.m` 的文件夹 |
+| `umpe_root` | `--umpe-root <dir>` | 解压后的 UMPE 源码目录，含 `pemp.f`, `phase2.f`, `makefile` |
 
 标志会覆盖搜索。后续安装会重用记录的位置，因此你只需传递一次标志。没有匹配项或有多个匹配项的条目会被保留为未设置并带有警告；使用其标志重新安装以设置它。
 
@@ -128,7 +129,8 @@ node bin/ocean-acoustics-expert.js install
 
 | 命令 | 作用 |
 |---|---|
-| `install` | 安装或更新专家。在终端中会询问安装平台。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--yes`、`--at-2023 <dir>`、`--at-2020 <dir>`。取消时退出码为 130。 |
+| `install` | 安装或更新专家。在终端中会询问安装平台。选项：`--harness <name>`、`--mode link\|copy`、`--dry-run`、`--yes`、`--at-2023 <dir>`、`--at-2020 <dir>`、`--umpe-root <dir>`。取消时退出码为 130。 |
+| `validate_umpe_inp [--patched-range-index] [case-dir]` | 只读校验 UMPE 输入和实际输出距离点数，默认按原版 v1.1 检查。仅在使用[公制距离索引补丁](knowledge/runbooks/umpe-runbook.md#preserve-the-official-ex4b-input-mks-range-index-fix)重新编译后指定该选项；不会运行或修改 UMPE。 |
 | `status` | 显示已安装的版本、模式、平台、数据文件夹、本地路径映射，以及清单列出的文件、链接和备份的数量。 |
 | `doctor` | 诊断安装并且不更改任何内容。每个问题打印一行 `FAIL`，有问题时以非零值退出；`WARN` 行不会导致失败。 |
 | `check` | 检查知识库并运行路由选择用例。用于编辑知识库的人。选项：`--kb <dir>`、`--cases <file>`、`--helpers <dir>`。 |

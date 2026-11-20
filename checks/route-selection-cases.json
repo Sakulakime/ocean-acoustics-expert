@@ -968,6 +968,183 @@
       }
     },
     {
+      "name": "runbook - UMPE input files route to the PE route that lists the UMPE runbook",
+      "prompt": "How do I build perun.inp, peenv.inp and pefiles.inp to run UMPE?",
+      "expected": {
+        "concept_key": "umpe",
+        "bucket": "parabolic_equations",
+        "route_notes": [
+          "topics/collins-pe-extensions.md",
+          "chapters/ch06-parabolic-equations.md",
+          "solvers/solver-ram.md",
+          "runbooks/ram-runbook.md",
+          "solvers/solver-umpe.md",
+          "runbooks/umpe-runbook.md",
+          "workflows/model-selection.md"
+        ],
+        "primary_notes": [
+          "solvers/solver-umpe.md"
+        ],
+        "secondary_notes": [
+          "runbooks/umpe-runbook.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "runbook - UMPE example with SSP in the environment deck",
+      "prompt": "How do I run UMPE ex3 with the sound speed profile in peenv.inp?",
+      "expected": {
+        "concept_key": "umpe",
+        "bucket": "parabolic_equations",
+        "route_notes": [
+          "topics/collins-pe-extensions.md",
+          "chapters/ch06-parabolic-equations.md",
+          "solvers/solver-ram.md",
+          "runbooks/ram-runbook.md",
+          "solvers/solver-umpe.md",
+          "runbooks/umpe-runbook.md",
+          "workflows/model-selection.md"
+        ],
+        "primary_notes": [
+          "solvers/solver-umpe.md"
+        ],
+        "secondary_notes": [
+          "runbooks/umpe-runbook.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "runbook - configuring an environment deck by path",
+      "prompt": "Where should I specify the sound-speed profile in examples/ex3/PEENV.INP?",
+      "expected": {
+        "concept_key": "umpe",
+        "bucket": "parabolic_equations",
+        "route_notes": [
+          "topics/collins-pe-extensions.md",
+          "chapters/ch06-parabolic-equations.md",
+          "solvers/solver-ram.md",
+          "runbooks/ram-runbook.md",
+          "solvers/solver-umpe.md",
+          "runbooks/umpe-runbook.md",
+          "workflows/model-selection.md"
+        ],
+        "primary_notes": [
+          "solvers/solver-umpe.md"
+        ],
+        "secondary_notes": [
+          "runbooks/umpe-runbook.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "runbook - configuring a UMPE environment deck in Chinese",
+      "prompt": "怎么在peenv.inp里填写 sound speed profile（声速剖面）？",
+      "expected": {
+        "concept_key": "umpe",
+        "bucket": "parabolic_equations",
+        "route_notes": [
+          "topics/collins-pe-extensions.md",
+          "chapters/ch06-parabolic-equations.md",
+          "solvers/solver-ram.md",
+          "runbooks/ram-runbook.md",
+          "solvers/solver-umpe.md",
+          "runbooks/umpe-runbook.md",
+          "workflows/model-selection.md"
+        ],
+        "primary_notes": [
+          "solvers/solver-umpe.md"
+        ],
+        "secondary_notes": [
+          "runbooks/umpe-runbook.md"
+        ],
+        "fallback_windows": [
+          "parabolic_equations.starters_and_split_step"
+        ]
+      }
+    },
+    {
+      "name": "concept - SSP theory with an incidental UMPE deck reference",
+      "prompt": "How does the sound speed profile affect refraction? My reference is UMPE’s peenv.inp.",
+      "expected": {
+        "concept_key": "sound_speed_profile",
+        "bucket": "fundamentals",
+        "primary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "fallback_windows": [
+          "fundamentals.environment_and_ssp"
+        ]
+      }
+    },
+    {
+      "name": "concept - SSP question followed by a previous UMPE run",
+      "prompt": "How does the sound speed profile affect refraction? I ran UMPE with peenv.inp.",
+      "expected": {
+        "concept_key": "sound_speed_profile",
+        "bucket": "fundamentals",
+        "primary_notes": ["chapters/ch01-fundamentals.md"],
+        "secondary_notes": ["chapters/ch02-wave-propagation-theory.md"],
+        "fallback_windows": ["fundamentals.environment_and_ssp"]
+      }
+    },
+    {
+      "name": "runbook - input syntax for SSP in an UMPE deck",
+      "prompt": "What is the syntax for a sound speed profile in peenv.inp?",
+      "expected": {
+        "concept_key": "umpe",
+        "bucket": "parabolic_equations",
+        "primary_notes": ["solvers/solver-umpe.md"],
+        "secondary_notes": ["runbooks/umpe-runbook.md"],
+        "fallback_windows": ["parabolic_equations.starters_and_split_step"]
+      }
+    },
+    {
+      "name": "concept - SSP without a concrete UMPE deck",
+      "prompt": "How should I specify the sound speed profile in a UMPE model?",
+      "expected": {
+        "concept_key": "sound_speed_profile",
+        "bucket": "fundamentals",
+        "primary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "fallback_windows": [
+          "fundamentals.environment_and_ssp"
+        ]
+      }
+    },
+    {
+      "name": "concept - SSP with only filename substrings",
+      "prompt": "How do I specify the sound speed profile in old_peenv.inp or peenv.inp.bak?",
+      "expected": {
+        "concept_key": "sound_speed_profile",
+        "bucket": "fundamentals",
+        "primary_notes": [
+          "chapters/ch01-fundamentals.md"
+        ],
+        "secondary_notes": [
+          "chapters/ch02-wave-propagation-theory.md"
+        ],
+        "fallback_windows": [
+          "fundamentals.environment_and_ssp"
+        ]
+      }
+    },
+    {
       "name": "concept - transmission-loss normalization",
       "prompt": "What is the standard transmission-loss normalization?",
       "expected": {

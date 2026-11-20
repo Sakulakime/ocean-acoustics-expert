@@ -161,12 +161,14 @@ routes:
         source: 01-source-etter.md
         pages: 159-167
   parabolic_equations:
-    trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, self-starter, Padé, rational approximation, elastic PE, poro-elastic PE, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM]
+    trigger_keywords: [parabolic equation, PE, split-step, split step Fourier, wide angle, starter, starter field, self-starter, Padé, rational approximation, elastic PE, poro-elastic PE, energy conservation, one-way approximation, 3D PE, 抛物方程, 分步傅里叶, 起始场, 宽角PE, ram, RAM, umpe, UMPE]
     notes:
       - topics/collins-pe-extensions.md
       - chapters/ch06-parabolic-equations.md
       - solvers/solver-ram.md
       - runbooks/ram-runbook.md
+      - solvers/solver-umpe.md
+      - runbooks/umpe-runbook.md
       - workflows/model-selection.md
     chapter_span: 473-545
     fallback_windows:

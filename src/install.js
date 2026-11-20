@@ -65,7 +65,7 @@ const MATLAB_CONFIG = "oae_local_paths.m";
  * Install the expert into the selected harnesses. On an interactive
  * terminal without --harness or --yes, it asks which harnesses to install
  * into and, before changing anything, asks to go ahead.
- * @param {string[]} args [--harness <name>]... [--mode link|copy] [--dry-run] [--yes] [--at-2023 <dir>] [--at-2020 <dir>]
+ * @param {string[]} args [--harness <name>]... [--mode link|copy] [--dry-run] [--yes] [--at-2023 <dir>] [--at-2020 <dir>] [--umpe-root <dir>]
  * @param {{terminal?: import("./install-prompts.js").Terminal|null}} [options]
  *   The terminal to ask on; default: standard input and output when both are terminals.
  * @returns {Promise<number>} Exit code: 0 done, 1 failed, 2 usage error, 130 cancelled.

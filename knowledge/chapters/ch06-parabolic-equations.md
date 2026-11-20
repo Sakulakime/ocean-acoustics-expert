@@ -235,6 +235,7 @@ The split-step Fourier algorithm marches the standard PE (and the Thomson–Chap
 **Cross-links**
 - `chapters/ch04-wavenumber-integration.md`
 - `chapters/ch08-broadband-modeling.md`
+- `runbooks/umpe-runbook.md` (a split-step Fourier PE code with switchable PE approximations)
 
 ### Computational domain, grid, density and attenuation
 The practical details of a PE run, shared by split-step and finite-difference codes: a pressure-release surface, an absorbing layer below the physical domain, depth and range steps, density jumps and volume attenuation.
@@ -265,6 +266,7 @@ The practical details of a PE run, shared by split-step and finite-difference co
 
 **Cross-links**
 - `runbooks/ram-runbook.md`
+- `runbooks/umpe-runbook.md`
 - `workflows/model-selection.md`
 
 ### FD and FE implementations of PE

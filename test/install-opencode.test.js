@@ -54,6 +54,7 @@ test("install renders a read-only OpenCode subagent that points at the installed
     [`${paths.data}/**`, "allow"],
     [`${join(home, "Tools/AT/at_2023")}/**`, "allow"],
     [`${join(home, "Tools/AT/atWin10_2020_11_4")}/**`, "allow"],
+    [`${join(home, "Tools/PE/source")}/**`, "allow"],
   ]);
   assert.match(body, new RegExp(`${paths.knowledge}/00-hub\\.md`));
   assert.match(body.trimStart(), /^## Harness note: OpenCode\n/);
